@@ -40,7 +40,6 @@
 
     # 游戏平台
     steam
-    bottles # Wine 容器管理
     protonplus # Proton/Wine runner 下载管理
     lutris
     heroic # Epic/GOG 启动器

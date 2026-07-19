@@ -139,7 +139,7 @@
       flatpak remote-add --if-not-exists flathub-sjtu https://dl.flathub.org/repo/flathub.flatpakrepo || true
       flatpak remote-modify flathub-sjtu --url=https://mirror.sjtu.edu.cn/flathub
       # 声明式安装（已安装则为快速 no-op）
-      for app in com.github.tchx84.Flatseal cn.wps.wps_365 eu.betterbird.Betterbird; do
+      for app in com.github.tchx84.Flatseal cn.wps.wps_365 eu.betterbird.Betterbird com.usebottles.bottles; do
         flatpak install -y --noninteractive flathub "$app" || echo "install failed: $app"
       done
     '';
