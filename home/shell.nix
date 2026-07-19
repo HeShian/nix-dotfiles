@@ -28,6 +28,20 @@
     enableZshIntegration = true;
   };
 
+  # nh：nix 命令助手（os switch/home switch 的友好封装）
+  programs.nh = {
+    enable = true;
+    flake = "${config.home.homeDirectory}/Documents/nix-dotfiles";
+    # 自动清理：每日执行 nh clean
+    # --keep 3：无论多旧都保留最近 3 个世代
+    # --keep-since 7d：另外保留 7 天内的所有世代
+    clean = {
+      enable = true;
+      dates = "daily";
+      extraArgs = "--keep 3 --keep-since 7d";
+    };
+  };
+
   programs.zsh = {
     enable = true;
     defaultKeymap = "viins";
@@ -64,9 +78,6 @@
     '';
 
     profileExtra = ''
-      if uwsm check may-start; then
-        exec uwsm start default
-      fi
     '';
   };
 }

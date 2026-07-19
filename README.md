@@ -1,8 +1,7 @@
 ## 概览 (Overview)
 ![Desktop Screenshot](./space.png)
-<!-- 如果想添加截图：可以创建一个 issue，将图片拖拽进去，然后将生成的链接复制到这里 -->
 
-> 基于 NixOS + Hyprland 的个人桌面配置。这里记录安装前要确认的内容和日常维护命令。
+> 基于 NixOS + Niri + Noctalia v5 的个人桌面配置。这里记录安装前要确认的内容和日常维护命令。
 
 ---
 
@@ -11,7 +10,7 @@
 
 我现在使用 Windows + Linux 双硬盘方案，避免单盘双系统被更新、引导项或误操作影响。笔记本仍用 macOS，台式机用 NixOS。
 
-这个仓库主要面向“台式机 + 独立 Linux 磁盘”。单盘双系统或笔记本请先确认磁盘、引导和硬件风险。
+这个仓库主要面向"台式机 + 独立 Linux 磁盘"。单盘双系统或笔记本请先确认磁盘、引导和硬件风险。
 
 ---
 
@@ -22,7 +21,7 @@
 安装 NixOS、拉取 GitHub 仓库和 Nix 缓存可能需要代理。
 
 - **Live ISO 环境**
-  此时电脑上还没有代理软件。推荐用手机 USB 网络共享：手机连接电脑，打开“USB 网络共享”，并在 Clash 等代理工具中开启 “Allow LAN / 允许局域网连接”。
+  此时电脑上还没有代理软件。推荐用手机 USB 网络共享：手机连接电脑，打开"USB 网络共享"，并在 Clash 等代理工具中开启 "Allow LAN / 允许局域网连接"。
 
   然后在 Live ISO 里查手机共享出来的网关 IP：
   ```bash
@@ -86,7 +85,7 @@ GPU (nvidia/amd/intel) [nvidia]:
 ```
 
 ### 💡 快捷键帮助
-进入桌面后按 **`Alt + /`** 查看快捷键。
+Niri 启动时会显示重要快捷键覆盖层。日常使用按 **`Super + /`** 查看快捷键。
 
 ---
 
@@ -98,7 +97,7 @@ GPU (nvidia/amd/intel) [nvidia]:
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
   - `disko.nix`: 分区规则。
 - **`home/`**: Home Manager 用户级配置。
-- **`dotfiles/`**: Hyprland、Neovim、Waybar、Rofi 等应用配置。
+- **`dotfiles/`**: Niri、Noctalia、Neovim 等应用配置。
 
 ---
 
@@ -110,7 +109,8 @@ GPU (nvidia/amd/intel) [nvidia]:
 包名可在 [search.nixos.org](https://search.nixos.org/packages) 搜索。
 
 ### 2. 如何修改桌面外观或快捷键？
-直接改 `dotfiles/` 下对应文件。是否需要 reload 或重启取决于具体程序。
+- Niri 合成器：编辑 `dotfiles/niri/config.kdl`，然后运行 `niri msg action load-config-file` 热重载。
+- Noctalia Shell：通过 Noctalia 设置面板（`Super + ,`）或用 `Super + Z` 打开启动器后搜索设置。
 
 ### 3. 如何应用你的修改？
 只修改 `dotfiles/` 下已有文件，通常不需要 `nixos-rebuild`。
@@ -120,26 +120,25 @@ GPU (nvidia/amd/intel) [nvidia]:
 cd ~/Documents/nix-dotfiles
 
 git add .
-sudo nixos-rebuild switch --flake .#space
+sudo nixos-rebuild switch --flake .#westwood
 ```
 
 升级锁定版本：
 ```bash
 nix flake update
-sudo nixos-rebuild switch --flake .#space
+sudo nixos-rebuild switch --flake .#westwood
 ```
 
 ---
-
 
 ## 🌟 为什么选择 NixOS？(Why NixOS?)
 ### 1. 绝对的稳定性：版本锁定
 `flake.lock` 锁定依赖版本。不运行 `nix flake update`，包版本就不会主动变化。
 
-### 2. 永不崩坏的系统：“世代”与回滚
+### 2. 永不崩坏的系统："世代"与回滚
 每次 `nixos-rebuild switch` 都会创建新世代。出问题时可从启动菜单回到旧世代。
 
-### 3. “一次配置，到处运行”
+### 3. "一次配置，到处运行"
 系统、用户环境、桌面和应用配置都放在仓库里，方便重装、迁移和审计。
 
 ---

@@ -1,8 +1,7 @@
 ## Overview
 ![Desktop Screenshot](./space.png)
-<!-- To add screenshots: Create an issue, drag & drop your images, then copy the generated URL here -->
 
-> Personal NixOS + Hyprland desktop configuration. This README covers install checks and daily maintenance.
+> Personal NixOS + Niri + Noctalia v5 desktop configuration. This README covers install checks and daily maintenance.
 
 ---
 
@@ -87,7 +86,7 @@ The installer supports checkpoint retries. To start over:
 ```
 
 ### Shortcut Help
-Press **`Alt + /`** on the desktop to view shortcuts.
+Niri shows an important shortcuts overlay at startup. During daily use, press **`Super + /`** to view shortcuts.
 
 ---
 
@@ -99,7 +98,7 @@ Press **`Alt + /`** on the desktop to view shortcuts.
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
 - **`home/`**: Home Manager user-level configuration.
-- **`dotfiles/`**: Hyprland, Neovim, Waybar, Rofi, and other app configs.
+- **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
 
 ---
 
@@ -113,7 +112,8 @@ Use `~/Documents/nix-dotfiles` as the source of truth.
 You can search for package names on [search.nixos.org](https://search.nixos.org/packages).
 
 ### Change Desktop Or App Config
-Edit the matching files under `dotfiles/`. Reload or restart the target app if needed.
+- Niri compositor: edit `dotfiles/niri/config.kdl`, then run `niri msg action load-config-file` to hot-reload.
+- Noctalia Shell: use the Settings panel (`Super + ,`) or open the launcher with `Super + Z` and search for settings.
 
 ### Apply Changes
 If you only changed existing files under `dotfiles/`, you usually do not need `nixos-rebuild`.
@@ -123,13 +123,13 @@ Run a rebuild after changing `.nix` files, packages, services, or Nix-managed fi
 cd ~/Documents/nix-dotfiles
 
 git add .
-sudo nixos-rebuild switch --flake .#space
+sudo nixos-rebuild switch --flake .#westwood
 ```
 
 To update locked package versions, run:
 ```bash
 nix flake update
-sudo nixos-rebuild switch --flake .#space
+sudo nixos-rebuild switch --flake .#westwood
 ```
 
 ---

@@ -1,5 +1,5 @@
 {
-  description = "NixOS with Hyprland";
+  description = "NixOS with Niri + Noctalia";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -11,18 +11,41 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/cachix";
+    };
+    noctalia-greeter = {
+      url = "github:noctalia-dev/noctalia-greeter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
+    kimi-code = {
+      url = "github:MoonshotAI/kimi-code";
+    };
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, disko, ... }:
+  outputs = { self, nixpkgs, home-manager, disko, noctalia, noctalia-greeter, zen-browser, kimi-code, agenix, ... }:
   let
     host = import ./nixos/host.nix;
     system = "x86_64-linux";
+    specialArgs = host // { inherit noctalia zen-browser kimi-code; };
     mkSystem = modules: nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = host;
+      inherit specialArgs;
       modules = [
         ./nixos/configuration.nix
         disko.nixosModules.disko
+        noctalia-greeter.nixosModules.default
+        agenix.nixosModules.default
       ] ++ modules;
     };
     homeManagerModules = [
@@ -33,7 +56,7 @@
           useUserPackages = true;
           users.${host.userName} = import ./home;
           backupFileExtension = "backup";
-          extraSpecialArgs = host;
+          extraSpecialArgs = specialArgs;
         };
       }
     ];

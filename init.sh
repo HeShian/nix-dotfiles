@@ -2,6 +2,9 @@
 
 set -e # 遇到错误立即停止
 
+export http_proxy="http://10.244.79.176:7890"
+export https_proxy="http://10.244.79.176:7890"
+
 USER_NAME=""
 USER_EMAIL=""
 HOST_NAME=""

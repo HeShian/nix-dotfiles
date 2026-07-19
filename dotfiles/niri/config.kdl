@@ -1,0 +1,91 @@
+// ============================================================
+// Niri Config — westwood (Noctalia v5 + Niri 26.04)
+// ============================================================
+
+// 截图保存位置
+screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
+
+// -----------------------------------------------------------
+// 环境变量
+// -----------------------------------------------------------
+environment {
+    XCURSOR_THEME "Bibata-Modern-Classic"
+    XCURSOR_SIZE "24"
+    DISPLAY ":0"
+    QT_IM_MODULE "fcitx"
+    XMODIFIERS "@im=fcitx"
+    EDITOR "nvim"
+    QT_QPA_PLATFORMTHEME "gtk3"
+    QT_QPA_PLATFORMTHEME_QT6 "gtk3"
+}
+
+// -----------------------------------------------------------
+// 输入
+// -----------------------------------------------------------
+input {
+    keyboard {
+        xkb {
+            layout "us"
+        }
+        repeat-delay 250
+        repeat-rate 35
+    }
+    touchpad {
+        tap
+        natural-scroll
+        dwt
+    }
+    mouse {
+        accel-speed -0.15
+        accel-profile "flat"
+    }
+}
+
+// -----------------------------------------------------------
+// 全局设置
+// -----------------------------------------------------------
+hotkey-overlay {
+    skip-at-startup
+}
+prefer-no-csd
+
+// -----------------------------------------------------------
+// XWayland
+// -----------------------------------------------------------
+xwayland-satellite {}
+
+// -----------------------------------------------------------
+// 自动启动
+// -----------------------------------------------------------
+spawn-at-startup "noctalia"
+spawn-at-startup "fcitx5" "--replace" "-d"
+spawn-at-startup "xsettingsd"
+spawn-sh-at-startup "~/.config/niri/scripts/portal-watcher.sh &"
+spawn-sh-at-startup "~/.config/niri/scripts/screenshot-sound.sh &"
+spawn-at-startup "udiskie" "-t" "-a"
+spawn-at-startup "wl-clip-persist" "--clipboard" "regular" "--reconnect-tries" "0"
+spawn-at-startup "sh" "-c" "wl-paste --type text --watch cliphist store"
+spawn-at-startup "sh" "-c" "wl-paste --type image --watch cliphist store"
+spawn-sh-at-startup "sleep 5 && noctalia msg wallpaper-random"
+// Gopeed 下载器后台静默启动（--hidden 为官方自启参数，不弹窗）
+spawn-sh-at-startup "gopeed --hidden &"
+
+// 笔记本: 合盖锁屏并挂起
+switch-events {
+    lid-close {
+        spawn "noctalia" "msg" "session" "lock-and-suspend";
+    }
+}
+
+// -----------------------------------------------------------
+// 模块化引入
+// -----------------------------------------------------------
+include "layout.kdl"
+include "animations.kdl"
+include "binds.kdl"
+include "windowrules.kdl"
+include "cursor.kdl"
+include "outputs.kdl"
+include "blur.kdl"
+
+include "noctalia.kdl"

@@ -1,0 +1,21 @@
+blur {
+    passes 3
+    offset 3
+    noise 0.02
+    saturation 1.5
+}
+
+window-rule {
+    background-effect {
+        xray true
+        blur true
+    }
+}
+
+window-rule {
+    match is-floating=true
+    background-effect {
+        xray true
+        blur true
+    }
+}

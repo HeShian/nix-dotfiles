@@ -1,0 +1,152 @@
+// -----------------------------------------------------------
+// 全局窗口规则
+// -----------------------------------------------------------
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    draw-border-with-background false
+}
+
+// Noctalia 设置窗口浮动居中
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+// 临时下拉终端（Mod+Slash 唤出）：顶部居中浮动
+window-rule {
+    match app-id="quickterminal"
+    open-floating true
+    default-floating-position x=0 y=0 relative-to="top"
+    default-column-width { proportion 0.5; }
+    default-window-height { fixed 600; }
+}
+
+// Noctalia 壁纸层放在 backdrop 上（固定壁纸方案）
+layer-rule {
+    match namespace="^noctalia-wallpaper"
+    place-within-backdrop true
+}
+
+// 透明背景使 backdrop 可见
+layout {
+    background-color "transparent"
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// -----------------------------------------------------------
+// 浮动窗口规则
+// -----------------------------------------------------------
+window-rule {
+    match app-id="imv"
+    match app-id="com.gabm.satty"
+    match app-id="blueman-manager"
+    match app-id="org.pulseaudio.pavucontrol"
+    match app-id="fcitx" title="Fcitx5 Input Window"
+    match title="群聊的聊天记录"
+    match title="聊天记录"
+    match title="群相册"
+    match title="重命名"
+    match title="另存为"
+    match title="图片查看器"
+    match title="画中画"
+    match title="Steam 设置"
+    match app-id="steam" title="Friends List"
+    match app-id="steam" title="好友列表"
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    match app-id="org.gnome.FileRoller"
+    match app-id="thunar" title="文件操作进度"
+    open-floating true
+}
+
+// 浮动窗口不自动聚焦
+window-rule {
+    match app-id="QQ" title="资料卡"
+    match app-id="QQ" title="天气"
+    open-focused false
+}
+
+// 视频播放器不透明
+window-rule {
+    match app-id="mpv"
+    match app-id="celluloid"
+    opacity 1.0
+}
+
+// Steam 好友弹窗
+window-rule {
+    match app-id="steam" title=r#"^notificationtoasts_\d+_desktop$"#
+    default-floating-position x=10 y=10 relative-to="bottom-right"
+    open-focused false
+}
+
+// Steam 好友列表窄列
+window-rule {
+    match app-id="steam" title="Friends List"
+    match app-id="steam" title="好友列表"
+    default-column-width { proportion 0.2; }
+}
+
+// 快捷键速查表（niri-binds 唤出的终端）：浮动
+window-rule {
+    match app-id="niri-hotkey-menu"
+    open-floating true
+}
+
+// GNOME 系设置窗口：平铺半宽（不浮动）
+window-rule {
+    match app-id=r#"^gnome-control-center$"#
+    match app-id=r#"^pavucontrol$"#
+    match app-id=r#"^nm-connection-editor$"#
+    default-column-width { proportion 0.5; }
+    open-floating false
+}
+
+// 计算器类小窗浮动
+window-rule {
+    match app-id=r#"^gnome-calculator$"#
+    match app-id=r#"^galculator$"#
+    open-floating true
+}
+
+// 图片/视频查看：浮动且不透明
+window-rule {
+    match title="图片查看器"
+    match title="画中画"
+    match title="图片和视频"
+    match title="视频播放器"
+    open-floating true
+    opacity 1.0
+}
+
+// GTK 应用圆角
+window-rule {
+    match app-id=r#"^org\.gnome\."#
+    draw-border-with-background false
+    geometry-corner-radius 12
+    clip-to-geometry true
+}
+
+// 终端类型不画边框背景
+window-rule {
+    match app-id="Alacritty"
+    match app-id="kitty"
+    match app-id="com.mitchellh.ghostty"
+    match app-id="zen"
+    draw-border-with-background false
+}
+
+// 活动/非活动窗口透明度
+window-rule {
+    match is-active=false
+    opacity 0.8
+}
+window-rule {
+    match is-active=true
+    opacity 0.9
+}
