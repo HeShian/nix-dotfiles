@@ -8,9 +8,7 @@
 ## 背景
 我从 Ubuntu 入门，后来用 Arch，最后转到 NixOS。NixOS 的优势是声明式配置、版本锁定和世代回滚：系统可控，也容易恢复。
 
-我现在使用 Windows + Linux 双硬盘方案，避免单盘双系统被更新、引导项或误操作影响。笔记本仍用 macOS，台式机用 NixOS。
-
-这个仓库主要面向"台式机 + 独立 Linux 磁盘"。单盘双系统或笔记本请先确认磁盘、引导和硬件风险。
+我现在只使用 NixOS 单系统，只有一台笔记本，没有台式机。
 
 ---
 
@@ -140,6 +138,14 @@ sudo nixos-rebuild switch --flake .#westwood
 
 ### 3. "一次配置，到处运行"
 系统、用户环境、桌面和应用配置都放在仓库里，方便重装、迁移和审计。
+
+---
+
+## 项目来源与参考
+
+- Fork 自：[huzch/nix-dotfiles](https://github.com/huzch/nix-dotfiles)
+- 主要参考：[SHORiN-KiWATA/shorin-arch-setup (noctalia-dotfiles)](https://github.com/SHORiN-KiWATA/shorin-arch-setup/tree/main/noctalia-dotfiles)
+- 动画参考代码：https://lagrange-x.lanzouq.com/iQGv93sel3uf
 
 ---
 
