@@ -4,19 +4,18 @@
 
 ## 项目概览
 
-- 基于 **NixOS（nixos-unstable）+ Niri（Wayland 滚动平铺合成器）+ Noctalia v5（Quickshell 桌面 Shell）** 的个人台式机配置。
+- 基于 **NixOS（nixos-unstable）+ Niri（Wayland 滚动平铺合成器）+ Noctalia v5（Quickshell 桌面 Shell）** 的个人笔记本配置（单系统，Niri 配置中含合盖锁屏挂起等笔记本逻辑）。
 - 通过 **Nix Flakes** 管理全部依赖，`flake.lock` 锁定版本；通过 **Home Manager**（作为 NixOS 模块）管理用户环境；通过 **Disko** 声明式分区。
-- 目标场景：台式机 + 独立 Linux 磁盘（Windows/Linux 双硬盘），单机单用户。
-- 上游仓库：`https://github.com/huzch/nix-dotfiles`。
+- 本仓库 Fork 自 [huzch/nix-dotfiles](https://github.com/huzch/nix-dotfiles)（git 远端 `origin`），作者自己的推送远端是 `codeberg`（`https://codeberg.org/claudia010/nix-dotfiles.git`，推送 token 由 agenix 管理，见"安全注意事项"）。桌面实现主要参考 [SHORiN-KiWATA/shorin-arch-setup](https://github.com/SHORiN-KiWATA/shorin-arch-setup)（noctalia-dotfiles）。
 
 ## 技术栈与运行时架构
 
-- **语言/格式**：Nix（系统与 Home Manager 配置）、KDL（Niri 配置）、Lua（Neovim，lazy.nvim 管理插件）、JSONC（fastfetch）、POSIX sh（安装脚本）、YAML（Rime 输入法）。
+- **语言/格式**：Nix（系统与 Home Manager 配置）、KDL（Niri 配置）、Lua（Neovim，lazy.nvim 管理插件）、JSONC（fastfetch）、POSIX sh（安装脚本与 niri 脚本）、YAML（Rime 输入法）。
 - **Flake 输入**（见 `flake.nix`）：`nixpkgs`(nixos-unstable)、`home-manager`、`disko`、`noctalia` + `noctalia-greeter`（greetd 登录界面）、`zen-browser`、`kimi-code`、`agenix`。
 - **Flake 输出**：
   - `nixosConfigurations.<hostName>`：完整系统（含 Home Manager）。
   - `nixosConfigurations.<hostName>-install`：精简安装系统（不含 Home Manager，供首装使用，避免引用尚不存在的 dotfiles 路径）。
-  - 当前 `hostName = "westwood"`，定义在 `nixos/host.nix`。
+  - 当前 `hostName = "westwood"`、`userName = "claudia"`，定义在 `nixos/host.nix`。
 - **运行机制**：`nixos/host.nix` 是唯一的机器参数源（userName、userEmail、hostName、disk、cpu、gpu），通过 `specialArgs` 注入所有 NixOS 模块和 Home Manager 模块；`configuration.nix` 按 `cpu`/`gpu` 条件化微码与显卡驱动（nvidia 使用开源内核模块）。
 
 ## 目录结构
@@ -24,22 +23,26 @@
 - `flake.nix` / `flake.lock`：系统入口与依赖锁定。
 - `nixos/`：系统级配置
   - `host.nix`：机器参数（由 `init.sh` 交互生成/改写）。
-  - `configuration.nix`：引导、网络、时区（Asia/Shanghai）、中文 locale + fcitx5/Rime、字体、Pipewire、蓝牙、OpenTabletDriver、NVIDIA、greetd + noctalia-greeter、xdg-desktop-portal（gnome/gtk 后端）、Thunar（`programs.thunar` + gvfs + tumbler）、Flatpak（flathub 中科大/上交大镜像 + `flatpak-setup.service` 声明式安装 flatseal/wps365/betterbird）、虚拟化（libvirtd+KVM+virt-manager+spiceUSBRedirection）、Waydroid（nftables 后端）、用户、Nix 设置（国内镜像 substituters + noctalia cachix）。注意：`sessionVariables.XDG_DATA_DIRS` 追加了 gsettings-desktop-schemas 路径（Noctalia 的 gsettings 钩子依赖），改动后需重新登录生效。
-  - `disko.nix`：GPT 分区（1G ESP + 16G swap + btrfs 根卷，子卷 `/root`、`/home`、`/nix`，zstd 压缩）。
+  - `configuration.nix`：引导（systemd-boot）、网络（NetworkManager + v2raya）、时区（Asia/Shanghai）、中文 locale + fcitx5/Rime（rime-ice 词库）、字体、Pipewire、gnome-keyring、蓝牙、OpenTabletDriver、NVIDIA、OpenSSH（host key 与 agenix 复用同一把）、greetd + noctalia-greeter、`programs.niri`、xdg-desktop-portal（gnome/gtk 后端，Secret 走 gnome-keyring）、Thunar（`programs.thunar` + gvfs + tumbler）、Flatpak（flathub 中科大/上交大镜像 + `flatpak-setup` oneshot 服务声明式安装 flatseal/wps365/betterbird，**由 systemd timer 触发**——开机 1 分钟后 + 每天，避免大体积下载阻塞 nixos-rebuild）、udisks2、power-profiles-daemon、nix-ld（FHS 兼容）、虚拟化（libvirtd+KVM+virt-manager+spiceUSBRedirection）、Waydroid（nftables 后端）、用户、Nix 设置（国内镜像 substituters + noctalia cachix）。注意：`sessionVariables.XDG_DATA_DIRS` 追加了 gsettings-desktop-schemas 路径（Noctalia 的 gsettings 钩子依赖），改动后需重新登录生效。
+  - `disko.nix`：GPT 分区（1G ESP + 16G swap（支持休眠）+ btrfs 根卷，子卷 `/root`、`/home`、`/nix`，zstd 压缩 + noatime）。
   - `hardware-configuration.nix`：安装时由 `nixos-generate-config` 生成（在 `.gitignore` 中被忽略，**不要手工维护**）。
-- `home/`：Home Manager 用户配置，`default.nix` 汇总并导入
-  - `desktop.nix`：Wayland 桌面工具（grim/slurp/cliphist/mpv 等）、`home.pointerCursor`（Bibata 光标）、foot 终端。**不使用 HM 的 `gtk` 模块**（GTK/Qt 颜色由 Noctalia 模板接管，避免争夺 `~/.config/gtk-*/`）。
-  - `shell.nix`：zsh（vi 键位、别名、`nrs` = nixos-rebuild 快捷别名）、git、fzf、yazi、nh（nix 命令助手，每日自动清理：保留最近 3 个世代 + 7 天内的世代）。
-  - `app.nix`：日常应用（浏览器、IM、VSCode、opencode、kimi-code、steam、wine（wineWow64Packages.stableFull）+ winetricks、bottles/protonplus/lutris/heroic、waydroid-helper 等）。
+- `home/`：Home Manager 用户配置（`home.stateVersion = "25.05"`），`default.nix` 汇总并导入
+  - `desktop.nix`：Wayland 桌面工具（grim/slurp/cliphist/mpv/satty/sunsetr/fuzzel 等）、`home.pointerCursor`（Bibata 光标）、foot 终端（配色 include Noctalia 生成的 `~/.config/foot/themes/noctalia`）、`~/Templates`"创建文档"模板（Office 模板二进制存于 `dotfiles/Templates/`）、`~/.config/xfce4/helpers.rc`（TerminalEmulator=foot）。**不使用 HM 的 `gtk` 模块**（GTK/Qt 颜色由 Noctalia 模板接管，避免争夺 `~/.config/gtk-*/`）。
+  - `shell.nix`：zsh（vi 键位、别名、`nrs` = nixos-rebuild 快捷别名）、git、fzf、yazi、neovim、nh（nix 命令助手，每日自动清理：保留最近 3 个世代 + 7 天内的世代）。
+  - `app.nix`：日常应用（brave + zen-browser(twilight) + pywalfox-native、IM、VSCode、opencode、kimi-code、uv/python3、steam、wine（wineWow64Packages.stableFull）+ winetricks、bottles/protonplus/lutris/heroic、waydroid-helper 等）。
 - `dotfiles/`：应用配置文件，由 `home/default.nix` 通过 `config.lib.file.mkOutOfStoreSymlink` 链接到 `~/.config/`（**指向仓库本身的活链接，不在 Nix store 中**）。
-  - `niri/`：Niri 配置，按主题拆分为多个 `.kdl` 文件（`config.kdl` 为主入口，另有 binds/layout/animations/windowrules 等）+ `scripts/`。**niri 是逐文件链接**（`~/.config/niri` 为真实目录）：`noctalia.kdl`（焦点环/边框等颜色）由 Noctalia 主题模板在运行时生成，不在仓库中；`config.kdl` 已 include 它。`binds.kdl` 的键位布局复刻自 [shorin-arch-setup](https://github.com/SHORiN-KiWATA/shorin-arch-setup)（已适配 v5 `noctalia msg` 与 foot）；`scripts/` 含 `portal-watcher.sh`（深浅色同步）、`screenshot-sound.sh`（截图快门声）、`niri-binds`（快捷键速查表）、`niri-force-kill-window`（强杀窗口）、`niri-pick`（窗口信息/取色）、`random-anime-wallpaper`（在线壁纸下载），新增脚本需在 `home/default.nix` 的 `niriFiles` 注册。
-  - `nvim/`：Neovim 配置（`init.lua` + `lua/core` + `lua/plugins`，lazy.nvim，锁定文件 `lazy-lock.json`）。配色由 `lua/noctalia.lua` 从 Noctalia 生成的 `~/.local/share/nvim/noctalia/colors.lua` 加载（SIGUSR1 热重载），文件缺失时回退内置 Catppuccin Mocha。
-  - `fastfetch/`、`xsettingsd/`（图标主题为 `Adwaita-Matugen-B`，见下）、`rime/`（链接到 `~/.local/share/fcitx5/rime/`）、`Thunar/`（右键自定义动作 uca.xml，配合 `~/Templates` 的"创建文档"模板与 `~/.config/xfce4/helpers.rc` 的 TerminalEmulator=foot）。
-  - `noctalia/`：Noctalia 自定义主题模板源（`templates/neovim.lua`、`templates/gtk-folder/` 图标重着色）。**不链接**到 `~/.config/noctalia`（Noctalia 的运行时状态不纳入 git），模板在 `~/.config/noctalia/config.toml` 的 `[theme.templates.user.*]` 以绝对路径登记。`gtk-folder/recolor.sh` 把 Adwaita 图标按当前调色板重着色到 `~/.local/share/icons/Adwaita-Matugen-{A,B}` 并通过 gsettings 翻转（A/B 交替强制应用刷新；xsettingsd 静态指向 B，GTK3 应用可能滞后一代换色）。
-  - 注意：`home/default.nix` 的 `configs` 表中含 `yazi`，新增对应的 `dotfiles/yazi/` 目录时才会生效。
+  - `niri/`：Niri 配置，按主题拆分为多个 `.kdl` 文件（`config.kdl` 为主入口，include `layout/animations/binds/windowrules/cursor/outputs/blur.kdl`）+ `scripts/`。**niri 是逐文件链接**（`~/.config/niri` 为真实目录）：`noctalia.kdl`（焦点环/边框等颜色）由 Noctalia 主题模板在运行时生成，不在仓库中；`config.kdl` 末尾已 include 它。`binds.kdl` 的键位布局复刻自 [shorin-arch-setup](https://github.com/SHORiN-KiWATA/shorin-arch-setup)（已适配 v5 `noctalia msg`、kitty→foot、firefox→brave）；`scripts/` 含 `portal-watcher.sh`（深浅色同步）、`screenshot-sound.sh`（截图快门声）、`screenshot-edit.sh`（satty 截图标注）、`niri-binds`（快捷键速查表）、`niri-force-kill-window`（强杀窗口）、`niri-pick`（窗口信息/取色）、`random-anime-wallpaper`（在线壁纸下载）。**新增脚本或 .kdl 文件需在 `home/default.nix` 的 `niriFiles` 列表注册**。
+  - `nvim/`：Neovim 配置（`init.lua` + `lua/core` + `lua/plugins`，lazy.nvim，锁定文件 `lazy-lock.json`）。配色由 `lua/noctalia.lua` 从 Noctalia 生成的 `~/.local/share/nvim/noctalia/colors.lua` 加载（SIGUSR1 热重载），文件缺失时回退内置 Catppuccin Mocha。`lua/matugen.lua` 是早期静态配色方案，已无任何文件引用，属遗留。
+  - `fastfetch/`、`xsettingsd/`（图标主题为 `Adwaita-Matugen-B`，见下）、`rime/`（仅 `default.custom.yaml`，链接到 `~/.local/share/fcitx5/rime/`）、`Thunar/`（右键自定义动作 `uca.xml` + `accels.scm` 快捷键，配合 `~/Templates` 模板与 helpers.rc 的 foot）、`Templates/`（WPS 空白 Office 模板，经 `home/desktop.nix` 链到 `~/Templates/`）。
+  - `noctalia/`：Noctalia 自定义主题模板源。**不链接**到 `~/.config/noctalia`（Noctalia 的运行时状态不纳入 git），模板在 `~/.config/noctalia/config.toml` 的 `[theme.templates.user.*]` 以绝对路径登记（详见该目录自带的 `README.md`）：
+    - `templates/neovim.lua`：nvim base16 配色模板。
+    - `templates/gtk-folder/`：Adwaita 图标按当前调色板重着色到 `~/.local/share/icons/Adwaita-Matugen-{A,B}` 并通过 gsettings 翻转（A/B 交替强制应用刷新；xsettingsd 静态指向 B，GTK3 应用可能滞后一代换色）。
+    - `templates/pywalfox-colors.json`：Pywalfox 配色模板（配合 `home/app.nix` 的 pywalfox-native，让 zen 浏览器主题跟随调色板）。
+  - 注意：`home/default.nix` 的 `configs` 表中含 `yazi`，但 `dotfiles/yazi/` 目录尚不存在（该条目目前无实际效果，新增对应目录时才会生效）。
 - `init.sh`：Live ISO 下的两阶段安装脚本（见下文）。
 - `secrets/`：agenix 密钥（`secrets.nix` 登记解密公钥 + `.age` 密文文件），用法见"安全注意事项"。
 - `opencode.json`：opencode 的 MCP 配置（`uvx mcp-nixos`）。
+- `README.md` / `README_EN.md`：面向人的安装与维护文档（含安装期代理配置说明）。
 
 ## 构建与修改命令
 
@@ -63,12 +66,12 @@ nix flake check --no-build        # 或 nixos-rebuild dry-build --flake .#westwo
 
 ```bash
 sudo -i
-git clone https://github.com/huzch/nix-dotfiles.git && cd nix-dotfiles
+git clone <仓库地址> && cd nix-dotfiles
 ./init.sh            # 交互确认 host.nix 参数；输入 "ERASE <disk>" 才会分区
 ./init.sh --reset    # 清除断点状态，从头重来
 ```
 
-`init.sh` 流程：改写 `nixos/host.nix` → disko 分区 → 生成 hardware-configuration → `nixos-install --flake .#<host>-install` → 拷贝仓库到 `/mnt/home/<user>/Documents/nix-dotfiles` 并克隆壁纸仓库 → chroot 内 `nixos-rebuild switch` 完整配置 → 设密码。脚本用 `/mnt/var/lib/nix-dotfiles-install-state/` 记录步骤完成状态，支持断点重试。
+`init.sh` 流程：交互改写 `nixos/host.nix` → disko 分区 → 生成 hardware-configuration → `nixos-install --flake .#<host>-install` → 拷贝仓库到 `/mnt/home/<user>/Documents/nix-dotfiles` 并克隆壁纸仓库（`~/Pictures/wallpapers`）→ chroot（nixos-enter）内 `nixos-rebuild switch` 完整配置 → 设密码。脚本用 `/mnt/var/lib/nix-dotfiles-install-state/` 记录步骤完成状态，支持断点重试。
 
 ## 代码风格约定
 
@@ -91,8 +94,9 @@ git clone https://github.com/huzch/nix-dotfiles.git && cd nix-dotfiles
 ## 安全注意事项
 
 - **`init.sh` 会分区并格式化 `host.nix` 指定的整块磁盘**，任何对它的修改都必须保留 `ERASE <disk>` 确认与 `lsblk` 展示等防护逻辑。
-- `init.sh` 顶部硬编码了代理环境变量（`http_proxy`/`https_proxy`），属作者个人网络环境，改动时注意这是安装期刚需而非可选项。
+- `init.sh` 顶部硬编码了代理环境变量（`http_proxy`/`https_proxy`），属作者个人网络环境，改动时注意这是安装期刚需而非可选项（README 有详细说明：Live ISO 阶段常用手机 USB 共享 + Clash Allow LAN）。
 - `configuration.nix` 中 `security.sudo.wheelNeedsPassword = false`、`nix.settings.sandbox = false`、`nixpkgs.config.allowUnfree = true` 均为有意的个人配置，不要"顺手修复"。
 - `nixos/host.nix` 含个人邮箱；`hardware-configuration.nix` 已被 gitignore。私密信息一律走 **agenix**：密文（`.age`）放 `secrets/` 提交进仓库，明文只存在于 `/run/agenix/`（tmpfs），不要提交任何明文密钥。
-- agenix 工作方式：解密用主机 SSH host key（`/etc/ssh/ssh_host_ed25519_key`，手工生成，未启用 sshd）；新增密钥时在 `secrets/secrets.nix` 登记公钥并在 `secrets/` 下 `echo -n "明文" | nix run github:ryantm/agenix -- -e <name>.age`，然后在 `configuration.nix` 声明 `age.secrets.<name>`。**重装系统 host key 会变，需用新公钥 `agenix -r` 重新加密全部密钥**。
+- agenix 工作方式：解密用主机 SSH host key（`/etc/ssh/ssh_host_ed25519_key`；`configuration.nix` 通过 `age.identityPaths` 显式指定，OpenSSH 服务端已启用并复用同一把 host key）。`secrets/secrets.nix` 登记了两个解密公钥：`westwood`（主机 host key，系统激活时解密）与 `claudia`（用户 `~/.ssh/id_ed25519`，本机用 agenix CLI 查看/编辑密文）。现有密钥 `codeberg_token_nix_dotfiles` 用于 git 推送 codeberg 远端，`age.secrets` 声明中 `owner = userName` 使用户可直接读取。
+- 新增密钥：在 `secrets/secrets.nix` 登记公钥，然后在 `secrets/` 下 `echo -n "明文" | nix run github:ryantm/agenix -- -e <name>.age`，并在 `configuration.nix` 声明 `age.secrets.<name>`。**重装系统 host key 会变，需用新公钥 `agenix -r` 重新加密全部密钥**。
 - Home Manager 的 `backupFileExtension = "backup"`：已存在的冲突文件会被改名为 `.backup`，排查配置不生效问题时先检查这一点。

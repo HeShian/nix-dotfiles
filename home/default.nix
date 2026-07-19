@@ -43,6 +43,13 @@ in
   home.homeDirectory = "/home/${userName}";
   home.stateVersion = "25.05";
 
+  # XDG 用户目录固定为英文（默认即 Downloads/Documents/Pictures/Videos/Music/Desktop/Templates），
+  # 并自动创建缺失目录，防止应用各自创建中文目录
+  xdg.userDirs = {
+    enable = true;
+    createDirectories = true;
+  };
+
   home.file.".local/share/fcitx5/rime/default.custom.yaml".source = link "rime/default.custom.yaml";
 
   # 配置文件

@@ -105,6 +105,18 @@
     file = ../secrets/codeberg_token_nix_dotfiles.age;
     owner = userName; # 允许用户直接读取（用于 git 推送 codeberg）
   };
+  age.secrets.deepseek_api_opencode = {
+    file = ../secrets/deepseek_api_opencode.age;
+    owner = userName;
+  };
+  age.secrets.deepseek_api_copilot = {
+    file = ../secrets/deepseek_api_copilot.age;
+    owner = userName;
+  };
+  age.secrets.github_token_codeberg = {
+    file = ../secrets/github_token_codeberg.age;
+    owner = userName;
+  };
 
   # 磁盘
   services.udisks2.enable = true;
