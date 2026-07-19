@@ -1,4 +1,4 @@
-{ pkgs, zen-browser, kimi-code, ... }:
+{ pkgs, lib, zen-browser, kimi-code, ... }:
 
 {
   home.packages = with pkgs; [
@@ -40,6 +40,7 @@
 
     # 游戏平台
     steam
+    prismlauncher # Minecraft 启动器
     protonplus # Proton/Wine runner 下载管理
     lutris
     heroic # Epic/GOG 启动器
@@ -51,4 +52,15 @@
     # 安卓容器辅助
     waydroid-helper
   ];
+
+  # Steam 客户端 UI 运行在 pressure-vessel 容器内，容器只挂载了 FHS 环境自带的 DejaVu 字体，
+  # 看不到系统字体目录（Nix store 未挂载进容器，符号链接无效），导致中文全部显示为方框。
+  # 容器与宿主机共享 HOME，其 fontconfig 会扫描 <dir prefix="xdg">fonts</dir>，
+  # 因此把 CJK 字体以真实文件形式复制到 ~/.local/share/fonts 供容器使用。
+  home.activation.steamCjkFonts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    fontsDir="$HOME/.local/share/fonts"
+    mkdir -p "$fontsDir"
+    cp -f ${pkgs.noto-fonts-cjk-sans}/share/fonts/opentype/noto-cjk/NotoSansCJK-VF.otf.ttc "$fontsDir/"
+    chmod u+w "$fontsDir/NotoSansCJK-VF.otf.ttc"
+  '';
 }
