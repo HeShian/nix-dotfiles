@@ -73,6 +73,14 @@ git clone <仓库地址> && cd nix-dotfiles
 
 `init.sh` 流程：交互改写 `nixos/host.nix` → disko 分区 → 生成 hardware-configuration → `nixos-install --flake .#<host>-install` → 拷贝仓库到 `/mnt/home/<user>/Documents/nix-dotfiles` 并克隆壁纸仓库（`~/Pictures/wallpapers`）→ chroot（nixos-enter）内 `nixos-rebuild switch` 完整配置 → 设密码。脚本用 `/mnt/var/lib/nix-dotfiles-install-state/` 记录步骤完成状态，支持断点重试。
 
+**init.sh 重装后仍需手工处理的事项**（仓库外的运行时状态，脚本不覆盖）：
+
+1. **agenix**：新机器 host key 不同 → 生成 `/etc/ssh/ssh_host_ed25519_key`（或从备份恢复），把新公钥加进 `secrets/secrets.nix` 并 `agenix -r` 重加密；用户的 `~/.ssh/id_ed25519` 从备份恢复后可正常查看/编辑密文。
+2. **Noctalia 运行时配置**：`~/.config/noctalia/config.toml` 不在仓库（主题选择、模板登记），需按 `dotfiles/noctalia/README.md` 重新种子。
+3. **Waydroid**：镜像不在仓库，需重新下载部署（网络问题见会话经验：v2rayA 代理 + OTA 时间戳绕过 init 下载）。
+4. **flatpak 应用**：`flatpak-setup.timer` 会自动补齐，无需干预。
+5. **gnome-keyring / 浏览器数据 / Noctalia 壁纸缓存**：不在仓库，随新系统重新生成。
+
 ## 代码风格约定
 
 - **注释和文档主要使用中文**，新代码沿用这一惯例；标识符、文件路径保持英文。
