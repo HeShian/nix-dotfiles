@@ -8,11 +8,23 @@ let
 in
 {
   # Codeberg access token（nix-dotfiles 仓库推送用）
-  "codeberg_token_nix_dotfiles.age".publicKeys = [ westwood claudia ];
-  # DeepSeek API key（opencode 用）
-  "deepseek_api_opencode.age".publicKeys = [ westwood claudia ];
+  "codeberg_token_nix_dotfiles.age".publicKeys = [
+    westwood
+    claudia
+  ];
   # DeepSeek API key（VSCode Copilot 自定义端点用）
-  "deepseek_api_copilot.age".publicKeys = [ westwood claudia ];
+  "deepseek_api_copilot.age".publicKeys = [
+    westwood
+    claudia
+  ];
+  # DeepSeek API key（opencode 用）
+  "deepseek_api_opencode.age".publicKeys = [
+    westwood
+    claudia
+  ];
   # GitHub PAT（ghp_ 前缀，名称为 github_token_codeberg）
-  "github_token_codeberg.age".publicKeys = [ westwood claudia ];
+  "github_token_codeberg.age".publicKeys = [
+    westwood
+    claudia
+  ];
 }

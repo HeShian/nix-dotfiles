@@ -67,12 +67,17 @@ run_always() {
 }
 
 read_host_config() {
-  USER_NAME="$(sed -n 's/.*userName = "\(.*\)";.*/\1/p' nixos/host.nix)"
-  USER_EMAIL="$(sed -n 's/.*userEmail = "\(.*\)";.*/\1/p' nixos/host.nix)"
-  HOST_NAME="$(sed -n 's/.*hostName = "\(.*\)";.*/\1/p' nixos/host.nix)"
-  DISK="$(sed -n 's/.*disk = "\(.*\)";.*/\1/p' nixos/host.nix)"
-  CPU="$(sed -n 's/.*cpu = "\(.*\)";.*/\1/p' nixos/host.nix)"
-  GPU="$(sed -n 's/.*gpu = "\(.*\)";.*/\1/p' nixos/host.nix)"
+  # 用 nix 求值读取 host.nix 属性（Live ISO 自带 nix），比 sed 解析文本更稳健。
+  # 求值失败时输出为空，由 validate_config 统一兜底报错（保持原有报错路径）。
+  eval_host_attr() {
+    nix --experimental-features "nix-command flakes" eval --impure --expr "(import ./nixos/host.nix).$1" --raw 2>/dev/null || true
+  }
+  USER_NAME="$(eval_host_attr userName)"
+  USER_EMAIL="$(eval_host_attr userEmail)"
+  HOST_NAME="$(eval_host_attr hostName)"
+  DISK="$(eval_host_attr disk)"
+  CPU="$(eval_host_attr cpu)"
+  GPU="$(eval_host_attr gpu)"
 }
 
 set_user_paths() {
@@ -216,7 +221,8 @@ run_disko() {
 
   confirm_disko
   echo "==> ${desc}"
-  nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount ./nixos/disko.nix
+  # disko 版本与 flake.lock 锁定的 rev 保持一致；升级 disko 输入（nix flake update）时需同步此处
+  nix --experimental-features "nix-command flakes" run github:nix-community/disko/ff8702b4de27f72b4c78573dfb89ec74e36abdf1 -- --mode destroy,format,mount ./nixos/disko.nix
   mark_done "01-disko"
 }
 
@@ -226,7 +232,7 @@ generate_hardware_config() {
 
 copy_config() {
   cp /mnt/etc/nixos/hardware-configuration.nix ./nixos/
-  cp -r flake.* ./nixos/ ./home/ ./dotfiles/ /mnt/etc/nixos/
+  cp -r flake.* ./nixos/ ./home/ ./dotfiles/ ./secrets/ /mnt/etc/nixos/
 }
 
 install_nixos() {

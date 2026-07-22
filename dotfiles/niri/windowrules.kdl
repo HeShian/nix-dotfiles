@@ -150,3 +150,10 @@ window-rule {
     match is-active=true
     opacity 0.9
 }
+
+// Krita 不透明（放在全局透明度规则之后，确保覆盖）
+window-rule {
+    match app-id="krita"
+    match app-id="org.kde.krita"
+    opacity 1.0
+}

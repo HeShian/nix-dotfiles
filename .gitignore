@@ -1,1 +1,1 @@
-# hardware-configuration.nix
+# hardware-configuration.nix 有意保持 git 跟踪（flake 只读取已跟踪文件），见 AGENTS.md

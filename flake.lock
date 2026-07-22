@@ -65,6 +65,24 @@
         "type": "github"
       }
     },
+    "flake-utils": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1731533236,
+        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -142,6 +160,40 @@
       "original": {
         "owner": "MoonshotAI",
         "repo": "kimi-code",
+        "type": "github"
+      }
+    },
+    "llama-cpp-ver": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-EhnLnB4ZfLx2VFHHSE4l4RB3N6FzNTuXfdPGQZtopm0=",
+        "type": "file",
+        "url": "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
+      }
+    },
+    "nixkits": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "llama-cpp-ver": "llama-cpp-ver",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1784155815,
+        "narHash": "sha256-JvntYXBGQ+djfByHuSv268zGDyVoBpFKXs2ZLs1NOGM=",
+        "owner": "Kihara777",
+        "repo": "NixKits",
+        "rev": "9067b9cefa69e53d9da1a045390a867c3839856f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Kihara777",
+        "repo": "NixKits",
         "type": "github"
       }
     },
@@ -233,6 +285,7 @@
         "disko": "disko",
         "home-manager": "home-manager_2",
         "kimi-code": "kimi-code",
+        "nixkits": "nixkits",
         "nixpkgs": "nixpkgs_2",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
@@ -240,6 +293,21 @@
       }
     },
     "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_2": {
       "locked": {
         "lastModified": 1681028828,
         "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
