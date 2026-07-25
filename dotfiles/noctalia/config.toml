@@ -1,0 +1,31 @@
+# Noctalia v5 运行时配置（初始种子，之后由 Noctalia 自己维护/覆写）
+# 主题选择（wallpaper 取色/深浅色）请在 Noctalia 设置界面调整。
+
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids = [ "niri", "gtk3", "gtk4", "foot", "qt", "btop", "cava" ]
+
+# Neovim base16 配色（lua/noctalia.lua 加载，SIGUSR1 热重载）
+[theme.templates.user.neovim]
+input_path  = "@REPO@/dotfiles/noctalia/templates/neovim.lua"
+output_path = "~/.local/share/nvim/noctalia/colors.lua"
+post_hook   = "pkill -USR1 nvim || true"
+
+# Adwaita-Matugen 图标重着色（A/B 双主题翻转强制应用刷新）
+[theme.templates.user.gtk-folder]
+input_path  = "@REPO@/dotfiles/noctalia/templates/gtk-folder/recolor.sh"
+output_path = "~/.cache/noctalia/recoloricons.sh"
+post_hook   = "bash ~/.cache/noctalia/recoloricons.sh &"
+
+# Pywalfox：zen 浏览器主题跟随配色（需 pywalfox-native 与扩展）
+[theme.templates.user.pywalfox]
+input_path  = "@REPO@/dotfiles/noctalia/templates/pywalfox-colors.json"
+output_path = "~/.cache/wal/colors.json"
+post_hook   = "pywalfox update &"
+
+# fcitx5 候选框主题（生成 ~/.local/share/fcitx5/themes/noctalia/theme.conf）
+# 注意：fcitx5-remote -r 不会重读主题文件，必须用 fcitx5 -r 替换实例
+[theme.templates.user.fcitx5]
+input_path  = "@REPO@/dotfiles/noctalia/templates/fcitx5-theme.conf"
+output_path = "~/.local/share/fcitx5/themes/noctalia/theme.conf"
+post_hook   = "(fcitx5 -r >/dev/null 2>&1 &)"

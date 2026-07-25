@@ -1,0 +1,212 @@
+config_version = 2
+
+[bar.default]
+background_opacity = 0.0
+capsule = true
+capsule_opacity = 0.79999998211860657
+capsule_thickness = 0.89999998360872269
+center = [ "clock", "weather", "media", "audio_visualizer" ]
+end = [ "tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center" ]
+margin_ends = 0
+start = [ "launcher", "taskbar", "active_window" ]
+
+[desktop_widgets]
+schema_version = 2
+widget_order = [ "desktop-widget-0000000000000001" ]
+
+    [desktop_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [desktop_widgets.widget.desktop-widget-0000000000000001]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 768.0
+    cy = 432.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "fancy_audio_visualizer"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000001.settings]
+        background = false
+
+[location]
+auto_locate = true
+
+[lockscreen_widgets]
+enabled = true
+schema_version = 2
+widget_order = [
+    "lockscreen-login-box@eDP-1",
+    "lockscreen-widget-0000000000000001",
+    "lockscreen-widget-0000000000000002",
+    "lockscreen-widget-0000000000000003",
+    "lockscreen-widget-0000000000000004",
+    "lockscreen-widget-0000000000000005"
+]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 70.0
+    box_width = 400.0
+    cx = 768.0
+    cy = 816.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_password_hint = true
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000001]
+    box_height = 128.0
+    box_width = 224.0
+    cx = 464.0
+    cy = 620.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "clock"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000001.settings]
+        clock_style = "digital"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000002]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 768.0
+    cy = 618.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "media_player"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000002.settings]
+        hide_when_no_media = true
+        layout = "horizontal"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000003]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 768.0
+    cy = 432.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "fancy_audio_visualizer"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000003.settings]
+        background = false
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000004]
+    box_height = 128.0
+    box_width = 240.0
+    cx = 1080.0
+    cy = 616.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "sysmon"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000004.settings]
+        stat = "cpu_usage"
+        stat2 = "cpu_temp"
+
+    [lockscreen_widgets.widget.lockscreen-widget-0000000000000005]
+    box_height = 0.0
+    box_width = 0.0
+    cx = 768.0
+    cy = 742.0
+    output = "eDP-1"
+    rotation = 0.0
+    type = "audio_visualizer"
+
+        [lockscreen_widgets.widget.lockscreen-widget-0000000000000005.settings]
+        background_opacity = 0.0
+        bands = 32
+        show_when_idle = true
+
+[shell]
+password_style = "random"
+polkit_agent = true
+
+    [shell.panel]
+    transparency_mode = "glass"
+
+[theme]
+builtin = "Catppuccin"
+community_palette = "Tokyo Night Storm"
+source = "wallpaper"
+wallpaper_scheme = "m3-content"
+
+    [theme.templates]
+    builtin_ids = [ "btop", "cava", "foot", "gtk3", "gtk4", "kcolorscheme", "niri", "qt" ]
+    community_ids = [
+        "pywalfox",
+        "zen-browser",
+        "neovim",
+        "obsidian",
+        "vscode",
+        "discord",
+        "obs",
+        "opencode",
+        "prismlauncher",
+        "steam",
+        "telegram",
+        "yazi",
+        "zathura"
+    ]
+
+[wallpaper]
+directory = "@HOME@/Pictures/wallpapers"
+transition_on_startup = true
+
+    [wallpaper.default]
+    path = "@HOME@/Pictures/wallpapers/tropic_island_morning.jpg"
+
+    [wallpaper.last]
+    path = "@HOME@/Pictures/wallpapers/tropic_island_morning.jpg"
+
+    [wallpaper.monitors.eDP-1]
+    path = "@HOME@/Pictures/wallpapers/tropic_island_morning.jpg"
+
+[widget.brightness]
+show_label = false
+
+[widget.media]
+title_scroll = "on_hover"
+
+[widget.network]
+show_label = false
+
+[widget.session]
+enabled = false
+
+[widget.sysmon]
+stat = "disk_pct"
+
+[widget.taskbar]
+group_by_workspace = true
+group_single_icon_per_app = true
+hide_empty_workspaces = true
+
+[widget.volume]
+show_label = false
+
+[widget.wallpaper]
+enabled = false
+
+[widget.workspaces]
+enabled = false
+hide_when_empty = true
+style = "focus_hint"
