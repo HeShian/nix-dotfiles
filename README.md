@@ -1,5 +1,6 @@
 ## 概览 (Overview)
 ![Desktop Screenshot](./space.png)
+![Fastfetch Screenshot](./ff.png)
 
 > 基于 NixOS + Niri + Noctalia v5 的个人桌面配置。这里记录安装前要确认的内容和日常维护命令。
 

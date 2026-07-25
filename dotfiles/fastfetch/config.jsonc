@@ -1,6 +1,10 @@
 {
     "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
     "logo": {
+        // 强制 sixel 位图渲染（foot 原生支持，清晰度等同原图）；auto 会错误落到 chafa 块元素模式
+        "type": "sixel",
+        "source": "/home/claudia/Documents/nix-dotfiles/dotfiles/fastfetch/ff-logo.png",
+        "width": 34,
         "padding": {
             "top": 1
         }

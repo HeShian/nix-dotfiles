@@ -1,5 +1,6 @@
 ## Overview
 ![Desktop Screenshot](./space.png)
+![Fastfetch Screenshot](./ff.png)
 
 > Personal NixOS + Niri + Noctalia v5 desktop configuration. This README covers install checks and daily maintenance.
 
