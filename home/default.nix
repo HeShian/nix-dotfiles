@@ -32,6 +32,27 @@ in
       name = ".agents/skills/${name}";
       value.source = "${nixkits}/skills/${name}";
     }) (lib.filterAttrs (_: type: type == "directory") (builtins.readDir "${nixkits}/skills"));
+    # Noctalia 初始配置种子：仅当目标文件不存在时从仓库拷贝，之后由 Noctalia 运行时维护/覆写。
+    # config.toml 的 @REPO@ 与 settings.toml 的 @HOME@ 在种子时替换为实际路径（适配 userName 变化）；
+    # state/ 下的社区调色板/模板缓存一并种子，保证重装后主题离线可用
+    #（--no-preserve=mode：nix store 文件只读，拷贝后必须恢复可写，否则 Noctalia 无法更新缓存）。
+    home.activation.noctaliaSeed = lib.hm.dag.entryAfter [
+      "writeBoundary"
+    ] ''
+    repo="$HOME/Documents/nix-dotfiles"
+    cfgDir="$HOME/.config/noctalia"
+    stateDir="$HOME/.local/state/noctalia"
+    if [ ! -f "$cfgDir/config.toml" ]; then
+      mkdir -p "$cfgDir"
+      sed "s|@REPO@|$repo|g" ${../dotfiles/noctalia/config.toml} > "$cfgDir/config.toml"
+    fi
+    if [ ! -f "$stateDir/settings.toml" ]; then
+      mkdir -p "$stateDir"
+      sed "s|@HOME@|$HOME|g" ${../dotfiles/noctalia/settings.toml} > "$stateDir/settings.toml"
+      cp -r --no-preserve=mode ${../dotfiles/noctalia/state}/. "$stateDir/"
+      touch "$stateDir/.setup-complete"
+    fi
+  '';
     home.homeDirectory = "/home/${userName}";
     home.stateVersion = "25.05";
     home.username = userName;

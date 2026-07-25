@@ -12,6 +12,11 @@ in
     westwood
     claudia
   ];
+  # Codeberg access token（Secret 仓库推送用）
+  "codeberg_token_secret.age".publicKeys = [
+    westwood
+    claudia
+  ];
   # DeepSeek API key（VSCode Copilot 自定义端点用）
   "deepseek_api_copilot.age".publicKeys = [
     westwood

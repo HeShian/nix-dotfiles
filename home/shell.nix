@@ -14,7 +14,6 @@
       fastfetch
       btop
       go-musicfox
-      reader
     ];
     home.sessionVariables = {
       EDITOR = "nvim";
@@ -73,7 +72,7 @@
         la = "ls -la";
         lg = "lazygit";
         ll = "ls -l";
-        nrs = "sudo nixos-rebuild switch --flake ~/Documents/nix-dotfiles#${hostName}";
+        nrs = "nh os switch";
         vim = "nvim";
       };
       syntaxHighlighting.enable = true;

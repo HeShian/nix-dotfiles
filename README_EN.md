@@ -116,20 +116,19 @@ You can search for package names on [search.nixos.org](https://search.nixos.org/
 - Noctalia Shell: use the Settings panel (`Super + ,`) or open the launcher with `Super + Z` and search for settings.
 
 ### Apply Changes
-If you only changed existing files under `dotfiles/`, you usually do not need `nixos-rebuild`.
+If you only changed existing files under `dotfiles/`, you usually do not need a rebuild.
 
 Run a rebuild after changing `.nix` files, packages, services, or Nix-managed files:
 ```bash
 cd ~/Documents/nix-dotfiles
 
 git add .
-sudo nixos-rebuild switch --flake .#westwood
+nh os switch    # preferred system management command (alias: nrs); equivalent to sudo nixos-rebuild switch --flake .#westwood
 ```
 
 To update locked package versions, run:
 ```bash
-nix flake update
-sudo nixos-rebuild switch --flake .#westwood
+nh os switch -u    # equivalent to nix flake update + nh os switch
 ```
 
 ---

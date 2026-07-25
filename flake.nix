@@ -23,6 +23,8 @@
       url = "github:Kihara777/NixKits";
     };
     nixpkgs.url = "nixpkgs/nixos-unstable";
+    # 跟随最新 stable tag（main 为不稳定分支，不用）
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     noctalia = {
       # 有意锁定 cachix 分支而非主线：该分支用于命中其 cachix 二进制缓存，
       # nix flake update 会跟随该分支更新
@@ -50,6 +52,7 @@
     kimi-code,
     nixkits,
     agenix,
+    nix-flatpak,
     ...
   }:
 let
@@ -66,6 +69,7 @@ let
             disko.nixosModules.disko
             noctalia-greeter.nixosModules.default
             agenix.nixosModules.default
+            nix-flatpak.nixosModules.nix-flatpak
           ] ++ modules;
         };
       homeManagerModules = [

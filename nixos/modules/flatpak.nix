@@ -1,37 +1,39 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 {
-  # Flatpak：flathub 国内镜像（中科大主用 + 上交大备用）+ 声明式安装应用
-  services.flatpak.enable = true;
-
-  # 安装服务由定时器触发（开机 1 分钟后 + 每天），避免大体积下载阻塞 nixos-rebuild
-  systemd.services.flatpak-setup = {
-    description = "Flathub 国内镜像配置与声明式应用安装";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    path = [ pkgs.flatpak ];
-    serviceConfig.Type = "oneshot";
-    script = ''
-      set -e
-      # 中科大镜像（主）
-      flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || true
-      flatpak remote-modify flathub --url=https://mirrors.ustc.edu.cn/flathub
+  # Flatpak：由 nix-flatpak（flake 输入，NixOS 模块在 flake.nix 注册）声明式管理
+  services.flatpak = {
+    enable = true;
+    remotes = [
+      # 中科大镜像（主）：直接指向 ostree 仓库 URL（镜像站只镜像 repo，不提供 .flatpakrepo 文件）
+      {
+        name = "flathub";
+        location = "https://mirrors.ustc.edu.cn/flathub";
+      }
       # 上交大镜像（备）
-      flatpak remote-add --if-not-exists flathub-sjtu https://dl.flathub.org/repo/flathub.flatpakrepo || true
-      flatpak remote-modify flathub-sjtu --url=https://mirror.sjtu.edu.cn/flathub
-      # 全局时区覆盖：NixOS 的 /etc/localtime 符号链接解析进 /nix/store，
-      # flatpak 沙箱无法映射，应用回退显示 UTC；运行时自带 zoneinfo，注入 TZ 修复
-      flatpak override --env=TZ=${config.time.timeZone}
-      # 声明式安装（已安装则为快速 no-op）
-      for app in com.github.tchx84.Flatseal cn.wps.wps_365 eu.betterbird.Betterbird com.usebottles.bottles com.tominlab.wonderpen; do
-        flatpak install -y --noninteractive flathub "$app" || echo "install failed: $app"
-      done
-    '';
-  };
-  systemd.timers.flatpak-setup = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "1min";
-      OnUnitActiveSec = "1d";
+      {
+        name = "flathub-sjtu";
+        location = "https://mirror.sjtu.edu.cn/flathub";
+      }
+    ];
+    # 声明式安装：flatseal / wps365 / betterbird / bottles / 妙笔（wonderpen）
+    packages = [
+      "com.github.tchx84.Flatseal"
+      "cn.wps.wps_365"
+      "eu.betterbird.Betterbird"
+      "com.usebottles.bottles"
+      "com.tominlab.wonderpen"
+    ];
+    # 每日自动更新（realtime systemd timer，睡眠/关机错过会补触发）。
+    # update.onActivation 保持默认 false：避免大体积下载阻塞 rebuild
+    update.auto = {
+      enable = true;
+      onCalendar = "daily";
+    };
+    # 全局 TZ 覆盖（legacy overrides 格式，v0.7.0 与新版 coercion 均兼容）：
+    # NixOS 的 /etc/localtime 符号链接解析进 /nix/store，flatpak 沙箱无法映射会回退 UTC，
+    # 运行时自带 zoneinfo，注入 TZ 修复（Betterbird 邮件时间曾因此显示 UTC）
+    overrides = {
+      global.Environment.TZ = config.time.timeZone;
     };
   };
 }

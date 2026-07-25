@@ -111,20 +111,19 @@ Niri 启动时会显示重要快捷键覆盖层。日常使用按 **`Super + /`*
 - Noctalia Shell：通过 Noctalia 设置面板（`Super + ,`）或用 `Super + Z` 打开启动器后搜索设置。
 
 ### 3. 如何应用你的修改？
-只修改 `dotfiles/` 下已有文件，通常不需要 `nixos-rebuild`。
+只修改 `dotfiles/` 下已有文件，通常不需要 rebuild。
 
 修改 `.nix`、软件包、服务，或新增 Nix 管理的文件后执行：
 ```bash
 cd ~/Documents/nix-dotfiles
 
 git add .
-sudo nixos-rebuild switch --flake .#westwood
+nh os switch    # 首选系统管理命令（别名 nrs）；底层等价于 sudo nixos-rebuild switch --flake .#westwood
 ```
 
 升级锁定版本：
 ```bash
-nix flake update
-sudo nixos-rebuild switch --flake .#westwood
+nh os switch -u    # 等价于 nix flake update + nh os switch
 ```
 
 ---

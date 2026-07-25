@@ -175,6 +175,22 @@
         "url": "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
       }
     },
+    "nix-flatpak": {
+      "locked": {
+        "lastModified": 1767983141,
+        "narHash": "sha256-7ZCulYUD9RmJIDULTRkGLSW1faMpDlPKcbWJLYHoXcs=",
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "rev": "440818969ac2cbd77bfe025e884d0aa528991374",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gmodena",
+        "ref": "latest",
+        "repo": "nix-flatpak",
+        "type": "github"
+      }
+    },
     "nixkits": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -285,6 +301,7 @@
         "disko": "disko",
         "home-manager": "home-manager_2",
         "kimi-code": "kimi-code",
+        "nix-flatpak": "nix-flatpak",
         "nixkits": "nixkits",
         "nixpkgs": "nixpkgs_2",
         "noctalia": "noctalia",

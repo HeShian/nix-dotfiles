@@ -38,6 +38,7 @@
           krita
           # 阅读
           z-library-desktop
+          readest
           # 开发工具
           vscode
           opencode

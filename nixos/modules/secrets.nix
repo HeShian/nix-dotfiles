@@ -9,6 +9,10 @@
     file = ../../secrets/codeberg_token_nix_dotfiles.age;
     owner = userName;
   };
+  age.secrets.codeberg_token_secret = {
+    file = ../../secrets/codeberg_token_secret.age;
+    owner = userName;
+  };
   age.secrets.deepseek_api_copilot = {
     file = ../../secrets/deepseek_api_copilot.age;
     owner = userName;

@@ -3,6 +3,24 @@
 主题色不在 home-manager 中管理，全部由 Noctalia 的主题系统（`[theme]` + 模板）在运行时生成。
 本目录只存放 Noctalia 没有内置模板的应用的**自定义模板源文件**。
 
+## 初始配置种子（重装自动恢复）
+
+- `config.toml`：`~/.config/noctalia/config.toml` 的副本（自定义模板登记），仓库路径写成 `@REPO@` 占位符。
+- `settings.toml`：`~/.local/state/noctalia/settings.toml` 的副本（v5 全部设置：bar 布局、桌面/锁屏小组件、主题选择、壁纸），家目录写成 `@HOME@` 占位符。
+- `state/`：社区调色板（community-palettes）与社区模板（community-templates）的缓存副本，保证重装后主题离线可用。
+
+`home/default.nix` 的 `home.activation.noctaliaSeed` 在每次 rebuild 时检查：**目标文件不存在才拷贝**（之后由 Noctalia 运行时维护/覆写），拷贝时把占位符替换为实际路径。
+
+**当前配置调整满意后想更新种子**，手动同步回来（占位符替换不可少）：
+
+```bash
+cd ~/Documents/nix-dotfiles/dotfiles/noctalia
+sed 's|/home/$USER/Documents/nix-dotfiles|@REPO@|g' ~/.config/noctalia/config.toml > config.toml
+sed 's|/home/$USER|@HOME@|g' ~/.local/state/noctalia/settings.toml > settings.toml
+rm -rf state && mkdir state
+cp -r ~/.local/state/noctalia/community-palettes ~/.local/state/noctalia/community-templates state/
+```
+
 ## templates/neovim.lua
 
 Neovim 的 base16 配色模板。Noctalia 没有内置 nvim 模板，需要在 Noctalia 配置中手动登记一次
