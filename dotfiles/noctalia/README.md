@@ -67,6 +67,22 @@ niri / gtk3 / gtk4 / foot / qt 等配色使用 Noctalia 内置模板，在 Nocta
 - foot → 生成 `~/.config/foot/themes/noctalia`（`home/desktop.nix` 的 foot 配置已 include）
 - gtk3/gtk4 → 生成 `~/.config/gtk-*/noctalia.css` 并维护 `gtk.css` 的 `@import`
 
+## 社区模板（含 VSCode）
+
+settings.toml 的 `[theme.templates].community_ids` 已启用一批社区模板（pywalfox、zen-browser、
+neovim、obsidian、vscode、discord、obs、opencode、prismlauncher、steam、telegram、yazi、zathura），
+模板文件缓存在 `state/community-templates/`，随种子恢复，无需在 config.toml 登记。
+
+其中 **vscode** 模板生成 `~/.vscode/extensions/noctalia.noctaliatheme-0.0.5/themes/NoctaliaTheme-color-theme.json`，
+需要两个手动前提：
+
+1. 在 VSCode 扩展市场安装 `noctalia.noctaliatheme` 扩展（版本号变化时需同步模板输出路径，
+   以社区模板 `template.toml` 为准）；
+2. 把 `~/.config/Code/User/settings.json` 的 `workbench.colorTheme` 设为 `NoctaliaTheme`。
+
+扩展声明了 `_watch`，Noctalia 换壁纸/换色重写主题 JSON 时 VSCode 热重载，无需重启。
+注意该模板只有 dark 变体，浅色模式下 VSCode 不会跟着变浅。
+
 ## templates/gtk-folder/（图标重着色）
 
 把 Adwaita 图标按当前调色板重着色（文件夹、网络、垃圾桶、mimetypes 等约 30 个 SVG），
