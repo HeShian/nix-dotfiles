@@ -14,6 +14,7 @@
       fastfetch
       btop
       go-musicfox
+      reader
     ];
     home.sessionVariables = {
       EDITOR = "nvim";

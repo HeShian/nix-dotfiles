@@ -32,7 +32,7 @@
     - `networking.nix`：NetworkManager + v2raya + nftables（Waydroid 后端）+ OpenSSH（host key 与 agenix 复用同一把）。
     - `nix.nix`：Nix 设置（国内镜像 substituters + noctalia/nixkits cachix）、allowUnfree、nix-ld（FHS 兼容）。
     - `desktop.nix`：`programs.niri`、greetd + noctalia-greeter、xdg-desktop-portal（gnome/gtk 后端，Secret 走 gnome-keyring）、`environment.sessionVariables`（注意：`XDG_DATA_DIRS` 追加了 gsettings-desktop-schemas 路径，Noctalia 的 gsettings 钩子依赖，改动后需重新登录生效）+ `systemPackages`、Thunar（`programs.thunar` + gvfs + tumbler + udisks2）、Pipewire + rtkit、gnome-keyring、power-profiles-daemon。
-    - `flatpak.nix`：flathub 中科大/上交大镜像 + `flatpak-setup` oneshot 服务声明式安装 flatseal/wps365/betterbird，**由 systemd timer 触发**（开机 1 分钟后 + 每天），避免大体积下载阻塞 nixos-rebuild。
+    - `flatpak.nix`：flathub 中科大/上交大镜像 + `flatpak-setup` oneshot 服务声明式安装 flatseal/wps365/betterbird/bottles/妙笔（wonderpen），**由 systemd timer 触发**（开机 1 分钟后 + 每天），避免大体积下载阻塞 nixos-rebuild。脚本还含全局 `flatpak override --env=TZ=<time.timeZone>`：NixOS 的 `/etc/localtime` 解析进 /nix/store，flatpak 沙箱无法映射会回退 UTC，靠注入 TZ 修复（Betterbird 邮件时间显示 UTC 即此问题）。
     - `virtualisation.nix`：libvirtd+KVM+virt-manager+spiceUSBRedirection、Waydroid。
     - `users.nix`：用户、zsh、sudo。
   - `disko.nix`：GPT 分区（1G ESP + 16G swap（支持休眠）+ btrfs 根卷，子卷 `/root`、`/home`、`/nix`，zstd 压缩 + noatime）。
@@ -49,6 +49,7 @@
     - `templates/neovim.lua`：nvim base16 配色模板。
     - `templates/gtk-folder/`：Adwaita 图标按当前调色板重着色到 `~/.local/share/icons/Adwaita-Matugen-{A,B}` 并通过 gsettings 翻转（A/B 交替强制应用刷新；xsettingsd 静态指向 B，GTK3 应用可能滞后一代换色）。
     - `templates/pywalfox-colors.json`：Pywalfox 配色模板（配合 `home/app.nix` 的 pywalfox-native，让 zen 浏览器主题跟随调色板）。
+    - `templates/fcitx5-theme.conf`：fcitx5 候选框主题模板，生成 `~/.local/share/fcitx5/themes/noctalia/theme.conf`（深浅色/壁纸取色均跟随调色板）。热重载必须用 `post_hook` 里的 `fcitx5 -r`（无缝替换实例）——`fcitx5-remote -r` 只重读配置、不重读主题文件；fcitx5 侧 `classicui.conf` 需 `Theme=noctalia` + `UseAccentColor=False`，该文件由 fcitx5 运行时维护不入库。
 - `init.sh`：Live ISO 下的两阶段安装脚本（见下文）。
 - `secrets/`：agenix 密钥（`secrets.nix` 登记解密公钥 + `.age` 密文文件），用法见"安全注意事项"。
 - `opencode.json`：opencode 的 MCP 配置（`uvx mcp-nixos`）。

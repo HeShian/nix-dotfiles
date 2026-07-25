@@ -29,7 +29,7 @@ binds {
     Mod+Shift+N   hotkey-overlay-title="通知中心 Notifications" { spawn-sh "noctalia msg panel-toggle control-center notifications"; }
     Mod+Shift+P   hotkey-overlay-title="电源菜单 Powermenu" { spawn-sh "noctalia msg panel-toggle session"; }
     Mod+Alt+V     hotkey-overlay-title="剪贴板 Clipboard" { spawn-sh "noctalia msg panel-toggle clipboard"; }
-    Alt+Tab       hotkey-overlay-title="跳转窗口 Switch windows" { spawn-sh "noctalia msg panel-toggle launcher windows"; }
+    Alt+Tab       hotkey-overlay-title="跳转窗口 Switch windows" { spawn-sh "noctalia msg window-switcher"; }
 
     // ============================================================
     // 壁纸

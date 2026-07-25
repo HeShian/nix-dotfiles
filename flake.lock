@@ -111,11 +111,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784407317,
-        "narHash": "sha256-iZrxHToDJWnvt+5LGAtvuQMTy1NZYlNEKbKaVtBJNcc=",
+        "lastModified": 1784789275,
+        "narHash": "sha256-cgRTWuG+u1tBPhm01JrId2k0Bni09phVJ1Q0BZlRd7M=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "39411a8e12a5526d992e65bc7e3dc9a4414d6713",
+        "rev": "3b0e6bbd65869af1beadf5963a99befc179d209f",
         "type": "github"
       },
       "original": {
@@ -150,11 +150,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784449082,
-        "narHash": "sha256-KvWxMartt4d9ygLGni+DqrvseYla+sHGWb8yrCTBHGs=",
+        "lastModified": 1784812500,
+        "narHash": "sha256-qXk0NOW7Vg4iUbm0gfYg3NV8r9xH05cnOTDzA9kitqY=",
         "owner": "MoonshotAI",
         "repo": "kimi-code",
-        "rev": "a3e773f90ce66abe6db229607440c20769537c93",
+        "rev": "66f611aae99887ad2076aa3482a0df5e415d3511",
         "type": "github"
       },
       "original": {
@@ -166,7 +166,7 @@
     "llama-cpp-ver": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-EhnLnB4ZfLx2VFHHSE4l4RB3N6FzNTuXfdPGQZtopm0=",
+        "narHash": "sha256-oCQikzQTolZFph/t0dAKmCRRPzKng0vj3f3ignFt5SY=",
         "type": "file",
         "url": "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
       },
@@ -184,11 +184,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784155815,
-        "narHash": "sha256-JvntYXBGQ+djfByHuSv268zGDyVoBpFKXs2ZLs1NOGM=",
+        "lastModified": 1784779079,
+        "narHash": "sha256-xP/BVlgPAO0ks8+t52Ra9QW6zfENxDxVxHeo3N08azM=",
         "owner": "Kihara777",
         "repo": "NixKits",
-        "rev": "9067b9cefa69e53d9da1a045390a867c3839856f",
+        "rev": "ff0a7e82ca0ef086e254a68a70203cc1efe962c1",
         "type": "github"
       },
       "original": {
@@ -215,11 +215,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1784356753,
-        "narHash": "sha256-zupdTm41be2fY8cexroEOGjopl3F2Gqs3gk7ieqaM3s=",
-        "rev": "61b7c44c4073f0b827768aff0049561b5110ea5a",
+        "lastModified": 1784497964,
+        "narHash": "sha256-WhdsTtaih3DgTPP/PX023b36UNQyMzEoi6GkPyGx0y4=",
+        "rev": "241313f4e8e508cb9b13278c2b0fa25b9ca27163",
         "type": "tarball",
-        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1036777.61b7c44c4073/nixexprs.tar.xz"
+        "url": "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1037713.241313f4e8e5/nixexprs.tar.xz"
       },
       "original": {
         "id": "nixpkgs",
@@ -245,11 +245,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1784456694,
-        "narHash": "sha256-WjF2/HV1swc1Fwug/8Hf4jtCCQeQqdSVIT6peWB8CGs=",
+        "lastModified": 1784820380,
+        "narHash": "sha256-jXz2vFHgidbyU46ScROLSuBIhsqqtyqNu2M0tmGX/FA=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "98f0d2b4afc2b1389d8480ce64e7f30957ff3800",
+        "rev": "4c2dcd0995f9c570c0ced95561bf5e4685e2ad1b",
         "type": "github"
       },
       "original": {
@@ -266,11 +266,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784425372,
-        "narHash": "sha256-ezvM9D0YWCxARihQI37NskeTs/dkHC7AdkXjPyK/Wek=",
+        "lastModified": 1784707224,
+        "narHash": "sha256-K8yyxX/sShhVznU/3ejZgriayg8Fyac+bR4dCTB1864=",
         "owner": "noctalia-dev",
         "repo": "noctalia-greeter",
-        "rev": "b17185cdfc73fbb80247361f351e967109bcca86",
+        "rev": "8e53bb30f1d1179c0bd2275b02915258827d62eb",
         "type": "github"
       },
       "original": {
@@ -330,11 +330,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784352415,
-        "narHash": "sha256-sHuh1KQopmLPWouFBYwZ5PVWj19Y4mKAjkQeQHCT3E0=",
+        "lastModified": 1784822396,
+        "narHash": "sha256-gW59E7cwPetoOAcygLtHQX7a3C8VdWz6T0GazldcxU0=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "7202b917826e2e335d9935c3a943ae18681056b1",
+        "rev": "a68b1580a237cae4c9f86e04ac972726e3f87fdb",
         "type": "github"
       },
       "original": {

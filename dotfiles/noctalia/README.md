@@ -19,6 +19,27 @@ post_hook   = "pkill -USR1 nvim || true"
 - nvim 侧由 `dotfiles/nvim/lua/noctalia.lua` 加载该文件，收到 SIGUSR1 后热重载；
   文件不存在时回退到内置的 Catppuccin Mocha 配色。
 
+## templates/fcitx5-theme.conf
+
+fcitx5 候选词框主题模板，生成 `~/.local/share/fcitx5/themes/noctalia/theme.conf`，
+深浅色与壁纸取色均跟随当前 Noctalia 调色板。已在 `~/.config/noctalia/config.toml` 登记：
+
+```toml
+[theme.templates.user.fcitx5]
+input_path  = "/home/<userName>/Documents/nix-dotfiles/dotfiles/noctalia/templates/fcitx5-theme.conf"
+output_path = "~/.local/share/fcitx5/themes/noctalia/theme.conf"
+post_hook   = "(fcitx5 -r >/dev/null 2>&1 &)"
+```
+
+- 需要把 fcitx5 切到该主题（`~/.config/fcitx5/conf/classicui.conf`，该文件由 fcitx5 运行时维护、不入库）：
+  `Theme=noctalia`、`UseDarkTheme=False`（始终用模板主题，深浅色由模板本身反映）、
+  `UseAccentColor=False`（否则系统重点色会覆盖主题高亮色）。
+- **热重载必须用 `fcitx5 -r`（替换实例）而非 `fcitx5-remote -r`**：后者只重读配置、
+  不会重读主题文件本身（参考 shorin-arch-setup 的做法）。`fcitx5 -r` 无缝替换进程，
+  输入仅瞬断，新实例自动接管 DBus 与 Wayland 连接。
+- `nixos/modules/locale.nix` 安装的 `fcitx5-nord` / `catppuccin-fcitx5` 皮肤包仍保留作备选，
+  在 fcitx5 配置工具里随时可切回。
+
 ## 内置模板
 
 niri / gtk3 / gtk4 / foot / qt 等配色使用 Noctalia 内置模板，在 Noctalia 设置界面启用即可

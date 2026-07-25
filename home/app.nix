@@ -31,10 +31,13 @@
           discord
           qq
           wechat
+          wemeet
           # 创作工具
           obsidian
           obs-studio
           krita
+          # 阅读
+          z-library-desktop
           # 开发工具
           vscode
           opencode
@@ -56,6 +59,7 @@
           remmina
           # 游戏平台
           steam
+          gamescope
           prismlauncher
           # Minecraft 启动器
           protonplus
