@@ -152,9 +152,7 @@ wallpaper_scheme = "m3-content"
     [theme.templates]
     builtin_ids = [ "btop", "cava", "foot", "gtk3", "gtk4", "kcolorscheme", "niri", "qt" ]
     community_ids = [
-        "pywalfox",
         "zen-browser",
-        "neovim",
         "obsidian",
         "vscode",
         "discord",

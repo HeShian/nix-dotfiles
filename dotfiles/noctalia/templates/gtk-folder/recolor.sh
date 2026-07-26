@@ -44,7 +44,7 @@ COLOR_SCRIPT_HIGHLIGHT=$MAIN_HILIGHT       # 高光 (原 #99c1f1 - 亮蓝)
 COLOR_SCRIPT_MID="#f0f0f0"         # 侧面/次亮 (原 #62a0ea)
 COLOR_SCRIPT_SHADOW=$MAIN_SHADOW      # 阴影 (原 #1c71d8)
 COLOR_SCRIPT_GEAR=$MAIN_DARKER_SHADOW    # 齿轮/最深色 
-COLOR_SCRIPT_PALE="ffffff"           # 极亮部 (原 #d7e8fc)
+COLOR_SCRIPT_PALE="#ffffff"           # 极亮部 (原 #d7e8fc)
 
 # ------------------------------------------------------------------------------
 # [4] 网页地球仪 (text-html.svg)

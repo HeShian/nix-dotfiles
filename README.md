@@ -84,7 +84,7 @@ GPU (nvidia/amd/intel) [nvidia]:
 ```
 
 ### 💡 快捷键帮助
-Niri 启动时会显示重要快捷键覆盖层。日常使用按 **`Super + /`** 查看快捷键。
+Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日常使用按 **`Super + Shift + /`** 打开快捷键速查表。
 
 ---
 
@@ -109,7 +109,7 @@ Niri 启动时会显示重要快捷键覆盖层。日常使用按 **`Super + /`*
 
 ### 2. 如何修改桌面外观或快捷键？
 - Niri 合成器：编辑 `dotfiles/niri/config.kdl`，然后运行 `niri msg action load-config-file` 热重载。
-- Noctalia Shell：通过 Noctalia 设置面板（`Super + ,`）或用 `Super + Z` 打开启动器后搜索设置。
+- Noctalia Shell：通过 Noctalia 设置面板（`Super + F2`）或用 `Super + Z` 打开启动器后搜索设置。
 
 ### 3. 如何应用你的修改？
 只修改 `dotfiles/` 下已有文件，通常不需要 rebuild。

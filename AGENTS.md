@@ -25,7 +25,7 @@
   - `host.nix`：机器参数（由 `init.sh` 交互生成/改写）。
   - `configuration.nix`：仅 imports（`hardware-configuration.nix` + `disko.nix` + `modules/`）与 `system.stateVersion`；具体配置全部按主题拆分到 `modules/`。
   - `modules/`：按主题拆分的系统模块，`default.nix` 聚合导入全部：
-    - `secrets.nix`：agenix（`age.identityPaths` 指定主机 host key + 4 个 `age.secrets.*`，`owner = userName`）。
+    - `secrets.nix`：agenix（`age.identityPaths` 指定主机 host key + 5 个 `age.secrets.*`，`owner = userName`）。
     - `boot.nix`：内核（linuxPackages_latest）+ GRUB（UEFI removable 安装到 ESP 回退路径、os-prober 探测其他系统、Reboot/Poweroff 自定义条目、静默启动参数、Crossgrub 主题（fetchzip 自 GitHub release，已预取进 store）；`efiInstallAsRemovable` 要求 `canTouchEfiVariables = false`）。
     - `hardware.nix`：微码、graphics、NVIDIA（按 `cpu`/`gpu` 条件化，nvidia 用开源内核模块）、蓝牙、OpenTabletDriver、`services.xserver.videoDrivers`、nvidia 环境变量。
     - `locale.nix`：中文 locale + fcitx5/Rime（rime-ice 词库）、时区（Asia/Shanghai）、字体。
@@ -40,7 +40,7 @@
 - `home/`：Home Manager 用户配置（`home.stateVersion = "25.05"`），`default.nix` 汇总并导入；另在 `default.nix` 中把 nixkits flake 的 `skills/` 目录逐个链接到 `~/.agents/skills/`（kimi-code 用户级技能目录，nix store 只读链接，`nix flake update` + rebuild 即更新技能）
   - `desktop.nix`：Wayland 桌面工具（grim/slurp/cliphist/mpv/satty/sunsetr/fuzzel 等）、`home.pointerCursor`（Bibata 光标）、foot 终端（配色 include Noctalia 生成的 `~/.config/foot/themes/noctalia`）、`~/Templates`"创建文档"模板（Office 模板二进制存于 `dotfiles/Templates/`）、`~/.config/xfce4/helpers.rc`（TerminalEmulator=foot）。**不使用 HM 的 `gtk` 模块**（GTK/Qt 颜色由 Noctalia 模板接管，避免争夺 `~/.config/gtk-*/`）。
   - `shell.nix`：zsh（vi 键位、别名、`nrs` = `nh os switch` 快捷别名）、git、fzf、yazi、neovim、nh（nix 命令助手，**首选系统管理命令**，每日自动清理：保留最近 3 个世代 + 7 天内的世代）。
-  - `app.nix`：日常应用（brave + zen-browser(twilight) + pywalfox-native、IM、VSCode、opencode、kimi-code、kitsfmt（来自 nixkits 的 Nix 格式化器）、uv/python3、steam、wine（wineWow64Packages.stableFull）+ winetricks、bottles/protonplus/lutris/heroic、waydroid-helper 等）。另含 `home.activation.steamCjkFonts`：把 Noto Sans CJK 以**真实文件**复制到 `~/.local/share/fonts`——Steam 客户端 UI 跑在 pressure-vessel 容器里（看不到 Nix store，符号链接无效），容器 fontconfig 通过 xdg fonts 目录发现它，否则 Steam 中文全部显示方框。
+  - `app.nix`：日常应用（brave + zen-browser(twilight) + pywalfox-native、IM、VSCode、opencode、kimi-code、kitsfmt（来自 nixkits 的 Nix 格式化器）、uv/python3、steam、wine（wineWow64Packages.stableFull）+ winetricks、protonplus/lutris/heroic、waydroid-helper 等）。另含 `home.activation.steamCjkFonts`：把 Noto Sans CJK 以**真实文件**复制到 `~/.local/share/fonts`——Steam 客户端 UI 跑在 pressure-vessel 容器里（看不到 Nix store，符号链接无效），容器 fontconfig 通过 xdg fonts 目录发现它，否则 Steam 中文全部显示方框。
 - `dotfiles/`：应用配置文件，由 `home/default.nix` 通过 `config.lib.file.mkOutOfStoreSymlink` 链接到 `~/.config/`（**指向仓库本身的活链接，不在 Nix store 中**）。
   - `niri/`：Niri 配置，按主题拆分为多个 `.kdl` 文件（`config.kdl` 为主入口，include `layout/animations/binds/windowrules/cursor/outputs/blur.kdl`）+ `scripts/`。**niri 是逐文件链接**（`~/.config/niri` 为真实目录）：`noctalia.kdl`（焦点环/边框等颜色）由 Noctalia 主题模板在运行时生成，不在仓库中；`config.kdl` 末尾已 include 它。`binds.kdl` 的键位布局复刻自 [shorin-arch-setup](https://github.com/SHORiN-KiWATA/shorin-arch-setup)（已适配 v5 `noctalia msg`、kitty→foot、firefox→brave）；`scripts/` 含 `portal-watcher.sh`（深浅色同步）、`screenshot-sound.sh`（截图快门声）、`screenshot-edit.sh`（satty 截图标注）、`niri-binds`（快捷键速查表）、`niri-force-kill-window`（强杀窗口）、`niri-pick`（窗口信息/取色）、`random-anime-wallpaper`（在线壁纸下载）。链接清单由 `home/default.nix` 用 `builtins.readDir` 自动枚举（顶层常规文件 + `scripts/` 下常规文件），新增脚本或 .kdl 文件无需手工登记。
   - `nvim/`：Neovim 配置（`init.lua` + `lua/core` + `lua/plugins`，lazy.nvim，锁定文件 `lazy-lock.json`）。配色由 `lua/noctalia.lua` 从 Noctalia 生成的 `~/.local/share/nvim/noctalia/colors.lua` 加载（SIGUSR1 热重载），文件缺失时回退内置 Catppuccin Mocha。`lua/matugen.lua` 是早期静态配色方案，已无任何文件引用，属遗留。
@@ -113,7 +113,7 @@ git clone <仓库地址> && cd nix-dotfiles
 2. `sudo nixos-rebuild switch` 应用；出问题从启动菜单回滚世代。
 3. Niri 改动用 `niri msg action load-config-file` 热重载并检查 `niri validate`。
 4. 修改 `init.sh` 后无法在本机完整测试（需要 Live ISO + 空磁盘），只做 `sh -n init.sh` 语法检查，逻辑改动需特别谨慎。
-5. **kitsfmt 0.5.0 已知 bug**：会把 `++`（列表拼接）错误格式化成 `+`，破坏求值（2026-07 全仓库格式化时已踩中并手工修复 4 处），两种模式下都会触发；其 best-practices 重写还会把 `with pkgs; [ ... ]` 改写成 `builtins.attrValues { inherit (pkgs) ...; }`（丢失列表内分组注释、包顺序被字母排序）。本仓库再次运行 kitsfmt 后必须 `nixos-rebuild dry-build` 验证并检查这两类改动。
+5. **kitsfmt 0.5.0 已知 bug**：会把 `++`（列表拼接）错误格式化成 `+`，破坏求值（2026-07 两次全仓库格式化分别踩中 4 处和 3 处，均已手工修复），两种模式下都会触发；其 best-practices 重写还会把 `with pkgs; [ ... ]` 改写成 `builtins.attrValues { inherit (pkgs) ...; }`（丢失列表内逐条注释、包顺序被字母排序）。本仓库**接受 attrValues 形式**（2026-07 第二次格式化起），包列表的逐条用途注释改写为列表上方的块注释（范例见 `home/desktop.nix` 的 `home.packages`）。每次运行 kitsfmt 后必须 `nixos-rebuild dry-build` 验证并检查 `++`→`+` 损坏。
 
 ## 安全注意事项
 
@@ -121,6 +121,6 @@ git clone <仓库地址> && cd nix-dotfiles
 - `init.sh` 顶部硬编码了代理环境变量（`http_proxy`/`https_proxy`），属作者个人网络环境，改动时注意这是安装期刚需而非可选项（README 有详细说明：Live ISO 阶段常用手机 USB 共享 + Clash Allow LAN）。
 - `nixos/modules/` 中 `security.sudo.wheelNeedsPassword = false`（users.nix）、`nix.settings.sandbox = false`、`nixpkgs.config.allowUnfree = true`（nix.nix）均为有意的个人配置，不要"顺手修复"。
 - `nixos/host.nix` 含个人邮箱；`hardware-configuration.nix` 只含 UUID 等机器信息、无密钥，有意保持 git 跟踪（见目录结构一节）。私密信息一律走 **agenix**：密文（`.age`）放 `secrets/` 提交进仓库，明文只存在于 `/run/agenix/`（tmpfs），不要提交任何明文密钥。
-- agenix 工作方式：解密用主机 SSH host key（`/etc/ssh/ssh_host_ed25519_key`；`nixos/modules/secrets.nix` 通过 `age.identityPaths` 显式指定，OpenSSH 服务端已启用并复用同一把 host key）。`secrets/secrets.nix` 登记了两个解密公钥：`westwood`（主机 host key，系统激活时解密）与 `claudia`（用户 `~/.ssh/id_ed25519`，本机用 agenix CLI 查看/编辑密文）。现有密钥 `codeberg_token_nix_dotfiles` 用于 git 推送 codeberg 远端；`codeberg_token_secret` 用于 `~/Documents/Secret` 私有仓库推送（该仓库的 git `credential.helper` 运行时从 `/run/agenix/codeberg_token_secret` 读 token，不落盘）。`age.secrets` 声明中 `owner = userName` 使用户可直接读取。
+- agenix 工作方式：解密用主机 SSH host key（`/etc/ssh/ssh_host_ed25519_key`；`nixos/modules/secrets.nix` 通过 `age.identityPaths` 显式指定，OpenSSH 服务端已启用并复用同一把 host key）。`secrets/secrets.nix` 登记了两个解密公钥：`westwood`（主机 host key，系统激活时解密）与 `claudia`（用户 `~/.ssh/id_ed25519`，本机用 agenix CLI 查看/编辑密文）。现有密钥 `codeberg_token_nix_dotfiles` 用于 git 推送 codeberg 远端；`codeberg_token_secret` 用于 `~/Documents/Secret` 私有仓库推送（该仓库的 git `credential.helper` 运行时从 `/run/agenix/codeberg_token_secret` 读 token，不落盘）；`deepseek_api_copilot` 用于 VSCode Copilot 自定义端点；`deepseek_api_opencode` 用于 opencode；`github_token_codeberg` 为 GitHub PAT（ghp_ 前缀）。`age.secrets` 声明中 `owner = userName` 使用户可直接读取。
 - 新增密钥：在 `secrets/secrets.nix` 登记公钥，然后在 `secrets/` 下 `echo -n "明文" | nix run github:ryantm/agenix -- -e <name>.age`，并在 `nixos/modules/secrets.nix` 声明 `age.secrets.<name>`。**重装系统 host key 会变，需用新公钥 `agenix -r` 重新加密全部密钥**。
 - Home Manager 的 `backupFileExtension = "backup"`：已存在的冲突文件会被改名为 `.backup`，排查配置不生效问题时先检查这一点。

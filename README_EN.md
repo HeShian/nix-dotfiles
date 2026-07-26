@@ -9,9 +9,7 @@
 ## Background
 I started with Ubuntu, moved through Arch, and ended up on NixOS. NixOS gives me declarative config, locked versions, and rollback points.
 
-I now use separate physical disks for Windows and Linux. This avoids most single-disk dual-boot problems. Laptops still run macOS; NixOS is for my desktop.
-
-This repo targets a desktop PC with a dedicated Linux disk. For single-disk dual boot or laptops, check disk, bootloader, and hardware assumptions first.
+I now run NixOS as the only OS on a single laptop — no desktop PC, no dual boot.
 
 ---
 
@@ -87,7 +85,7 @@ The installer supports checkpoint retries. To start over:
 ```
 
 ### Shortcut Help
-Niri shows an important shortcuts overlay at startup. During daily use, press **`Super + /`** to view shortcuts.
+Niri does not show the shortcut overlay at startup (`skip-at-startup`). During daily use, press **`Super + Shift + /`** to open the shortcut cheatsheet.
 
 ---
 
@@ -114,7 +112,7 @@ You can search for package names on [search.nixos.org](https://search.nixos.org/
 
 ### Change Desktop Or App Config
 - Niri compositor: edit `dotfiles/niri/config.kdl`, then run `niri msg action load-config-file` to hot-reload.
-- Noctalia Shell: use the Settings panel (`Super + ,`) or open the launcher with `Super + Z` and search for settings.
+- Noctalia Shell: use the Settings panel (`Super + F2`) or open the launcher with `Super + Z` and search for settings.
 
 ### Apply Changes
 If you only changed existing files under `dotfiles/`, you usually do not need a rebuild.
