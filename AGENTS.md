@@ -26,7 +26,7 @@
   - `configuration.nix`：仅 imports（`hardware-configuration.nix` + `disko.nix` + `modules/`）与 `system.stateVersion`；具体配置全部按主题拆分到 `modules/`。
   - `modules/`：按主题拆分的系统模块，`default.nix` 聚合导入全部：
     - `secrets.nix`：agenix（`age.identityPaths` 指定主机 host key + 4 个 `age.secrets.*`，`owner = userName`）。
-    - `boot.nix`：内核（linuxPackages_latest）+ GRUB（UEFI removable 安装到 ESP 回退路径、os-prober 探测其他系统、Reboot/Poweroff 自定义条目、静默启动参数；`efiInstallAsRemovable` 要求 `canTouchEfiVariables = false`）。
+    - `boot.nix`：内核（linuxPackages_latest）+ GRUB（UEFI removable 安装到 ESP 回退路径、os-prober 探测其他系统、Reboot/Poweroff 自定义条目、静默启动参数、Crossgrub 主题（fetchzip 自 GitHub release，已预取进 store）；`efiInstallAsRemovable` 要求 `canTouchEfiVariables = false`）。
     - `hardware.nix`：微码、graphics、NVIDIA（按 `cpu`/`gpu` 条件化，nvidia 用开源内核模块）、蓝牙、OpenTabletDriver、`services.xserver.videoDrivers`、nvidia 环境变量。
     - `locale.nix`：中文 locale + fcitx5/Rime（rime-ice 词库）、时区（Asia/Shanghai）、字体。
     - `networking.nix`：NetworkManager + v2raya + nftables（Waydroid 后端）+ OpenSSH（host key 与 agenix 复用同一把）。

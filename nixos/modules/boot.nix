@@ -1,4 +1,12 @@
 { pkgs, ... }:
+let
+  # Crossgrub 主题（CrossCode 标题画面风格，https://github.com/krypciak/crossgrub）
+  # 发布包解压后 theme.txt 直接在根目录；已预取进 nix store（GitHub 直连不可达，fetch 走本地代理）
+  crossgrub = pkgs.fetchzip {
+    url = "https://github.com/krypciak/crossgrub/releases/download/1.0.0/crossgrub.tar.gz";
+    hash = "sha256-91HejF6/Vt8iX1fm7xi+FY/AKlPL5TJpIFCfGzGDTWw=";
+  };
+in
 {
   # 引导加载器
   boot = {
@@ -19,6 +27,8 @@
         efiSupport = true;
         # 安装到 ESP 回退路径 EFI/BOOT/BOOTX64.EFI
         efiInstallAsRemovable = true;
+        # GRUB 主题（激活时复制到 /boot/grub/themes/nixos）
+        theme = crossgrub;
         # 自定义条目放在 NixOS 条目之前（需 default = "saved" 才生效）
         extraEntriesBeforeNixOS = true;
         extraEntries = ''
