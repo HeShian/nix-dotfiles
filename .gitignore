@@ -1,1 +1,5 @@
 # hardware-configuration.nix 有意保持 git 跟踪（flake 只读取已跟踪文件），见 AGENTS.md
+
+# nix build 产物符号链接（nh os build / nixos-rebuild build 的默认输出）
+result
+result-*
