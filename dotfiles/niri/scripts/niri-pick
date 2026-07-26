@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 #
-# niri-pick
-# 提取 Niri 窗口信息或吸取屏幕颜色，并复制到剪贴板
+# niri-pick — 提取 niri 窗口信息（标题 / App ID / PID / 完整信息）或吸取屏幕颜色，复制到剪贴板
+# 触发方式：Mod+P 调用 `niri-pick focus`（见 binds.kdl）；也可终端直接运行，见 -h
+# 依赖：niri、wl-copy（wl-clipboard）、fuzzel 或 rofi（菜单模式）、hyprpicker（可选，优先于 niri 原生吸色）
 
-# ==========================================
-# 1. 语言环境检测
-# ==========================================
+# ---------- 语言环境检测（决定提示文案中英文） ----------
 IS_ZH=false
 if locale 2>/dev/null | grep -iq "zh"; then
     IS_ZH=true
@@ -13,7 +12,7 @@ elif echo "${LANG} ${LC_ALL} ${LC_MESSAGES}" | grep -iq "zh"; then
     IS_ZH=true
 fi
 
-# 定义多语言文案 (精简、去括号)
+# 多语言文案
 if [[ "$IS_ZH" == true ]]; then
     STR_ERR_TITLE="缺失依赖"
     STR_MENU_TITLE="选择并复制:"
@@ -62,9 +61,7 @@ else
     STR_ERR_CMD="Unknown command"
 fi
 
-# ==========================================
-# 2. 核心函数
-# ==========================================
+# ---------- 核心函数 ----------
 show_notification() {
     local title="$1"
     local msg="$2"
@@ -119,11 +116,9 @@ run_menu() {
     fi
 }
 
-# ==========================================
-# 3. 参数解析与命令分发
-# ==========================================
+# ---------- 参数解析与命令分发 ----------
 ACTION="menu"
-SOURCE="pick-window" # 默认为鼠标点选窗口来源
+SOURCE="pick-window"  # 默认鼠标点选窗口；focus 子命令会改为 focused-window
 
 if [[ $# -gt 0 ]]; then
     case "$1" in
@@ -137,9 +132,7 @@ if [[ $# -gt 0 ]]; then
     esac
 fi
 
-# --------------------------
-# 处理 Help
-# --------------------------
+# 显示帮助并退出
 if [[ "$ACTION" == "help" ]]; then
     if [[ "$IS_ZH" == true ]]; then
         echo "用法: niri-pick [命令]"
@@ -155,7 +148,7 @@ if [[ "$ACTION" == "help" ]]; then
         echo "  rgb        吸取并复制 屏幕颜色 (RGB)"
         echo "  help, -h   显示此帮助信息"
     else
-        echo "Usage: niri-pick[COMMAND]"
+        echo "Usage: niri-pick [COMMAND]"
         echo ""
         echo "Commands:"
         echo "  menu       Show full interactive menu (Default)"
@@ -173,9 +166,7 @@ fi
 
 check_dependencies "$ACTION"
 
-# --------------------------
-# 处理 Menu / Focus 菜单逻辑
-# --------------------------
+# 菜单交互：menu 弹出完整菜单（含吸色），focus 只针对当前焦点窗口
 if [[ "$ACTION" == "menu" ]]; then
     main_items=(
         "$STR_MENU_WIN_ALL"
@@ -229,13 +220,11 @@ elif [[ "$ACTION" == "focus" ]]; then
         2) ACTION="appid" ;;
         3) ACTION="pid" ;;
     esac
-    # 将信息获取来源设定为当前焦点窗口
+    # 信息来源改为当前焦点窗口
     SOURCE="focused-window"
 fi
 
-# ==========================================
-# 4. 执行操作并提取数据
-# ==========================================
+# ---------- 按 ACTION 提取数据 ----------
 value=""
 label=""
 
@@ -249,7 +238,7 @@ if [[ "$ACTION" =~ ^(all|title|appid|pid)$ ]]; then
             value="$output"
             label="$LBL_WIN_ALL" ;;
         title)
-            value=$(echo "$output" | grep -Po 'Title: "\K.*(?=")')
+            value=$(echo "$output" | grep -Po 'Title: "\K[^"]*')
             label="$LBL_WIN_TITLE" ;;
         appid)
             value=$(echo "$output" | grep -Po 'App ID: "\K.*(?=")')
@@ -261,10 +250,10 @@ if [[ "$ACTION" =~ ^(all|title|appid|pid)$ ]]; then
 
 elif [[ "$ACTION" =~ ^(hex|rgb)$ ]]; then
     if command -v hyprpicker &>/dev/null; then
-        # 优先使用 hyprpicker (修复了上个版本的正则小笔误)
+        # 优先使用 hyprpicker 吸色
         if [[ "$ACTION" == "rgb" ]]; then
             raw_val=$(hyprpicker --format rgb -n 2>/dev/null)
-            if [[ "$raw_val" =~ ^[0-9]+\ [0-9]+\[0-9]+$ ]]; then
+            if [[ "$raw_val" =~ ^[0-9]+\ [0-9]+\ [0-9]+$ ]]; then
                 value="rgb(${raw_val// /, })"
             else
                 value="$raw_val"
@@ -290,9 +279,7 @@ elif [[ "$ACTION" =~ ^(hex|rgb)$ ]]; then
     [[ -z "$value" ]] && { echo "$STR_CANCELLED"; exit 0; }
 fi
 
-# ==========================================
-# 5. 复制并通知
-# ==========================================
+# ---------- 复制结果并通知 ----------
 if [[ -z "$value" ]]; then
     show_error "$STR_ERR_NOT_FOUND"
     exit 1
@@ -300,9 +287,8 @@ fi
 
 copy_to_clipboard "$value"
 
-# 发起弹窗通知
 notify_msg=$(printf "$STR_NOTIFY_SUCC_MSG" "$label" "$value")
 show_notification "$STR_NOTIFY_SUCC_TITLE" "$notify_msg"
 
-# 终端同步输出反馈 (安全换码避免 EOF 异常)
+# 终端同步输出反馈（安全换码避免 EOF 异常）
 echo -e "\e[32m✔ ${label}: \n\e[1m$value\e[0m\e[32m\e[0m"

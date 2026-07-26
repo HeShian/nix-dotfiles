@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 #
-# niri-force-kill-window
-# 通过鼠标点击强制结束 (SIGKILL) 任意窗口。支持单体强杀与进程树强杀。
+# niri-force-kill-window — 鼠标点选窗口后强制结束（SIGKILL），支持单体强杀与进程树强杀（-f）
+# 触发方式：Alt+F4 强杀单窗口，Alt+Shift+F4 强杀整个进程树（见 binds.kdl）
+# 依赖：niri、xprop（XWayland 窗口取真实 PID）、notify-send、pw-play（可选，提示音）
 
-# ==========================================
-# 0. 参数解析
-# ==========================================
+# ---------- 参数解析 ----------
 KILL_FAMILY=false
 SHOW_HELP=false
 
@@ -18,9 +17,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# ==========================================
-# 1. 多语言 (Locale) 自适应支持与帮助信息
-# ==========================================
+# ---------- 提示文案（按 LANG 自适应中英文） ----------
 if [[ "${LANG}" == zh_* ]]; then
     STR_HELP="用法: niri-force-kill-window [选项]
 
@@ -70,9 +67,7 @@ if [[ "$SHOW_HELP" == true ]]; then
     exit 0
 fi
 
-# ==========================================
-# 2. 环境与依赖检查
-# ==========================================
+# ---------- 依赖检查 ----------
 check_dependency() {
     local cmd="$1" pkg="$2"
     if ! command -v "$cmd" &> /dev/null; then
@@ -98,9 +93,7 @@ notify_and_play() {
     fi
 }
 
-# ==========================================
-# 3. 抓取目标窗口与协议鉴定
-# ==========================================
+# ---------- 点选目标窗口并鉴定协议（Wayland / XWayland） ----------
 if ! output=$(niri msg pick-window 2>/dev/null); then exit 0; fi
 if [[ -z "$output" ]]; then exit 0; fi
 
@@ -132,15 +125,13 @@ if [[ -z "$real_pid" ]]; then
     exit 1
 fi
 
-# ==========================================
-# 4. 执行击杀逻辑 (单体 / 进程树)
-# ==========================================
+# ---------- 执行强杀（单窗口 / 进程树） ----------
 if [[ "$KILL_FAMILY" == true ]]; then
-    # --- 进程树连根拔起模式 ---
+    # 进程树模式：先向上溯源找到应用进程树的根，再向下递归收集
     app_root=$real_pid
     current=$real_pid
 
-    # 极速解析 stat 文件向上溯源
+    # 沿 /proc/<pid>/stat 逐层向上解析父进程
     while true; do
         stat_file="/proc/$current/stat"
         if [[ ! -r "$stat_file" ]]; then break; fi
@@ -157,11 +148,21 @@ if [[ "$KILL_FAMILY" == true ]]; then
             break
         fi
         
+        # 注意：向上登记 app_root 之前必须先检查父进程是否在终止名单内。
+        # 若父进程是终端 shell/tmux 等，说明 current 才是应用进程树的根，
+        # 此时必须保持 app_root=$current 并停止溯源——否则 get_descendants
+        # 会从该 shell 向下收集，把终端里所有无关进程一并 SIGKILL
+        parent_comm=$(<"/proc/$ppid/comm" 2>/dev/null) || parent_comm=""
+        if [[ "$parent_comm" =~ ^(systemd|niri|bash|zsh|fish|tmux|screen|xwayland.*|sshd|login|init|sway|hyprland)$ ]]; then
+            app_root=$current
+            break
+        fi
+        
         app_root=$ppid
         current=$ppid
     done
 
-    # 向下递归收集进程
+    # 从 app_root 向下递归收集整棵进程树
     get_descendants() {
         local p=$1
         echo "$p"
@@ -179,12 +180,11 @@ if [[ "$KILL_FAMILY" == true ]]; then
     printf -v final_msg "$STR_SUCC_MSG_FAMILY" "$app_name" "$pid_count"
 
 else
-    # --- 单一窗口进程精准击杀模式 (默认) ---
+    # 单窗口模式（默认）：只杀窗口对应的真实 PID
     kill -9 "$real_pid" 2>/dev/null
     
     printf -v final_title "$STR_SUCC_TITLE" "$proto_str"
     printf -v final_msg "$STR_SUCC_MSG_SINGLE" "$app_name" "$real_pid"
 fi
 
-# 战果汇报
 notify_and_play "$final_title" "$final_msg"

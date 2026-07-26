@@ -60,17 +60,17 @@ xwayland-satellite {}
 spawn-at-startup "noctalia"
 spawn-at-startup "fcitx5" "--replace" "-d"
 spawn-at-startup "xsettingsd"
-spawn-sh-at-startup "~/.config/niri/scripts/portal-watcher.sh &"
-spawn-sh-at-startup "~/.config/niri/scripts/screenshot-sound.sh &"
+spawn-sh-at-startup "~/.config/niri/scripts/portal-watcher.sh"
+spawn-sh-at-startup "~/.config/niri/scripts/screenshot-sound.sh"
 spawn-at-startup "udiskie" "-t" "-a"
 spawn-at-startup "wl-clip-persist" "--clipboard" "regular" "--reconnect-tries" "0"
 spawn-at-startup "sh" "-c" "wl-paste --type text --watch cliphist store"
 spawn-at-startup "sh" "-c" "wl-paste --type image --watch cliphist store"
 spawn-sh-at-startup "sleep 5 && noctalia msg wallpaper-random"
 // Gopeed 下载器后台静默启动（--hidden 为官方自启参数，不弹窗）
-spawn-sh-at-startup "gopeed --hidden &"
+spawn-sh-at-startup "gopeed --hidden"
 
-// 笔记本: 合盖锁屏并挂起
+// 笔记本：合盖锁屏并挂起
 switch-events {
     lid-close {
         spawn "noctalia" "msg" "session" "lock-and-suspend";
@@ -88,4 +88,5 @@ include "cursor.kdl"
 include "outputs.kdl"
 include "blur.kdl"
 
+// noctalia.kdl 由 Noctalia 主题模板在运行时生成（不在仓库中），提供焦点环/边框等配色
 include "noctalia.kdl"

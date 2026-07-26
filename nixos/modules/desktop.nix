@@ -20,6 +20,7 @@
               vim
               git
               wget
+              # niri 无内置 XWayland，X11 应用经它运行
               xwayland-satellite
               glib
               # gsettings/dconf CLI：Noctalia gtk 模板同步深色模式、portal 调试用
@@ -28,7 +29,9 @@
               noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
             ];
     };
-    # 合成器
+    # KDE Connect（系统模块自动放行防火墙 1714-1764；只装包不开端口会配对失败）
+    programs.kdeconnect.enable = true;
+    # Niri 合成器（Wayland 滚动平铺）
     programs.niri.enable = true;
     # 登录界面：greetd + noctalia-greeter
     programs.noctalia-greeter = {
@@ -45,6 +48,8 @@
         session.default = "niri";
       };
     };
+    # Steam 系统模块（udev 规则与 Remote Play 端口；steam 包不再装到 home/app.nix）
+    programs.steam.enable = true;
     # Thunar 文件管理器（NixOS 模块：xfconf/插件/gvfs 回收站与网络挂载/tumbler 缩略图）
     programs.thunar = {
       enable = true;
@@ -52,9 +57,13 @@
         inherit (pkgs.xfce) thunar-archive-plugin thunar-volman;
       };
     };
+    # 图形登录时随密码解锁 gnome-keyring，否则走 Secret portal 的 Electron 应用每次开机弹密码框
+    security.pam.services.greetd.enableGnomeKeyring = true;
+    # 控制台 TTY 不启用（图形登录走 greetd）
     security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
     security.rtkit.enable = true;
-    # gnome-keyring: Electron 应用（WeChat 等）需要
+    # 为 Pipewire 提供实时调度优先级
+    # gnome-keyring：Secret Service 后端，Electron 应用（WeChat 等）需要
     services.gnome.gnome-keyring.enable = true;
     services.greetd = {
       enable = true;
@@ -63,7 +72,8 @@
       };
     };
     services.gvfs.enable = true;
-    # 音视频
+    # Thunar 的回收站与网络挂载后端
+    # 音频（Pipewire + ALSA/PulseAudio 兼容层）
     services.pipewire = {
       alsa = {
         enable = true;
@@ -72,15 +82,14 @@
       enable = true;
       pulse.enable = true;
     };
-    # 电源
+    # 电源档位（性能/平衡/省电）
     services.power-profiles-daemon.enable = true;
-    # 缩略图
+    # 文件缩略图服务（Thunar）
     services.tumbler.enable = true;
-    # 磁盘
+    # 磁盘与移动介质挂载（Thunar 侧边栏挂载 U 盘等）
     services.udisks2.enable = true;
-    # XDG Desktop Portal：显式声明 Niri 下的后端
-    # gnome 后端负责截图/录屏/外观（color-scheme 深浅色，供 Noctalia 与 GTK 同步）
-    # gtk 后端负责文件选择器等；Secret 走 gnome-keyring
+    # XDG Desktop Portal 后端分工：gnome 负责截图/录屏/外观（深浅色同步），
+    # gtk 负责文件选择器等，Secret 走 gnome-keyring
     xdg.portal = {
       config.niri = {
         "org.freedesktop.impl.portal.Access" = [

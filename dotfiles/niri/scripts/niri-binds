@@ -1,18 +1,23 @@
 #!/usr/bin/env bash
+#
+# niri-binds — 快捷键速查表：从 niri 配置中提取所有 hotkey-overlay-title 绑定，
+#              在浮动终端里用 fzf 模糊检索（结果仅展示，选中不执行）
+# 触发方式：Mod+Shift+Slash（见 binds.kdl）
+# 依赖：fzf、column；终端按 foot → alacritty → wezterm → $TERMINAL 顺序探测，
+#       都没有时降级到 fuzzel --dmenu
 
 NIRI_DIR="$HOME/.config/niri"
 
-# === 界面尺寸设置 (在这里微调，下方的所有终端会自动应用) ===
+# 菜单窗口尺寸（所有终端共用，在此统一调整）
 MENU_WIDTH=90
 MENU_HEIGHT=20
 
-# 检查目录
 if [[ ! -d "$NIRI_DIR" ]]; then
     echo "Error: 找不到配置目录 $NIRI_DIR"
     exit 1
 fi
 
-# 提取并使用 column 对齐
+# 从所有 .kdl 提取带 hotkey-overlay-title 的绑定（排除注释行），用 column 对齐
 MENU_ITEMS=$(grep -Rh 'hotkey-overlay-title=' "$NIRI_DIR" --include="*.kdl" | \
              grep -v '^[ \t]*//' | \
              sed -n -E 's/^[ \t]*(.*)[ \t]+hotkey-overlay-title="([^"]+)".*/\1|\2/p' | \
@@ -24,16 +29,11 @@ if [[ -z "$MENU_ITEMS" ]]; then
     exit 1
 fi
 
-# Fzf 核心命令
+# fzf 命令串：交给下方各终端的 bash -c 执行（选中结果丢弃，纯展示）
 FZF_CMD="echo \"$MENU_ITEMS\" | fzf --reverse --prompt='󰌌 快捷键: ' --info=hidden --border=none > /dev/null"
 
-# 动态检测终端并使用对应的参数启动
-if command -v kitty >/dev/null 2>&1; then
-    kitty --class "niri-hotkey-menu" --title "快捷键菜单" \
-          -o remember_window_size=no -o initial_window_width=${MENU_WIDTH}c -o initial_window_height=${MENU_HEIGHT}c \
-          bash -c "$FZF_CMD"
-
-elif command -v foot >/dev/null 2>&1; then
+# 按优先级探测终端，用各自的参数启动菜单窗口
+if command -v foot >/dev/null 2>&1; then
     foot --app-id "niri-hotkey-menu" --title "快捷键菜单" \
          --window-size-chars=${MENU_WIDTH}x${MENU_HEIGHT} \
          bash -c "$FZF_CMD"
@@ -52,7 +52,7 @@ elif [[ -n "$TERMINAL" ]]; then
 else
     echo "Error: 未检测到支持的终端模拟器。"
     if command -v fuzzel >/dev/null 2>&1; then
-         # Fuzzel 降级方案也会自动读取顶层变量
+         # 无终端可用时降级到 fuzzel --dmenu（同样使用上方 MENU_WIDTH）
          echo "$MENU_ITEMS" | fuzzel --dmenu -i -p "󰌌 快捷键: " -w ${MENU_WIDTH} > /dev/null
     fi
 fi

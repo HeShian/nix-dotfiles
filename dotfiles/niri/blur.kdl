@@ -5,15 +5,8 @@ blur {
     saturation 1.5
 }
 
+// 无 match 的全局规则：对所有窗口（含浮动）启用 xray + blur
 window-rule {
-    background-effect {
-        xray true
-        blur true
-    }
-}
-
-window-rule {
-    match is-floating=true
     background-effect {
         xray true
         blur true

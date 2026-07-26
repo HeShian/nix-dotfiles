@@ -1,5 +1,5 @@
 // 快捷键布局复刻自 SHORiN-KiWATA/shorin-arch-setup (noctalia-dotfiles/.config/niri/binds.kdl)
-// 适配：Noctalia v4 IPC (qs ipc call) → v5 (noctalia msg)；kitty → foot；firefox → brave
+// 适配：Noctalia v4 IPC（qs ipc call）→ v5（noctalia msg）；kitty → foot；firefox → brave
 binds {
     // ============================================================
     // 特殊功能
@@ -224,18 +224,18 @@ binds {
     Alt+grave     { switch-focus-between-floating-and-tiling; }
 
     // ============================================================
-    // 截图 (niri 内建 + 快门声布防)
+    // 截图（niri 内建 + 给快门声服务「上膛」）
     // ============================================================
     Print                hotkey-overlay-title="区域截图 Select screenshot" { spawn-sh "niri msg action screenshot --show-pointer false && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
     Mod+Alt+A            hotkey-overlay-title="区域截图 Select screenshot" { spawn-sh "niri msg action screenshot --show-pointer false && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
     Ctrl+Print           { spawn-sh "niri msg action screenshot-window --show-pointer false && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
-    Mod+Alt+Ctrl+A       hotkey-overlay-title="截取聚焦窗口 Focus-window screenshot" { spawn-sh "niri msg action screenshot-window && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
+    Mod+Alt+Ctrl+A       hotkey-overlay-title="截取聚焦窗口 Focus-window screenshot" { spawn-sh "niri msg action screenshot-window --show-pointer false && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
     Shift+Print          { spawn-sh "niri msg action screenshot-screen --show-pointer false && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
     Mod+Alt+Ctrl+Shift+A hotkey-overlay-title="截取显示器 Monitor screenshot" { spawn-sh "niri msg action screenshot-screen --show-pointer false && pkill -f -USR1 '[s]creenshot-sound.sh'"; }
     Mod+Shift+S          hotkey-overlay-title="区域截图并编辑 Screenshot and edit" { spawn "~/.config/niri/scripts/screenshot-edit.sh"; }
 
     // ============================================================
-    // 音量 / 亮度 / 媒体 (Noctalia v5)
+    // 音量 / 亮度 / 媒体（Noctalia v5）
     // ============================================================
     XF86AudioRaiseVolume    repeat=true { spawn-sh "noctalia msg volume-up"; }
     XF86AudioLowerVolume    repeat=true { spawn-sh "noctalia msg volume-down"; }
@@ -254,7 +254,7 @@ binds {
 }
 
 // ============================================================
-// Recent Windows (缩略图窗口切换)
+// Recent Windows（缩略图窗口切换）
 // ============================================================
 recent-windows {
     debounce-ms 750

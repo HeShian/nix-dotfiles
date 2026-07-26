@@ -27,21 +27,21 @@ return {
 		"mikavilpas/yazi.nvim",
 		event = "VeryLazy",
 		keys = {
-			-- 👇 in this section, choose your own keymappings!
+			-- 在下方选择自己的键位映射
 			{
 				"<leader>-",
 				"<cmd>Yazi<cr>",
 				desc = "Open yazi at the current file",
 			},
 			{
-				-- Open in the current working directory
+				-- 在当前工作目录打开
 				"<leader>cw",
 				"<cmd>Yazi cwd<cr>",
 				desc = "Open the file manager in nvim's working directory",
 			},
 			{
-				-- NOTE: this requires a version of yazi that includes
-				-- https://github.com/sxyazi/yazi/pull/1305 from 2024-07-18
+				-- 注意：需要包含 2024-07-18 的
+				-- https://github.com/sxyazi/yazi/pull/1305 的 yazi 版本
 				'<c-up>',
 				"<cmd>Yazi toggle<cr>",
 				desc = "Resume the last yazi session",
@@ -49,7 +49,7 @@ return {
 		},
 		---@type YaziConfig
 		opts = {
-			-- if you want to open yazi instead of netrw, see below for more info
+			-- 若想用 yazi 代替 netrw 打开目录，见插件文档
 			open_for_directories = false,
 			keymaps = {
 				show_help = '<f1>',

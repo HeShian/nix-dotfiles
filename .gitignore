@@ -3,3 +3,9 @@
 # nix build 产物符号链接（nh os build / nixos-rebuild build 的默认输出）
 result
 result-*
+
+# 常见兜底规则
+.env*
+*.bak
+*.swp
+*.swo

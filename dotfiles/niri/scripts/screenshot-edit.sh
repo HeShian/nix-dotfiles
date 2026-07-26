@@ -9,10 +9,10 @@ before=$(wl-paste --type image 2>/dev/null | sha256sum | cut -d' ' -f1)
 
 niri msg action screenshot --show-pointer false || exit 0
 
-# 截图结束（无论成败），布防快门声
+# 截图结束（无论成败），给快门声服务「上膛」
 pkill -f -USR1 '[s]creenshot-sound.sh' 2>/dev/null || true
 
-# 等待剪贴板出现“新”图片（最多 3 秒）
+# 等待剪贴板出现「新」图片（最多 3 秒）
 for _ in $(seq 1 30); do
     sleep 0.1
     now=$(wl-paste --type image 2>/dev/null | sha256sum | cut -d' ' -f1)

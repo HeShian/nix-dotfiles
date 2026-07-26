@@ -14,12 +14,14 @@
       url = "github:nix-community/home-manager";
     };
     kimi-code = {
+      # follows nixpkgs：与 nixkits 同理，避免重复下载一份 nixpkgs 源码
+      inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MoonshotAI/kimi-code";
     };
     # 跟随最新 stable tag（main 为不稳定分支，不用）
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     # follows nixpkgs：避免重复下载一份 nixpkgs 源码（且本机网络拉取 GitHub 大 tarball 不稳定）。
-    # 代价：与 NixKits 上游锁定的 nixpkgs 不同，kitsfmt 无法命中其 cachix，需本地从源码编译（Rust）。
+    # 代价：与 NixKits 上游锁定的 nixpkgs 不同，kitsfmt 无法命中其 cachix，需本地从源码编译（Rust）
     nixkits = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:Kihara777/NixKits";

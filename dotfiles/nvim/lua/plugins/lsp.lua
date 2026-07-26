@@ -84,7 +84,7 @@ return {
 		config = function()
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-			-- LSP keymaps via LspAttach autocmd
+			-- 通过 LspAttach 自动命令绑定 LSP 快捷键
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(args)
 					local opts = { noremap = true, silent = true, buffer = args.buf }
@@ -106,7 +106,7 @@ return {
 				vim.lsp.buf.format({ async = true })
 			end, { desc = "Format current buffer with LSP" })
 
-			-- Per-server config via vim.lsp.config (nvim 0.11+)
+			-- 按服务器分别配置（vim.lsp.config，nvim 0.11+）
 			vim.lsp.config("gopls", { capabilities = capabilities })
 			vim.lsp.config("ts_ls", { capabilities = capabilities })
 			vim.lsp.config("basedpyright", { capabilities = capabilities })
@@ -127,10 +127,10 @@ return {
 				},
 			})
 
-			-- Enable all configured servers
+			-- 启用所有已配置的服务器
 			vim.lsp.enable({ "gopls", "ts_ls", "basedpyright", "clangd", "rust_analyzer" })
 
-			-- Diagnostics
+			-- 诊断显示
 			vim.diagnostic.config({
 				virtual_text = true,
 				signs = true,

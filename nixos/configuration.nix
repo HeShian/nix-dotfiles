@@ -6,6 +6,6 @@
       ./disko.nix
       ./modules
     ];
-    # 系统版本（首次安装）
+    # stateVersion 记录首次安装的 NixOS 版本，决定有状态数据的兼容默认值；升级系统时不要改动
     system.stateVersion = "25.05";
   }

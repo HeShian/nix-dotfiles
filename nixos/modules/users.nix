@@ -1,9 +1,12 @@
 { pkgs, userName, ... }:
 {
     programs.zsh.enable = true;
+    # 登录 shell 用 zsh 需先启用系统模块
+    # wheel 组 sudo 免密（有意的个人配置）
     security.sudo.wheelNeedsPassword = false;
-    # 用户
+    # 用户账号
     users.users.${userName} = {
+      # wheel：sudo；networkmanager：网络管理；video/audio/render：显示与音视频设备访问；libvirtd：虚拟机管理
       extraGroups = [
         "wheel"
         "networkmanager"

@@ -1,7 +1,17 @@
 #!/bin/sh
+#
+# init.sh — Live ISO 环境下的 NixOS 安装脚本
+#
+# 用途：交互确认 nixos/host.nix 的机器参数后，用 disko 分区并格式化目标磁盘，
+#       安装精简系统，再 chroot 进新系统应用完整配置（含 Home Manager）
+# 用法：sudo ./init.sh [--reset]（--reset 清除断点状态从头重来）
+#       断点状态记录在 /mnt/var/lib/nix-dotfiles-install-state/，中断后重跑自动续装
+# 警告：会分区并格式化 host.nix 指定的整块磁盘，运行中需输入 "ERASE <disk>" 确认
+# 依赖：NixOS Live ISO 环境（自带 nix、nixos-install、nixos-enter、git）
 
-set -e # 遇到错误立即停止
+set -e  # 任何命令失败立即中止（配合 run_once：失败步骤不落标记，重跑时重试）
 
+# 安装期代理：Live ISO 阶段拉取 flake 依赖需经此代理，属安装刚需而非可选项
 export http_proxy="http://10.244.79.176:7890"
 export https_proxy="http://10.244.79.176:7890"
 
@@ -28,12 +38,17 @@ if [ "${1:-}" = "--reset" ]; then
   RESET_STATE=1
 fi
 
-# 检查是否为 root
+# 分区与 nixos-install 均需要 root 权限
 if [ "$(id -u)" -ne 0 ]; then
   echo "please run in root (sudo $0)"
   exit 1
 fi
 
+# 后续步骤以相对路径引用仓库文件（如 read_host_config 的 ./nixos/host.nix），
+# 先切到脚本所在目录（即仓库根），避免隐含依赖调用时的 cwd
+cd "$(dirname "$0")"
+
+# 断点状态机：每个步骤完成后在 STATE_DIR 下落一个 <step>.done 标记文件
 step_done() {
   [ -f "${STATE_DIR}/$1.done" ]
 }
@@ -43,6 +58,7 @@ mark_done() {
   touch "${STATE_DIR}/$1.done"
 }
 
+# 幂等执行：步骤已完成则跳过，否则执行并落标记（断点续装的核心）
 run_once() {
   step="$1"
   desc="$2"
@@ -58,6 +74,7 @@ run_once() {
   mark_done "${step}"
 }
 
+# 无条件执行：每次运行都执行（用于可安全重复的步骤）
 run_always() {
   desc="$1"
   shift
@@ -117,6 +134,19 @@ validate_user_name() {
   esac
 }
 
+validate_user_email() {
+  # userEmail 会插值进未引用 heredoc 生成 host.nix，
+  # 含双引号、反斜杠或换行会产生语法非法的 Nix 文件，必须在此拦截
+  nl='
+'
+  case "$1" in
+    "" | *\"* | *\\* | *"$nl"*)
+      echo "invalid userEmail: must not be empty or contain '\"', '\' or newlines."
+      exit 1
+      ;;
+  esac
+}
+
 validate_host_name() {
   case "$1" in
     "" | *[!A-Za-z0-9-]* | -* | *-)
@@ -153,6 +183,7 @@ ask_host_config() {
   GPU="$(prompt_value "GPU" "${GPU}" "nvidia/amd/intel")"
 
   validate_user_name "${USER_NAME}"
+  validate_user_email "${USER_EMAIL}"
   validate_host_name "${HOST_NAME}"
   validate_choice "${CPU}" "amd intel" "cpu"
   validate_choice "${GPU}" "nvidia amd intel" "gpu"
@@ -177,6 +208,7 @@ validate_config() {
     exit 1
   fi
 
+  # --reset 在确认配置有效后才清除断点状态，避免误清导致从头分区
   if [ "${RESET_STATE}" -eq 1 ]; then
     rm -rf "${STATE_DIR}"
   fi
@@ -189,6 +221,7 @@ validate_config() {
   fi
 }
 
+# 分区前最后防线：展示安装摘要与 lsblk 现状，必须逐字输入 "ERASE <disk>" 才继续
 confirm_disko() {
   echo "==> Install summary"
   echo "    User: ${USER_NAME}"
@@ -243,6 +276,7 @@ set_user_password() {
   nixos-enter --root /mnt -c "passwd ${USER_NAME}"
 }
 
+# 把仓库拷贝到新系统的用户目录、克隆壁纸仓库，并修正属主
 prepare_user_files() {
   mkdir -p "${USER_DOCS}" "${USER_PICTURES}"
   rm -rf "${DOTFILES_TARGET}"
@@ -257,6 +291,23 @@ prepare_user_files() {
 }
 
 activate_full_system() {
+  # agenix 在系统激活时用主机 SSH host key（/etc/ssh/ssh_host_ed25519_key）解密
+  # secrets/ 下的密钥；全新安装时该 key 尚不存在，解密失败只会得到无解释的
+  # activation 报错。先确认 host key 就位，给用户处理机会，再跑 nixos-rebuild switch。
+  # 用户 Ctrl-C 中止后重跑本脚本，断点状态机会从本步骤继续。
+  while [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key ]; do
+    cat <<'EOF'
+==> 未找到主机 SSH host key: /mnt/etc/ssh/ssh_host_ed25519_key
+    完整配置启用了 agenix，激活时需要用它解密 secrets/ 下的密钥，否则本步骤必然失败。
+    请选择处理方式：
+      1. 从备份恢复旧机器的 host key 到 /mnt/etc/ssh/（推荐，secrets 无需重加密）；
+      2. 生成新 key:
+           ssh-keygen -t ed25519 -f /mnt/etc/ssh/ssh_host_ed25519_key -N ""
+         装好后进入新系统，把新公钥加入 secrets/secrets.nix 并用 agenix -r 重加密全部密钥。
+    处理完成后回到这里按回车重新检查；按 Ctrl-C 中止（重跑 init.sh 会从本步骤继续）。
+EOF
+    read -r _
+  done
   nixos-enter --root /mnt -c "nixos-rebuild switch --flake /home/${USER_NAME}/Documents/nix-dotfiles#${HOST_NAME}"
 }
 
@@ -272,4 +323,7 @@ run_once "04-nixos-install" "4. Installing base NixOS..." install_nixos
 run_once "05-user-files" "5. Preparing user files..." prepare_user_files
 run_once "06-full-system" "6. Activating full system configuration..." activate_full_system
 run_always "7. Setting user password..." set_user_password
+
+# 全部步骤成功后清理断点状态目录，避免残留进装好的系统（/mnt 即新系统根）
+rm -rf "${STATE_DIR}"
 echo "==> Installation complete! Please remove the installation media and reboot."

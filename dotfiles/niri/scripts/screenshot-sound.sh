@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
+#
+# screenshot-sound.sh — 截图快门声服务
+#
+# 触发方式：niri 启动时由 config.kdl 的 spawn-sh-at-startup 常驻运行；
+#           截图快捷键（见 binds.kdl）截图结束后向本进程发 SIGUSR1「上膛」，
+#           随后 wl-paste 监听到剪贴板出现新图片即播放快门声
+# 依赖：pw-play（pipewire）、wl-paste（wl-clipboard）、notify-send
 
-# =================配置区域=================
+# ---------- 可调参数 ----------
 SOUND="/run/current-system/sw/share/sounds/freedesktop/stereo/camera-shutter.oga"
-# 这是一个“扳机”文件，存于内存中 (/dev/shm)，读写极快
+# 「扳机」文件，存于内存文件系统（/dev/shm），读写开销极小
 TRIGGER_FILE="/dev/shm/niri_screenshot_armed"
-# 有效期：按下截图键后，多少秒内产生了图片才响？(防止你取消截图后，下次复制图片误响)
+# 有效期：上膛后多少秒内剪贴板出现图片才响（避免取消截图后，下次复制图片误响）
 TIMEOUT_SEC=15
-# =========================================
+# ------------------------------
 
 # 环境检查
 if ! command -v pw-play >/dev/null; then
@@ -14,54 +21,43 @@ if ! command -v pw-play >/dev/null; then
     exit 1
 fi
 
-# =========================================
-# 1. 定义信号处理 (收到信号 = 上膛)
-# =========================================
+# 信号处理：收到 SIGUSR1 即「上膛」（刷新扳机文件的修改时间，不存在则创建）
 arm_trigger() {
-    # 更新文件的修改时间，或者创建它
     touch "$TRIGGER_FILE"
 }
 
-# 注册信号：收到 USR1 就执行 arm_trigger
 trap arm_trigger SIGUSR1
 
-# =========================================
-# 2. 启动剪贴板监听 (后台运行)
-# =========================================
-# 只有当剪贴板真正发生变化时，这个子进程才会醒来
+# 后台监听剪贴板：wl-paste --watch 只在剪贴板内容变化时唤醒子进程
 wl-paste --watch bash -c "
-    # A. 检查是不是图片
+    # 只处理图片
     if wl-paste --list-types 2>/dev/null | grep -q 'image/'; then
-        
-        # B. 检查有没有“上膛” (文件是否存在)
+
+        # 已上膛才继续（扳机文件存在）
         if [ -f \"$TRIGGER_FILE\" ]; then
-            
-            # C. 检查“上膛”是否过期 (利用文件修改时间)
-            # $(date +%s) - stat获取的时间
+
+            # 按扳机文件的修改时间判断上膛是否过期
             NOW=\$(date +%s)
             FILE_TIME=\$(stat -c %Y \"$TRIGGER_FILE\")
             DIFF=\$((NOW - FILE_TIME))
 
             if [ \$DIFF -lt $TIMEOUT_SEC ]; then
-                #  조건을 满足：是图片 + 已上膛 + 没过期
+                # 条件齐备：是图片 + 已上膛 + 未过期
                 pw-play \"$SOUND\" &
-                
-                # D. 销毁扳机 (防止连响)
+
+                # 销毁扳机，防止连响
                 rm -f \"$TRIGGER_FILE\"
             fi
         fi
     fi
 " &
-# 获取 wl-paste 的 PID，以便脚本退出时杀掉它
+# 记录监听子进程 PID，脚本退出时一并清理
 WATCHER_PID=$!
 
-# =========================================
-# 3. 守护进程主循环 (0 CPU 占用)
-# =========================================
-# 这里的 trap 负责在脚本退出时清理子进程
+# 主循环：无限睡眠只响应信号，退出时杀掉监听子进程
 trap "kill $WATCHER_PID; exit" INT TERM EXIT
 
-# 写入当前 PID 方便调试 (可选)
+# 写入当前 PID 方便调试（可选）
 # echo $$ > /tmp/niri-sound.pid
 
 echo "截图音效服务已启动，等待 SIGUSR1 信号..."
