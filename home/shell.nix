@@ -7,14 +7,9 @@
   ...
 }:
 {
-    home.packages = with pkgs; [
-      yazi
-      neovim
-      lazygit
-      fastfetch
-      btop
-      go-musicfox
-    ];
+    home.packages = builtins.attrValues {
+      inherit (pkgs) yazi neovim lazygit fastfetch btop go-musicfox;
+    };
     home.sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
