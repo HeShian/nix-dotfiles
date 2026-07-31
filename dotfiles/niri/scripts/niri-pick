@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# niri-pick — 提取 niri 窗口信息（标题 / App ID / PID / 完整信息）或吸取屏幕颜色，复制到剪贴板
-# 触发方式：Mod+P 调用 `niri-pick focus`（见 binds.kdl）；也可终端直接运行，见 -h
-# 依赖：niri、wl-copy（wl-clipboard）、fuzzel 或 rofi（菜单模式）、hyprpicker（可选，优先于 niri 原生吸色）
+# niri-pick — 提取 niri 窗口信息（标题/App ID/PID/完整信息）或吸取屏幕颜色，复制到剪贴板
+# Mod+P 调用 focus 子命令（见 binds.kdl），也可终端直接运行（见 -h）
+# 依赖：niri、wl-copy、fuzzel 或 rofi（菜单模式）、hyprpicker（可选，优先于 niri 原生吸色）
 
 # ---------- 语言环境检测（决定提示文案中英文） ----------
 IS_ZH=false
@@ -132,7 +132,6 @@ if [[ $# -gt 0 ]]; then
     esac
 fi
 
-# 显示帮助并退出
 if [[ "$ACTION" == "help" ]]; then
     if [[ "$IS_ZH" == true ]]; then
         echo "用法: niri-pick [命令]"
@@ -220,7 +219,6 @@ elif [[ "$ACTION" == "focus" ]]; then
         2) ACTION="appid" ;;
         3) ACTION="pid" ;;
     esac
-    # 信息来源改为当前焦点窗口
     SOURCE="focused-window"
 fi
 
@@ -229,7 +227,6 @@ value=""
 label=""
 
 if [[ "$ACTION" =~ ^(all|title|appid|pid)$ ]]; then
-    # 根据 SOURCE 动态执行 pick-window 还是 focused-window
     output=$(niri msg "$SOURCE" 2>/dev/null)
     [[ -z "$output" ]] && { echo "$STR_CANCELLED"; exit 0; }
     

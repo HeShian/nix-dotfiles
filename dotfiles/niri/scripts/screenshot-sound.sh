@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 #
-# screenshot-sound.sh — 截图快门声服务
-#
-# 触发方式：niri 启动时由 config.kdl 的 spawn-sh-at-startup 常驻运行；
-#           截图快捷键（见 binds.kdl）截图结束后向本进程发 SIGUSR1「上膛」，
-#           随后 wl-paste 监听到剪贴板出现新图片即播放快门声
-# 依赖：pw-play（pipewire）、wl-paste（wl-clipboard）、notify-send
+# screenshot-sound.sh — 截图快门声服务：binds.kdl 截图快捷键结束后发 SIGUSR1「上膛」，
+# wl-paste 监听到剪贴板新图片即播放；由 config.kdl 常驻启动。依赖：pw-play、wl-paste、notify-send
 
 # ---------- 可调参数 ----------
 SOUND="/run/current-system/sw/share/sounds/freedesktop/stereo/camera-shutter.oga"
@@ -30,10 +26,8 @@ trap arm_trigger SIGUSR1
 
 # 后台监听剪贴板：wl-paste --watch 只在剪贴板内容变化时唤醒子进程
 wl-paste --watch bash -c "
-    # 只处理图片
     if wl-paste --list-types 2>/dev/null | grep -q 'image/'; then
 
-        # 已上膛才继续（扳机文件存在）
         if [ -f \"$TRIGGER_FILE\" ]; then
 
             # 按扳机文件的修改时间判断上膛是否过期
@@ -42,7 +36,6 @@ wl-paste --watch bash -c "
             DIFF=\$((NOW - FILE_TIME))
 
             if [ \$DIFF -lt $TIMEOUT_SEC ]; then
-                # 条件齐备：是图片 + 已上膛 + 未过期
                 pw-play \"$SOUND\" &
 
                 # 销毁扳机，防止连响
@@ -62,7 +55,6 @@ trap "kill $WATCHER_PID; exit" INT TERM EXIT
 
 echo "截图音效服务已启动，等待 SIGUSR1 信号..."
 
-# 无限睡眠，只响应信号
 while true; do
     sleep infinity & wait $!
 done

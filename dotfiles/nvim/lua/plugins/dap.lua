@@ -52,7 +52,7 @@ return {
 			-- 设置浮动窗口的 keymaps
 			local function toggle_watches()
 				dapui.float_element("watches", {
-					enter = true, -- 进入窗口
+					enter = true,
 					width = 80,
 					height = 20,
 				})
@@ -66,7 +66,6 @@ return {
 				})
 			end
 
-			-- 绑定快捷键
 			vim.keymap.set("n", "<leader>dw", toggle_watches, { desc = "Toggle DAP Watches" })
 			vim.keymap.set("n", "<leader>dc", toggle_console, { desc = "Toggle DAP Console" })
 

@@ -127,7 +127,6 @@ return {
 				},
 			})
 
-			-- 启用所有已配置的服务器
 			vim.lsp.enable({ "gopls", "ts_ls", "basedpyright", "clangd", "rust_analyzer" })
 
 			-- 诊断显示

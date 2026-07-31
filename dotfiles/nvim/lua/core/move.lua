@@ -1,12 +1,12 @@
 
-vim.opt.number = true --显示行号
-vim.opt.relativenumber = true --显示相对行号
-vim.opt.laststatus = 2 --设置常驻状态栏
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.laststatus = 2
 
-vim.opt.ignorecase = true --默认不区分大小写搜索
-vim.opt.smartcase = true --搜索时若出现大写则区分大小写
-vim.opt.incsearch = true --启用增量搜索
-vim.opt.hlsearch = true --高亮搜索匹配项
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.incsearch = true
+vim.opt.hlsearch = true
 
 -- 禁用新手拐杖
 -- vim.keymap.set('n', '<Down>', '<Nop>', { noremap = true, silent = true })

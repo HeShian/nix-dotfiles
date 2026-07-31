@@ -1,13 +1,13 @@
 { ... }:
 {
-    # Nix 设置：国内镜像 substituters + noctalia/nixkits cachix
+    # 国内镜像 + noctalia/nixkits cachix
     nix.settings = {
       experimental-features = [
         "nix-command"
         "flakes"
       ];
+      # 有意关闭（个人配置）
       sandbox = false;
-      # 有意关闭构建沙箱（个人配置）
       substituters = [
         "https://mirrors.ustc.edu.cn/nix-channels/store"
         "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
@@ -21,8 +21,7 @@
         "nixkits.cachix.org-1:ycmoZnAnvjGsSzIMdGNmFdc65LeRW/GZ7GdN7KkRL8c="
       ];
     };
-    # 允许闭源软件（NVIDIA 驱动、Steam 等）
     nixpkgs.config.allowUnfree = true;
-    # FHS 兼容层：运行未按 Nix 打包的动态链接二进制
+    # FHS 兼容层
     programs.nix-ld.enable = true;
   }

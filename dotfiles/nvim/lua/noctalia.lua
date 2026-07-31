@@ -1,6 +1,5 @@
--- 配色由 Noctalia 主题模板生成（~/.local/share/nvim/noctalia/colors.lua），
--- 模板源文件见 dotfiles/noctalia/templates/neovim.lua。
--- 生成文件不存在时回退到 Catppuccin Mocha。
+-- 配色由 Noctalia 主题模板生成（模板源：dotfiles/noctalia/templates/neovim.lua），
+-- 生成文件缺失时回退内置 Catppuccin Mocha。
 local M = {}
 
 local colors_path = vim.fn.stdpath('data') .. '/noctalia/colors.lua'
@@ -55,9 +54,8 @@ function M.setup()
   hi('TelescopeMatching',       { fg = c.base0D, bold = true })
 end
 
--- SIGUSR1：Noctalia 模板重新生成颜色后热重载（post_hook 里 pkill -USR1 nvim）
--- 注意：只重跑 M.setup()（内部会重新 dofile 颜色文件），不能 package.loaded=nil 后重新
--- require 本模块——那会再次执行下面这段，重复注册 signal 且旧句柄永不 close，造成泄漏
+-- SIGUSR1 热重载（Noctalia post_hook 里 pkill -USR1 nvim）：只重跑 M.setup()，
+-- 不能重新 require 本模块——那会重复注册 signal 且旧句柄永不 close（泄漏）
 local signal = vim.uv.new_signal()
 signal:start(
   'sigusr1',

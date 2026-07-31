@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# niri-force-kill-window — 鼠标点选窗口后强制结束（SIGKILL），支持单体强杀与进程树强杀（-f）
-# 触发方式：Alt+F4 强杀单窗口，Alt+Shift+F4 强杀整个进程树（见 binds.kdl）
+# niri-force-kill-window — 鼠标点选窗口后 SIGKILL 强杀：Alt+F4 杀单窗口，Alt+Shift+F4 杀整个进程树（-f）
 # 依赖：niri、xprop（XWayland 窗口取真实 PID）、notify-send、pw-play（可选，提示音）
 
 # ---------- 参数解析 ----------
@@ -148,10 +147,8 @@ if [[ "$KILL_FAMILY" == true ]]; then
             break
         fi
         
-        # 注意：向上登记 app_root 之前必须先检查父进程是否在终止名单内。
-        # 若父进程是终端 shell/tmux 等，说明 current 才是应用进程树的根，
-        # 此时必须保持 app_root=$current 并停止溯源——否则 get_descendants
-        # 会从该 shell 向下收集，把终端里所有无关进程一并 SIGKILL
+        # 父进程在终止名单（终端 shell/tmux 等）内时，current 才是应用进程树的根：
+        # 必须保持 app_root=$current 并停止，否则会把终端里所有无关进程一并 SIGKILL
         parent_comm=$(<"/proc/$ppid/comm" 2>/dev/null) || parent_comm=""
         if [[ "$parent_comm" =~ ^(systemd|niri|bash|zsh|fish|tmux|screen|xwayland.*|sshd|login|init|sway|hyprland)$ ]]; then
             app_root=$current

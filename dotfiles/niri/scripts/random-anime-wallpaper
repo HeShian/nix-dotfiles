@@ -1,20 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# random-anime-wallpaper — 从在线 API 下载随机壁纸，转 PNG 后用 noctalia msg（v5）设为桌面壁纸
-# 触发方式：Mod+Shift+F10（见 binds.kdl），也可终端直接运行
-# 行为：校验文件大小与 MIME 类型，失败时回退本地随机壁纸（wallpaper-random）；
-#       下载目录只保留最新 KEEP_COUNT 张
-# 改编自 SHORiN-KiWATA/shorin-arch-setup 的 random-anime-wallpaper-noctalia（v4 IPC → v5）
-# 选项：-k 不清理旧壁纸；-s 静默（不发通知）；-h 帮助
-# 依赖：curl、file、notify-send、ImageMagick（magick 或 convert）、noctalia
+# random-anime-wallpaper — 从在线 API 下载随机壁纸，转 PNG 后用 noctalia msg（v5）设为壁纸；Mod+Shift+F10 触发
+# 下载失败回退本地随机壁纸；下载目录只保留最新 KEEP_COUNT 张。选项：-k 不清理；-s 静默；-h 帮助
+# 改编自 SHORiN-KiWATA/shorin-arch-setup（v4 IPC → v5）。依赖：curl、file、notify-send、ImageMagick、noctalia
 
 # ---------- 默认配置 ----------
 API_URL="https://t.alcy.cc/pc/"
 # 与 Noctalia 壁纸目录（~/Pictures/wallpapers）保持一致，下载的壁纸才能进壁纸面板
 SAVE_DIR="$HOME/Pictures/wallpapers/anime"
 
-# 自动清理时保留最近多少张图片
 KEEP_COUNT=40
 
 # 默认开关状态（可被参数覆盖）
@@ -89,7 +84,7 @@ if ! curl -L -s -A "$USER_AGENT" --connect-timeout 10 -m 120 -o "$RAW_PATH" "$AP
     exit 1
 fi
 
-# 下载结束，停掉心跳通知进程
+# 下载结束，停掉心跳通知
 if [ -n "${NOTIFY_PID:-}" ]; then
     kill "$NOTIFY_PID" 2>/dev/null || true
 fi
@@ -130,7 +125,6 @@ if ! $IMG_TOOL "$RAW_PATH" "$FINAL_PATH"; then
     exit 1
 fi
 
-# 转换成功，清理原始临时文件
 rm -f "$RAW_PATH"
 
 # 第三步：设为壁纸（不带 connector 参数 = 应用到所有显示器）

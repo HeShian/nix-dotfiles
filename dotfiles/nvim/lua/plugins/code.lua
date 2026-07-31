@@ -63,7 +63,7 @@ return {
 
 	{
 		'kylechui/nvim-surround',
-		version = "*", -- Use for stability; omit to use `main` branch for the latest features
+		version = "*", -- 锁定稳定版；去掉则用 main 分支最新特性
 		event = "VeryLazy",
 		config = function()
 			require("nvim-surround").setup({})

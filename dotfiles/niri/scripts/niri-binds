@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 #
-# niri-binds — 快捷键速查表：从 niri 配置中提取所有 hotkey-overlay-title 绑定，
-#              在浮动终端里用 fzf 模糊检索（结果仅展示，选中不执行）
-# 触发方式：Mod+Shift+Slash（见 binds.kdl）
-# 依赖：fzf、column；终端按 foot → alacritty → wezterm → $TERMINAL 顺序探测，
-#       都没有时降级到 fuzzel --dmenu
+# niri-binds — 快捷键速查表：从 niri 配置提取 hotkey-overlay-title 绑定，浮动终端里 fzf 模糊检索（纯展示）
+# 触发：Mod+Shift+Slash；依赖 fzf、column；终端按 foot → alacritty → wezterm → $TERMINAL 探测，都没有时降级 fuzzel --dmenu
 
 NIRI_DIR="$HOME/.config/niri"
 

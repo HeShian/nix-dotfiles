@@ -2,7 +2,6 @@
 // Niri Config — westwood (Noctalia v5 + Niri 26.04)
 // ============================================================
 
-// 截图保存位置
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
 
 // -----------------------------------------------------------
@@ -67,7 +66,7 @@ spawn-at-startup "wl-clip-persist" "--clipboard" "regular" "--reconnect-tries" "
 spawn-at-startup "sh" "-c" "wl-paste --type text --watch cliphist store"
 spawn-at-startup "sh" "-c" "wl-paste --type image --watch cliphist store"
 spawn-sh-at-startup "sleep 5 && noctalia msg wallpaper-random"
-// Gopeed 下载器后台静默启动（--hidden 为官方自启参数，不弹窗）
+// --hidden 是 gopeed 官方自启参数，后台静默不弹窗
 spawn-sh-at-startup "gopeed --hidden"
 
 // 笔记本：合盖锁屏并挂起

@@ -1,17 +1,12 @@
 #!/bin/sh
 #
 # portal-watcher.sh — 监听 portal color-scheme 变化，同步 GTK3/GTK4 的深浅色设置
-#
-# 触发方式：niri 启动时由 config.kdl 的 spawn-sh-at-startup 常驻运行
-# 原理：Noctalia v5 切换主题时会更新 xdg portal 的 color-scheme，GTK 应用
-#       不直接监听 portal，本脚本轮询该值并改写 settings.ini 的
-#       gtk-application-prefer-dark-theme，再 HUP xsettingsd 使其生效
-# 依赖：dbus-send、xsettingsd
+# 由 config.kdl spawn-sh-at-startup 常驻运行；依赖：dbus-send、xsettingsd
 
 GTK3_INI="$HOME/.config/gtk-3.0/settings.ini"
 GTK4_INI="$HOME/.config/gtk-4.0/settings.ini"
 
-# 读取 portal color-scheme（1 = 深色），改写 GTK settings.ini 并刷新 xsettingsd
+# 读取 portal color-scheme（1 = 深色）并应用
 update_gtk() {
     scheme=$(dbus-send --session --print-reply \
         --dest=org.freedesktop.portal.Desktop \

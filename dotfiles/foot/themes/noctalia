@@ -1,6 +1,5 @@
-# foot 配色兜底（Catppuccin Mocha 基调）
-# 仅在该文件缺失时由 home.activation.footThemeFallback 种子到 ~/.config/foot/themes/noctalia，
-# Noctalia 主题模板运行后会覆写为目标文件，本文件只是初始兜底
+# foot 配色兜底（Catppuccin Mocha 基调）：仅在文件缺失时由 home.activation.footThemeFallback
+# 种子到 ~/.config/foot/themes/noctalia，Noctalia 主题模板运行后会覆写
 [colors]
 foreground=cdd6f4
 background=1e1e2e

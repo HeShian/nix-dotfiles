@@ -7,7 +7,7 @@
   ...
 }:
 {
-    # 终端工具：yazi 文件管理/lazygit/fastfetch 系统信息/btop 资源监控（neovim 配置见 dotfiles/nvim/）
+    # 终端工具：yazi（文件管理）、neovim、lazygit、fastfetch（系统信息）、btop（资源监控）
     home.packages = builtins.attrValues {
       inherit (pkgs) yazi neovim lazygit fastfetch btop;
     };
@@ -22,7 +22,7 @@
     programs.git = {
       enable = true;
       settings = {
-        # codeberg 凭据：git 认证时执行该命令，从 agenix（tmpfs）读 token，避免明文落盘
+        # 从 agenix 读 token，不落盘
         credential."https://codeberg.org".helper = "!f() { echo username=claudia010; echo password=$(cat /run/agenix/codeberg_token_nix_dotfiles); }; f";
         user = {
           email = userEmail;
@@ -30,9 +30,7 @@
         };
       };
     };
-    # nh：nix 命令助手（flake 已指向本仓库，nh os switch 免 --flake）
     programs.nh = {
-      # 每日自动清理：保留最近 3 个世代及 7 天内的世代
       clean = {
         dates = "daily";
         enable = true;

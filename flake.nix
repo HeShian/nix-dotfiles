@@ -14,22 +14,19 @@
       url = "github:nix-community/home-manager";
     };
     kimi-code = {
-      # follows nixpkgs：与 nixkits 同理，避免重复下载一份 nixpkgs 源码
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MoonshotAI/kimi-code";
     };
-    # 跟随最新 stable tag（main 为不稳定分支，不用）
+    # 跟随最新 stable tag
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-    # follows nixpkgs：避免重复下载一份 nixpkgs 源码（且本机网络拉取 GitHub 大 tarball 不稳定）。
-    # 代价：与 NixKits 上游锁定的 nixpkgs 不同，kitsfmt 无法命中其 cachix，需本地从源码编译（Rust）
+    # 代价：kitsfmt 无法命中上游 cachix，需本地编译
     nixkits = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:Kihara777/NixKits";
     };
     nixpkgs.url = "nixpkgs/nixos-unstable";
     noctalia = {
-      # 有意锁定 cachix 分支而非主线：该分支用于命中其 cachix 二进制缓存，
-      # nix flake update 会跟随该分支更新
+      # 锁定 cachix 分支（命中二进制缓存）
       url = "github:noctalia-dev/noctalia/cachix";
     };
     noctalia-greeter = {
@@ -63,9 +60,7 @@ let
       specialArgs = host // {
         inherit noctalia zen-browser kimi-code nixkits;
       };
-      # installMode = true 时排除 agenix secrets 模块：
-      # 全新机器的 SSH host key 尚未生成，无 identity 可解密仓库密文，
-      # activation 失败会中断 nixos-install / chroot rebuild（见 AGENTS.md 装后手工步骤）
+      # installMode：新机无 host key，排除 secrets 以免中断安装
       mkSystem =       installMode: modules: nixpkgs.lib.nixosSystem {
             inherit system;
             modules = [

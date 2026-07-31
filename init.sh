@@ -254,8 +254,9 @@ run_disko() {
 
   confirm_disko
   echo "==> ${desc}"
-  # disko 版本与 flake.lock 锁定的 rev 保持一致；升级 disko 输入（nix flake update）时需同步此处
-  nix --experimental-features "nix-command flakes" run github:nix-community/disko/ff8702b4de27f72b4c78573dfb89ec74e36abdf1 -- --mode destroy,format,mount ./nixos/disko.nix
+  # disko 直接取 flake.lock 锁定的版本，升级 disko 输入（nix flake update）后无需同步此处
+  DISKO_STORE_PATH="$(nix --experimental-features "nix-command flakes" eval --raw .#inputs.disko.outPath)"
+  nix --experimental-features "nix-command flakes" run "path:${DISKO_STORE_PATH}#disko" -- --mode destroy,format,mount ./nixos/disko.nix
   mark_done "01-disko"
 }
 
