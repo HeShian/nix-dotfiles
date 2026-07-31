@@ -4,6 +4,15 @@
 result
 result-*
 
+# codegraph 图索引（由 codegraph init 从源码生成）
+.codegraph/
+
+# AI 工具的本地配置/状态（含密钥或会话状态，不入库）
+.kimi-code/
+.pi/
+.mcp.json
+opencode.json
+
 # 常见兜底规则
 .env*
 *.bak

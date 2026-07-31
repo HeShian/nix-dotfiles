@@ -55,7 +55,7 @@
     - `templates/fcitx5-theme.conf`：fcitx5 候选框主题模板，生成 `~/.local/share/fcitx5/themes/noctalia/theme.conf`（深浅色/壁纸取色均跟随调色板）。热重载必须用 `post_hook` 里的 `fcitx5 -r`（无缝替换实例）——`fcitx5-remote -r` 只重读配置、不重读主题文件；fcitx5 侧 `classicui.conf` 需 `Theme=noctalia` + `UseAccentColor=False`，该文件由 fcitx5 运行时维护不入库。
 - `init.sh`：Live ISO 下的两阶段安装脚本（见下文）。
 - `secrets/`：agenix 密钥（`secrets.nix` 登记解密公钥 + `.age` 密文文件），用法见"安全注意事项"。
-- `opencode.json`：opencode 的 MCP 配置（`uvx mcp-nixos`）。
+- `opencode.json`：opencode 的 MCP 配置（`uvx mcp-nixos`），本机文件，已 gitignore 不入库。
 - `README.md` / `README_EN.md`：面向人的安装与维护文档（含安装期代理配置说明）。
 - `doc/`：主题式使用文档，`zh/`（中文）与 `en/`（英文）双语镜像，按主题分文件（快捷键/软件/维护/agenix/主题），修改对应配置时同步更新。
 
