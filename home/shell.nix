@@ -22,8 +22,6 @@
     programs.git = {
       enable = true;
       settings = {
-        # 从 agenix 读 token，不落盘
-        credential."https://codeberg.org".helper = "!f() { echo username=claudia010; echo password=$(cat /run/agenix/codeberg_token_nix_dotfiles); }; f";
         user = {
           email = userEmail;
           name = userName;

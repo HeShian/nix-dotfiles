@@ -5,16 +5,6 @@ let
   claudia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFRoL7nbbokjssmkeAjrXIQrz5mp5mgd1mZMP6g2UaE3";
 in
 {
-  # Codeberg token（本仓库推送）
-  "codeberg_token_nix_dotfiles.age".publicKeys = [
-    westwood
-    claudia
-  ];
-  # Codeberg token（Secret 仓库推送）
-  "codeberg_token_secret.age".publicKeys = [
-    westwood
-    claudia
-  ];
   # DeepSeek API key（VSCode Copilot）
   "deepseek_api_copilot.age".publicKeys = [
     westwood
