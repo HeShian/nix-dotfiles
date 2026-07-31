@@ -15,6 +15,11 @@ in
     westwood
     claudia
   ];
+  # DeepSeek API key（pi-coding-agent）
+  "deepseek_api_pi.age".publicKeys = [
+    westwood
+    claudia
+  ];
   # GitHub PAT（ghp_ 前缀）
   "github_token_codeberg.age".publicKeys = [
     westwood
