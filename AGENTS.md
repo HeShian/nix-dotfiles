@@ -57,6 +57,7 @@
 - `secrets/`：agenix 密钥（`secrets.nix` 登记解密公钥 + `.age` 密文文件），用法见"安全注意事项"。
 - `opencode.json`：opencode 的 MCP 配置（`uvx mcp-nixos`）。
 - `README.md` / `README_EN.md`：面向人的安装与维护文档（含安装期代理配置说明）。
+- `doc/`：主题式使用文档，`zh/`（中文）与 `en/`（英文）双语镜像，按主题分文件（快捷键/软件/维护/agenix/主题），修改对应配置时同步更新。
 
 ## 构建与修改命令
 
@@ -121,6 +122,6 @@ git clone <仓库地址> && cd nix-dotfiles
 - `init.sh` 顶部硬编码了代理环境变量（`http_proxy`/`https_proxy`），属作者个人网络环境，改动时注意这是安装期刚需而非可选项（README 有详细说明：Live ISO 阶段常用手机 USB 共享 + Clash Allow LAN）。
 - `nixos/modules/` 中 `security.sudo.wheelNeedsPassword = false`（users.nix）、`nix.settings.sandbox = false`、`nixpkgs.config.allowUnfree = true`（nix.nix）均为有意的个人配置，不要"顺手修复"。
 - `nixos/host.nix` 含个人邮箱；`hardware-configuration.nix` 只含 UUID 等机器信息、无密钥，有意保持 git 跟踪（见目录结构一节）。私密信息一律走 **agenix**：密文（`.age`）放 `secrets/` 提交进仓库，明文只存在于 `/run/agenix/`（tmpfs），不要提交任何明文密钥。
-- agenix 工作方式：解密用主机 SSH host key（`/etc/ssh/ssh_host_ed25519_key`；`nixos/modules/secrets.nix` 通过 `age.identityPaths` 显式指定，OpenSSH 服务端已启用并复用同一把 host key）。`secrets/secrets.nix` 登记了两个解密公钥：`westwood`（主机 host key，系统激活时解密）与 `claudia`（用户 `~/.ssh/id_ed25519`，本机用 agenix CLI 查看/编辑密文）。codeberg 远端推送走 SSH（`git@codeberg.org:...`，用 `~/.ssh/id_ed25519`；Codeberg 封禁了本网络的 git HTTP 端点，原 HTTPS+token 方案已弃用，对应密钥已删除）。现有密钥 `deepseek_api_copilot` 用于 VSCode Copilot 自定义端点；`deepseek_api_opencode` 用于 opencode；`github_token_codeberg` 为 GitHub PAT（ghp_ 前缀）。`age.secrets` 声明中 `owner = userName` 使用户可直接读取。
+- agenix 工作方式：解密用主机 SSH host key（`/etc/ssh/ssh_host_ed25519_key`；`nixos/modules/secrets.nix` 通过 `age.identityPaths` 显式指定，OpenSSH 服务端已启用并复用同一把 host key）。`secrets/secrets.nix` 登记了两个解密公钥：`westwood`（主机 host key，系统激活时解密）与 `claudia`（用户 `~/.ssh/id_ed25519`，本机用 agenix CLI 查看/编辑密文）。codeberg 远端推送走 SSH（`git@codeberg.org:...`，用 `~/.ssh/id_ed25519`；Codeberg 封禁了本网络的 git HTTP 端点，原 HTTPS+token 方案已弃用，对应密钥已删除）。现有密钥 `deepseek_api_copilot` 用于 VSCode Copilot 自定义端点；`deepseek_api_opencode` 用于 opencode；`deepseek_api_pi` 用于 pi-coding-agent；`github_token_codeberg` 为 GitHub PAT（ghp_ 前缀）。`age.secrets` 声明中 `owner = userName` 使用户可直接读取。
 - 新增密钥：在 `secrets/secrets.nix` 登记公钥，然后在 `secrets/` 下 `echo -n "明文" | nix run github:ryantm/agenix -- -e <name>.age`，并在 `nixos/modules/secrets.nix` 声明 `age.secrets.<name>`。**重装系统 host key 会变，需用新公钥 `agenix -r` 重新加密全部密钥**。
 - Home Manager 的 `backupFileExtension = "backup"`：已存在的冲突文件会被改名为 `.backup`，排查配置不生效问题时先检查这一点。
