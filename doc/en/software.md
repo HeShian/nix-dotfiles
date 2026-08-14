@@ -2,7 +2,7 @@
 
 # Software
 
-Categorized software list. Declared in: `home/claudia/app.nix` (daily apps), `home/claudia/desktop.nix` (desktop tools), `home/claudia/shell.nix` (terminal tools), `modules/nixos/desktop.nix` (system modules), `modules/nixos/flatpak.nix` (Flatpak).
+Categorized software list. Declared in: `modules/home/app.nix` (daily apps), `modules/home/desktop.nix` (desktop tools), `modules/home/shell.nix` (terminal tools), `modules/nixos/desktop.nix` (system modules), `modules/nixos/flatpak.nix` (Flatpak).
 
 ## Daily Apps
 

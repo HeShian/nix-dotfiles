@@ -99,7 +99,8 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
 - **`modules/nixos/`**: System-level modules (drivers, networking, fonts, services; split by topic).
-- **`home/claudia/`**: Home Manager user-level configuration (one `home/<user>/` directory per user).
+- **`modules/home/`**: Shared Home Manager configuration (desktop/shell/apps; every user gets it automatically).
+- **`home/claudia/`**: Thin per-user identity layer (imports the shared layer + git identity; one `home/<user>/` directory per user).
 - **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
 
 ---
@@ -109,7 +110,7 @@ Use `~/Documents/nix-dotfiles` as the source of truth.
 
 ### Install New Packages
 - System components: the matching topic file under `modules/nixos/`.
-- User apps: edit `home/claudia/app.nix` or another file under `home/claudia/`.
+- User apps: edit `modules/home/app.nix` or another file under `modules/home/`.
 
 You can search for package names on [search.nixos.org](https://search.nixos.org/packages).
 

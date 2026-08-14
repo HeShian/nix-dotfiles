@@ -1,11 +1,4 @@
-{
-  config,
-  pkgs,
-  userName,
-  userEmail,
-  hostName,
-  ...
-}:
+{ config, pkgs, ... }:
 {
     # 终端工具：yazi（文件管理）、neovim、lazygit、fastfetch（系统信息）、btop（资源监控）；
     # rtk：代理命令行输出的 token 压缩工具（配合 pi/opencode 等 agent 使用，rtk init 安装 hook）；
@@ -22,15 +15,7 @@
       enable = true;
       enableZshIntegration = true;
     };
-    programs.git = {
-      enable = true;
-      settings = {
-        user = {
-          email = userEmail;
-          name = userName;
-        };
-      };
-    };
+    # programs.git 身份（name/email）在 home/<user>/default.nix 按用户定义
     programs.nh = {
       clean = {
         dates = "daily";

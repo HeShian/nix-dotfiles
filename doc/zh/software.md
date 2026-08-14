@@ -2,7 +2,7 @@
 
 # 软件
 
-已安装软件分类清单。声明位置：`home/claudia/app.nix`（日常应用）、`home/claudia/desktop.nix`（桌面工具）、`home/claudia/shell.nix`（终端工具）、`modules/nixos/desktop.nix`（系统模块）、`modules/nixos/flatpak.nix`（Flatpak）。
+已安装软件分类清单。声明位置：`modules/home/app.nix`（日常应用）、`modules/home/desktop.nix`（桌面工具）、`modules/home/shell.nix`（终端工具）、`modules/nixos/desktop.nix`（系统模块）、`modules/nixos/flatpak.nix`（Flatpak）。
 
 ## 日常应用
 

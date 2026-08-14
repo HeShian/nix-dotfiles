@@ -31,7 +31,8 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | `flake.nix` | System entry point and dependency lock (auto-discovers `hosts/*`) |
 | `hosts/<host>/` | Per-machine config: `host.nix` parameters, `disko.nix` layout, `hardware-configuration.nix` |
 | `modules/nixos/` | System-level modules (split by topic) |
-| `home/<user>/` | Per-user Home Manager config |
+| `modules/home/` | Shared Home Manager config (every user gets it automatically) |
+| `home/<user>/` | Thin per-user identity layer (imports the shared layer + git identity) |
 | `overlays/` | Custom nixpkgs overlays (auto-aggregated) |
 | `libs/` | Custom function library (aggregated as `mylib`, injected into all modules) |
 | `dotfiles/` | App configs (live-linked to `~/.config`, no rebuild needed) |

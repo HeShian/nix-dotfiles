@@ -31,7 +31,8 @@
 | `flake.nix` | 系统入口与依赖锁定（自动发现 `hosts/*`） |
 | `hosts/<host>/` | 每主机配置：`host.nix` 机器参数、`disko.nix` 分区、`hardware-configuration.nix` |
 | `modules/nixos/` | 系统级模块（按主题拆分） |
-| `home/<user>/` | 每用户 Home Manager 配置 |
+| `modules/home/` | 共享 Home Manager 配置（所有用户自动获得） |
+| `home/<user>/` | 每用户薄身份层（imports 共享层 + git 署名） |
 | `overlays/` | 自定义 nixpkgs overlay（自动聚合） |
 | `libs/` | 自定义函数库（聚合为 `mylib`，注入所有模块） |
 | `dotfiles/` | 应用配置（活链接到 `~/.config`，改动无需 rebuild） |

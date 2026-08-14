@@ -35,9 +35,9 @@
 
 | 改动类型 | 位置 |
 |------|------|
-| GUI/CLI 软件 | `home/claudia/app.nix` / `home/claudia/desktop.nix` / `home/claudia/shell.nix` |
+| GUI/CLI 软件 | `modules/home/app.nix` / `modules/home/desktop.nix` / `modules/home/shell.nix` |
 | 系统级组件 | `modules/nixos/` 对应主题文件 |
-| 应用配置目录 | `dotfiles/<name>/`（在 `home/claudia/default.nix` 的 `configs` 登记） |
+| 应用配置目录 | `dotfiles/<name>/`（在 `modules/home/default.nix` 的 `configs` 登记） |
 | 机器相关参数 | 一律走 `hosts/<host>/host.nix`，不要硬编码 |
 
 ## 注意
