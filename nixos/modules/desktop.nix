@@ -53,9 +53,9 @@
         inherit (pkgs) thunar-archive-plugin thunar-volman;
       };
     };
-    # 随登录密码解锁 keyring（否则 Electron 应用开机弹密码框）
-    security.pam.services.greetd.enableGnomeKeyring = true;
-    security.pam.services.login.enableGnomeKeyring = lib.mkForce false;
+    # 随登录密码解锁 keyring（否则 Electron 应用开机弹密码框）；greetd 的 PAM 全部
+    # substack 到 login（其模块 useDefaultRules=false，greetd 服务上的同名选项无效）
+    security.pam.services.login.enableGnomeKeyring = true;
     # Pipewire 实时调度
     security.rtkit.enable = true;
     # Secret Service 后端（Electron 应用需要）
