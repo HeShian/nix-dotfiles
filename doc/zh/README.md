@@ -33,6 +33,8 @@
 | `hosts/westwood/` | 机器专属配置（disko 分区、hardware-configuration） |
 | `modules/nixos/` | 系统级模块（按主题拆分） |
 | `modules/home/` | Home Manager 用户配置 |
+| `overlays/` | 自定义 nixpkgs overlay（自动聚合） |
+| `libs/` | 自定义函数库（聚合为 `mylib`，注入所有模块） |
 | `dotfiles/` | 应用配置（活链接到 `~/.config`，改动无需 rebuild） |
 | `secrets/` | agenix 密钥（密文入库，明文只在 `/run/agenix/`） |
 | `init.sh` | Live ISO 两阶段安装脚本（会格式化磁盘） |

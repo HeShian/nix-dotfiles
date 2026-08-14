@@ -33,6 +33,8 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | `hosts/westwood/` | Machine-specific config (disko layout, hardware-configuration) |
 | `modules/nixos/` | System-level modules (split by topic) |
 | `modules/home/` | Home Manager user config |
+| `overlays/` | Custom nixpkgs overlays (auto-aggregated) |
+| `libs/` | Custom function library (aggregated as `mylib`, injected into all modules) |
 | `dotfiles/` | App configs (live-linked to `~/.config`, no rebuild needed) |
 | `secrets/` | agenix secrets (ciphertext in git, plaintext only in `/run/agenix/`) |
 | `init.sh` | Two-stage Live ISO installer (formats the disk) |

@@ -54,6 +54,8 @@
     - `templates/pywalfox-colors.json`：Pywalfox 配色模板（配合 `modules/home/app.nix` 的 pywalfox-native，让 zen 浏览器主题跟随调色板）。
     - `templates/fcitx5-theme.conf`：fcitx5 候选框主题模板，生成 `~/.local/share/fcitx5/themes/noctalia/theme.conf`（深浅色/壁纸取色均跟随调色板）。热重载必须用 `post_hook` 里的 `fcitx5 -r`（无缝替换实例）——`fcitx5-remote -r` 只重读配置、不重读主题文件；fcitx5 侧 `classicui.conf` 需 `Theme=noctalia` + `UseAccentColor=False`，该文件由 fcitx5 运行时维护不入库。
 - `init.sh`：Live ISO 下的两阶段安装脚本（见下文）。
+- `overlays/`：自定义 nixpkgs overlay。目录下每个 `.nix` 文件是一个 overlay（`final: prev: { ... }`），`default.nix` 自动聚合成列表，由 `flake.nix` 应用到 `nixpkgs.overlays`，新增文件无需登记（需 git 跟踪才可见）。
+- `libs/`：自定义函数库。目录下每个 `.nix` 文件形式为 `{ lib }: <函数或属性集>`，按文件名聚合（`libs/foo.nix` → `mylib.foo`），`mylib` 经 `specialArgs` 注入所有 NixOS 与 Home Manager 模块。
 - `pkgs/`：第三方软件自打包（nixpkgs 没有的软件），`default.nix` 聚合导出（`{ pkgs }: { ... }`），由 `modules/home/app.nix` 等处 `import ../../pkgs { inherit pkgs; }` 引入安装；现有 `mazi51`（51mazi 小说写作软件，AppImage 经 `appimageTools.wrapType2` 打包，**GitHub release 资源域名在本网络 DNS 被污染，更新版本时需先经 v2rayA 代理 `nix store prefetch-file` 预取进 store**，否则 fetchurl 构建期下载失败）。
 - `secrets/`：agenix 密钥（`secrets.nix` 登记解密公钥 + `.age` 密文文件），用法见"安全注意事项"。
 - `opencode.json`：opencode 的 MCP 配置（`uvx mcp-nixos`），本机文件，已 gitignore 不入库。

@@ -52,8 +52,10 @@
 let
       host = import ./host.nix;
       system = "x86_64-linux";
+      # 自定义函数库与 overlay（见 libs/、overlays/），mylib 经 specialArgs 注入所有模块
+      mylib = import ./libs { inherit (nixpkgs) lib; };
       specialArgs = host // {
-        inherit noctalia zen-browser kimi-code nixkits;
+        inherit noctalia zen-browser kimi-code nixkits mylib;
       };
       # installMode：新机无 host key，排除 secrets 以免中断安装
       mkSystem =       installMode: modules: nixpkgs.lib.nixosSystem {
@@ -64,6 +66,7 @@ let
               noctalia-greeter.nixosModules.default
               agenix.nixosModules.default
               nix-flatpak.nixosModules.nix-flatpak
+              { nixpkgs.overlays = import ./overlays { inherit (nixpkgs) lib; }; }
             ] ++ modules;
             specialArgs = specialArgs // {
               inherit installMode;
