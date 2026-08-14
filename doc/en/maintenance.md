@@ -35,10 +35,10 @@ Pick an older generation in the GRUB boot menu. A broken new generation never af
 
 | Change | Location |
 |--------|----------|
-| GUI/CLI packages | `modules/home/app.nix` / `modules/home/desktop.nix` / `modules/home/shell.nix` |
+| GUI/CLI packages | `home/claudia/app.nix` / `home/claudia/desktop.nix` / `home/claudia/shell.nix` |
 | System components | Matching topic file in `modules/nixos/` |
-| New app config dir | `dotfiles/<name>/` (register in `configs` in `modules/home/default.nix`) |
-| Machine parameters | Always via `host.nix`, never hardcode |
+| New app config dir | `dotfiles/<name>/` (register in `configs` in `home/claudia/default.nix`) |
+| Machine parameters | Always via `hosts/<host>/host.nix`, never hardcode |
 
 ## Caveats
 

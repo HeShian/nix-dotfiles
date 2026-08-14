@@ -62,7 +62,7 @@ cd nix-dotfiles
 ./init.sh
 ```
 
-脚本会询问以下配置，并写回 `host.nix`。方括号 `[]` 中是当前值，直接回车会沿用；圆括号 `()` 中是可选值。
+脚本会询问以下配置，并写回 `hosts/<host>/host.nix`。方括号 `[]` 中是当前值，直接回车会沿用；圆括号 `()` 中是可选值。
 ```bash
 User name [claudia]:
 User email [3453289292@qq.com]:
@@ -91,14 +91,14 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 ---
 
 ## 📁 目录结构说明 (Project Structure)
-- **`flake.nix`**: 系统入口。
-- **`host.nix`**: 当前机器的用户名、邮箱、主机名、磁盘、CPU 和 GPU 类型。
-- **`hosts/westwood/`**: 机器专属配置。
+- **`flake.nix`**: 系统入口（自动发现 `hosts/*` 生成全部系统配置）。
+- **`hosts/westwood/`**: 机器专属配置（每台机器一个 `hosts/<host>/` 目录）。
+  - `host.nix`: 当前机器的用户名、邮箱、磁盘、CPU/GPU 类型与用户清单。
   - `default.nix`: imports 聚合与 `system.stateVersion`。
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
   - `disko.nix`: 分区规则。
 - **`modules/nixos/`**: 系统级模块（驱动、网络、字体、服务等，按主题拆分）。
-- **`modules/home/`**: Home Manager 用户级配置。
+- **`home/claudia/`**: Home Manager 用户级配置（每个用户一个 `home/<user>/` 目录）。
 - **`dotfiles/`**: Niri、Noctalia、Neovim 等应用配置。
 
 ---
@@ -106,7 +106,7 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 ## 🛠️ 如何维护你的配置 (Maintenance)
 ### 1. 如何安装新软件？
 - 系统组件：编辑 `modules/nixos/` 下对应主题文件。
-- 日常软件：编辑 `modules/home/app.nix` 或其他 `modules/home/` 配置。
+- 日常软件：编辑 `home/claudia/app.nix` 或其他 `home/claudia/` 配置。
 
 包名可在 [search.nixos.org](https://search.nixos.org/packages) 搜索。
 

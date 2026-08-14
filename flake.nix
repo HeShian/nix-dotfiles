@@ -50,43 +50,56 @@
     ...
   }:
 let
-      host = import ./host.nix;
+      inherit (nixpkgs) lib;
       system = "x86_64-linux";
       # 自定义函数库与 overlay（见 libs/、overlays/），mylib 经 specialArgs 注入所有模块
-      mylib = import ./libs { inherit (nixpkgs) lib; };
-      specialArgs = host // {
-        inherit noctalia zen-browser kimi-code nixkits mylib;
+      mylib = import ./libs {
+        inherit lib;
       };
+      # 自动发现 hosts/*：目录名即 hostName，机器参数读自各目录的 host.nix
+      hostDirs = lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts);
+      hosts = lib.mapAttrs (name: _: import (./hosts + "/${name}/host.nix") // {
+      hostName = name;
+    }) hostDirs;
       # installMode：新机无 host key，排除 secrets 以免中断安装
-      mkSystem =       installMode: modules: nixpkgs.lib.nixosSystem {
-            inherit system;
-            modules = [
-              ./hosts/${host.hostName}
-              disko.nixosModules.disko
-              noctalia-greeter.nixosModules.default
-              agenix.nixosModules.default
-              nix-flatpak.nixosModules.nix-flatpak
-              { nixpkgs.overlays = import ./overlays { inherit (nixpkgs) lib; }; }
-            ] ++ modules;
-            specialArgs = specialArgs // {
-              inherit installMode;
+      mkHost =       name: cfg: installMode: lib.nixosSystem {
+              inherit system;
+              modules = [
+                ./hosts/${name}
+                disko.nixosModules.disko
+                noctalia-greeter.nixosModules.default
+                agenix.nixosModules.default
+                nix-flatpak.nixosModules.nix-flatpak
+                {
+                  nixpkgs.overlays = import ./overlays {
+                    inherit lib;
+                  };
+                }
+              ] ++ lib.optionals (!installMode) [
+                home-manager.nixosModules.home-manager
+                {
+                  home-manager = {
+                    backupFileExtension = "backup";
+                    extraSpecialArgs = cfg // {
+                      inherit noctalia zen-browser kimi-code nixkits mylib;
+                    };
+                    useGlobalPkgs = true;
+                    useUserPackages = true;
+                    # 只挂载存在 home/<user>/ 目录的用户
+                    users = lib.genAttrs (builtins.filter (u: builtins.pathExists (./home + "/${u}")) cfg.users) (u: import (./home + "/${u}"));
+                  };
+                }
+              ];
+              specialArgs = cfg // {
+                inherit noctalia zen-browser kimi-code nixkits mylib installMode;
+              };
             };
-          };
-      homeManagerModules = [
-        home-manager.nixosModules.home-manager
-        {
-          home-manager = {
-            backupFileExtension = "backup";
-            extraSpecialArgs = specialArgs;
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            users.${host.userName} = import ./modules/home;
-          };
-        }
-      ];
 in
     {
-      nixosConfigurations."${host.hostName}-install" = mkSystem true [];
-      nixosConfigurations.${host.hostName} = mkSystem false homeManagerModules;
+      nixosConfigurations = lib.concatMapAttrs (name: cfg:
+      {
+            "${name}-install" = mkHost name cfg true;
+            ${name} = mkHost name cfg false;
+          }) hosts;
     };
 }

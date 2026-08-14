@@ -12,7 +12,7 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | User | claudia |
 | Desktop | Niri (Wayland scrolling tiling) + Noctalia v5 (Quickshell) |
 | Management | Nix Flakes + Home Manager + Disko + agenix |
-| Machine parameters | `host.nix` (userName/hostName/disk/cpu/gpu) |
+| Machine parameters | `hosts/<host>/host.nix` (userName/hostName/disk/cpu/gpu) |
 
 ## Documents
 
@@ -28,11 +28,10 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 
 | Path | Content |
 |------|---------|
-| `flake.nix` | System entry point and dependency lock |
-| `host.nix` | Machine parameters (single source for init.sh and the flake) |
-| `hosts/westwood/` | Machine-specific config (disko layout, hardware-configuration) |
+| `flake.nix` | System entry point and dependency lock (auto-discovers `hosts/*`) |
+| `hosts/<host>/` | Per-machine config: `host.nix` parameters, `disko.nix` layout, `hardware-configuration.nix` |
 | `modules/nixos/` | System-level modules (split by topic) |
-| `modules/home/` | Home Manager user config |
+| `home/<user>/` | Per-user Home Manager config |
 | `overlays/` | Custom nixpkgs overlays (auto-aggregated) |
 | `libs/` | Custom function library (aggregated as `mylib`, injected into all modules) |
 | `dotfiles/` | App configs (live-linked to `~/.config`, no rebuild needed) |

@@ -63,7 +63,7 @@ cd nix-dotfiles
 ./init.sh
 ```
 
-The script asks for these values and writes them back to `host.nix`. Square brackets `[]` show the current value; press Enter to keep it. Parentheses `()` show valid choices.
+The script asks for these values and writes them back to `hosts/<host>/host.nix`. Square brackets `[]` show the current value; press Enter to keep it. Parentheses `()` show valid choices.
 ```bash
 User name [claudia]:
 User email [3453289292@qq.com]:
@@ -92,14 +92,14 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 ---
 
 ## Project Structure
-- **`flake.nix`**: System entry point.
-- **`host.nix`**: Current machine settings for username, email, hostname, disk, CPU, and GPU type.
-- **`hosts/westwood/`**: Machine-specific configuration.
+- **`flake.nix`**: System entry point (auto-discovers `hosts/*` to build all system configurations).
+- **`hosts/westwood/`**: Machine-specific configuration (one `hosts/<host>/` directory per machine).
+  - `host.nix`: Current machine settings for username, email, disk, CPU/GPU type, and user list.
   - `default.nix`: Imports aggregation and `system.stateVersion`.
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
 - **`modules/nixos/`**: System-level modules (drivers, networking, fonts, services; split by topic).
-- **`modules/home/`**: Home Manager user-level configuration.
+- **`home/claudia/`**: Home Manager user-level configuration (one `home/<user>/` directory per user).
 - **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
 
 ---
@@ -109,7 +109,7 @@ Use `~/Documents/nix-dotfiles` as the source of truth.
 
 ### Install New Packages
 - System components: the matching topic file under `modules/nixos/`.
-- User apps: edit `modules/home/app.nix` or another file under `modules/home/`.
+- User apps: edit `home/claudia/app.nix` or another file under `home/claudia/`.
 
 You can search for package names on [search.nixos.org](https://search.nixos.org/packages).
 

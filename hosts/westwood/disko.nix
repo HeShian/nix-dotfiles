@@ -1,5 +1,5 @@
 {
-  disk ? (import ../../host.nix).disk,
+  disk ? (import ./host.nix).disk,
   ...
 }:
 let

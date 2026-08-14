@@ -44,7 +44,7 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-# 后续步骤以相对路径引用仓库文件（如 read_host_config 的 ./host.nix），
+# 后续步骤以相对路径引用仓库文件（如 read_host_config 的 hosts/*/host.nix），
 # 先切到脚本所在目录（即仓库根），避免隐含依赖调用时的 cwd
 cd "$(dirname "$0")"
 
@@ -84,10 +84,12 @@ run_always() {
 }
 
 read_host_config() {
+  # 多主机布局：以 hosts/ 下第一个主机目录的 host.nix 为模板提供提示默认值
+  TEMPLATE_HOST="$(ls hosts | head -n 1)"
   # 用 nix 求值读取 host.nix 属性（Live ISO 自带 nix），比 sed 解析文本更稳健。
   # 求值失败时输出为空，由 validate_config 统一兜底报错（保持原有报错路径）。
   eval_host_attr() {
-    nix --experimental-features "nix-command flakes" eval --impure --expr "(import ./host.nix).$1" --raw 2>/dev/null || true
+    nix --experimental-features "nix-command flakes" eval --impure --expr "(import ./hosts/${TEMPLATE_HOST}/host.nix).$1" --raw 2>/dev/null || true
   }
   USER_NAME="$(eval_host_attr userName)"
   USER_EMAIL="$(eval_host_attr userEmail)"
@@ -95,6 +97,8 @@ read_host_config() {
   DISK="$(eval_host_attr disk)"
   CPU="$(eval_host_attr cpu)"
   GPU="$(eval_host_attr gpu)"
+  # 模板用户名，seed_home_dir 用它给新用户名复制一份 HM 配置
+  TEMPLATE_USER="${USER_NAME}"
 }
 
 set_user_paths() {
@@ -190,7 +194,7 @@ ask_host_config() {
 }
 
 write_host_config() {
-  cat > host.nix <<EOF
+  cat > "hosts/${HOST_NAME}/host.nix" <<EOF
 {
   userName = "${USER_NAME}";
   userEmail = "${USER_EMAIL}";
@@ -198,13 +202,14 @@ write_host_config() {
   disk = "${DISK}";
   cpu = "${CPU}";
   gpu = "${GPU}";
+  users = [ "${USER_NAME}" ];
 }
 EOF
 }
 
 validate_config() {
   if [ -z "${USER_NAME}" ] || [ -z "${USER_EMAIL}" ] || [ -z "${HOST_NAME}" ] || [ -z "${DISK}" ] || [ -z "${CPU}" ] || [ -z "${GPU}" ]; then
-    echo "failed to read userName, userEmail, hostName, disk, cpu, or gpu from host.nix"
+    echo "failed to read userName, userEmail, hostName, disk, cpu, or gpu from hosts/<host>/host.nix"
     exit 1
   fi
 
@@ -244,12 +249,19 @@ confirm_disko() {
   fi
 }
 
-# 新机名没有对应 hosts/<name>/ 目录时，以 westwood 的通用文件为种子
+# 新机名没有对应 hosts/<name>/ 目录时，以模板主机的通用文件为种子
 # （default.nix/disko.nix 均已参数化，不含机器特定内容）
 seed_host_dir() {
   if [ ! -f "hosts/${HOST_NAME}/default.nix" ]; then
     mkdir -p "hosts/${HOST_NAME}"
-    cp hosts/westwood/default.nix hosts/westwood/disko.nix "hosts/${HOST_NAME}/"
+    cp "hosts/${TEMPLATE_HOST}/default.nix" "hosts/${TEMPLATE_HOST}/disko.nix" "hosts/${HOST_NAME}/"
+  fi
+}
+
+# 新用户名没有对应 home/<user>/ 目录时，从模板用户目录复制一份 HM 配置
+seed_home_dir() {
+  if [ ! -d "home/${USER_NAME}" ] && [ -n "${TEMPLATE_USER}" ]; then
+    cp -r "home/${TEMPLATE_USER}" "home/${USER_NAME}"
   fi
 }
 
@@ -275,7 +287,7 @@ generate_hardware_config() {
 
 copy_config() {
   cp /mnt/etc/nixos/hardware-configuration.nix "hosts/${HOST_NAME}/"
-  cp -r flake.* host.nix ./hosts/ ./modules/ ./dotfiles/ ./secrets/ /mnt/etc/nixos/
+  cp -r flake.* ./hosts/ ./home/ ./modules/ ./dotfiles/ ./secrets/ /mnt/etc/nixos/
 }
 
 install_nixos() {
@@ -323,10 +335,11 @@ EOF
 
 read_host_config
 ask_host_config
+seed_host_dir
 write_host_config
+seed_home_dir
 set_user_paths
 validate_config
-seed_host_dir
 run_disko
 run_once "02-hardware" "2. Generating hardware configuration..." generate_hardware_config
 run_always "3. Preparing configuration files..." copy_config
