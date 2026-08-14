@@ -55,7 +55,7 @@
     ...
   }:
 let
-      host = import ./nixos/host.nix;
+      host = import ./host.nix;
       system = "x86_64-linux";
       specialArgs = host // {
         inherit noctalia zen-browser kimi-code nixkits;
@@ -64,7 +64,7 @@ let
       mkSystem =       installMode: modules: nixpkgs.lib.nixosSystem {
             inherit system;
             modules = [
-              ./nixos/configuration.nix
+              ./hosts/${host.hostName}
               disko.nixosModules.disko
               noctalia-greeter.nixosModules.default
               agenix.nixosModules.default
@@ -82,7 +82,7 @@ let
             extraSpecialArgs = specialArgs;
             useGlobalPkgs = true;
             useUserPackages = true;
-            users.${host.userName} = import ./home;
+            users.${host.userName} = import ./modules/home;
           };
         }
       ];

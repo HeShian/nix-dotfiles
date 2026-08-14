@@ -31,7 +31,7 @@
     home.packages = builtins.attrValues {
       inherit (pkgs) brave pywalfox-native telegram-desktop discord qq wechat obsidian obs-studio krita z-library-desktop readest onlyoffice-desktopeditors wpsoffice-cn vscode opencode pi-coding-agent uv python3 gopeed localsend go-musicfox remmina gamescope prismlauncher protonplus lutris heroic winetricks waydroid-helper;
       inherit (pkgs.wineWow64Packages) stableFull;
-      mazi51 = (import ../pkgs { inherit pkgs; }).mazi51;
+      mazi51 = (import ../../pkgs { inherit pkgs; }).mazi51;
       kimi-code-cli = kimi-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
       kitsfmt = nixkits.packages.${pkgs.stdenv.hostPlatform.system}.kitsfmt;
       # wemeet 绿屏方案：Exec 改走 wemeet-xwayland 包装（x11/xcb），原生 Wayland 版勿用

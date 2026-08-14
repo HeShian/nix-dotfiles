@@ -12,7 +12,7 @@
     footThemeDir="$HOME/.config/foot/themes"
     if [ ! -f "$footThemeDir/noctalia" ]; then
       mkdir -p "$footThemeDir" || exit 1
-      install -m 644 ${../dotfiles/foot/themes/noctalia} "$footThemeDir/noctalia" || exit 1
+      install -m 644 ${../../dotfiles/foot/themes/noctalia} "$footThemeDir/noctalia" || exit 1
     fi
   '';
     # Xfce 默认终端
@@ -20,10 +20,10 @@
     TerminalEmulator=foot
   '';
     # Thunar「创建文档」菜单模板
-    home.file."Templates/Excel 工作簿.xlsx".source = ../dotfiles/Templates + "/Excel 工作簿.xlsx";
+    home.file."Templates/Excel 工作簿.xlsx".source = ../../dotfiles/Templates + "/Excel 工作簿.xlsx";
     home.file."Templates/Markdown 文档.md".text = "";
-    home.file."Templates/PowerPoint 演示文稿.pptx".source = ../dotfiles/Templates + "/PowerPoint 演示文稿.pptx";
-    home.file."Templates/Word 文档.docx".source = ../dotfiles/Templates + "/Word 文档.docx";
+    home.file."Templates/PowerPoint 演示文稿.pptx".source = ../../dotfiles/Templates + "/PowerPoint 演示文稿.pptx";
+    home.file."Templates/Word 文档.docx".source = ../../dotfiles/Templates + "/Word 文档.docx";
     home.file."Templates/文本文档.txt".text = "";
     # 截图/录屏：grim、slurp、wf-recorder、satty（标注）
     # 剪贴板：cliphist、wl-clipboard、wl-clip-persist

@@ -19,7 +19,7 @@ let
       "xsettingsd"
     ];
     # 逐文件链接（~/.config/niri 需是真实目录）
-    niriDir = ../dotfiles/niri;
+    niriDir = ../../dotfiles/niri;
     regularFilesIn =     dir: lib.mapAttrsToList (name: _: name) (lib.filterAttrs (_: type: type == "regular") (builtins.readDir dir));
     niriFiles = regularFilesIn niriDir ++ map (file: "scripts/${file}") (regularFilesIn (niriDir + "/scripts"));
 in
@@ -33,16 +33,16 @@ in
     stateDir="$HOME/.local/state/noctalia"
     if [ ! -f "$cfgDir/config.toml" ]; then
       mkdir -p "$cfgDir" || exit 1
-      sed "s|@REPO@|$repo|g" ${../dotfiles/noctalia/config.toml} > "$cfgDir/config.toml" || exit 1
+      sed "s|@REPO@|$repo|g" ${../../dotfiles/noctalia/config.toml} > "$cfgDir/config.toml" || exit 1
     fi
     if [ ! -f "$stateDir/settings.toml" ]; then
       mkdir -p "$stateDir" || exit 1
-      sed "s|@HOME@|$HOME|g" ${../dotfiles/noctalia/settings.toml} > "$stateDir/settings.toml" || exit 1
+      sed "s|@HOME@|$HOME|g" ${../../dotfiles/noctalia/settings.toml} > "$stateDir/settings.toml" || exit 1
       touch "$stateDir/.setup-complete" || exit 1
     fi
     if [ ! -d "$stateDir/community-palettes" ]; then
       mkdir -p "$stateDir" || exit 1
-      cp -r --no-preserve=mode ${../dotfiles/noctalia/state}/. "$stateDir/" || exit 1
+      cp -r --no-preserve=mode ${../../dotfiles/noctalia/state}/. "$stateDir/" || exit 1
     fi
   '';
     home.file = {
