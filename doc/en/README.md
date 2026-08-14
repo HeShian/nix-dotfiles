@@ -12,7 +12,7 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | User | claudia |
 | Desktop | Niri (Wayland scrolling tiling) + Noctalia v5 (Quickshell) |
 | Management | Nix Flakes + Home Manager + Disko + agenix |
-| Machine parameters | `nixos/host.nix` (userName/hostName/disk/cpu/gpu) |
+| Machine parameters | `host.nix` (userName/hostName/disk/cpu/gpu) |
 
 ## Documents
 
@@ -29,8 +29,10 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | Path | Content |
 |------|---------|
 | `flake.nix` | System entry point and dependency lock |
-| `nixos/` | System-level config (`modules/` split by topic) |
-| `home/` | Home Manager user config |
+| `host.nix` | Machine parameters (single source for init.sh and the flake) |
+| `hosts/westwood/` | Machine-specific config (disko layout, hardware-configuration) |
+| `modules/nixos/` | System-level modules (split by topic) |
+| `modules/home/` | Home Manager user config |
 | `dotfiles/` | App configs (live-linked to `~/.config`, no rebuild needed) |
 | `secrets/` | agenix secrets (ciphertext in git, plaintext only in `/run/agenix/`) |
 | `init.sh` | Two-stage Live ISO installer (formats the disk) |

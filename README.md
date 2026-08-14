@@ -1,3 +1,5 @@
+中文 | [English](README_EN.md)
+
 ## 概览 (Overview)
 ![Desktop Screenshot](./space.png)
 ![Fastfetch Screenshot](./ff.png)
@@ -60,13 +62,13 @@ cd nix-dotfiles
 ./init.sh
 ```
 
-脚本会询问以下配置，并写回 `nixos/host.nix`。方括号 `[]` 中是当前值，直接回车会沿用；圆括号 `()` 中是可选值。
+脚本会询问以下配置，并写回 `host.nix`。方括号 `[]` 中是当前值，直接回车会沿用；圆括号 `()` 中是可选值。
 ```bash
-User name [huzch]:
-User email [huzch123@gmail.com]:
-Host name [space]:
+User name [claudia]:
+User email [3453289292@qq.com]:
+Host name [westwood]:
 Target disk [/dev/nvme0n1]:
-CPU (amd/intel) [amd]:
+CPU (amd/intel) [intel]:
 GPU (nvidia/amd/intel) [nvidia]:
 ```
 
@@ -90,20 +92,21 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 
 ## 📁 目录结构说明 (Project Structure)
 - **`flake.nix`**: 系统入口。
-- **`nixos/`**: 系统级配置。
-  - `configuration.nix`: 系统组件、驱动、网络、字体和服务。
-  - `host.nix`: 当前机器的用户名、邮箱、主机名、磁盘、CPU 和 GPU 类型。
+- **`host.nix`**: 当前机器的用户名、邮箱、主机名、磁盘、CPU 和 GPU 类型。
+- **`hosts/westwood/`**: 机器专属配置。
+  - `default.nix`: imports 聚合与 `system.stateVersion`。
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
   - `disko.nix`: 分区规则。
-- **`home/`**: Home Manager 用户级配置。
+- **`modules/nixos/`**: 系统级模块（驱动、网络、字体、服务等，按主题拆分）。
+- **`modules/home/`**: Home Manager 用户级配置。
 - **`dotfiles/`**: Niri、Noctalia、Neovim 等应用配置。
 
 ---
 
 ## 🛠️ 如何维护你的配置 (Maintenance)
 ### 1. 如何安装新软件？
-- 系统组件：编辑 `nixos/configuration.nix`。
-- 日常软件：编辑 `home/app.nix` 或其他 `home/` 配置。
+- 系统组件：编辑 `modules/nixos/` 下对应主题文件。
+- 日常软件：编辑 `modules/home/app.nix` 或其他 `modules/home/` 配置。
 
 包名可在 [search.nixos.org](https://search.nixos.org/packages) 搜索。
 

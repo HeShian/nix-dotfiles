@@ -12,7 +12,7 @@
 | 用户 | claudia |
 | 桌面 | Niri（Wayland 滚动平铺）+ Noctalia v5（Quickshell） |
 | 管理 | Nix Flakes + Home Manager + Disko + agenix |
-| 机器参数 | `nixos/host.nix`（userName/hostName/disk/cpu/gpu） |
+| 机器参数 | `host.nix`（userName/hostName/disk/cpu/gpu） |
 
 ## 文档索引
 
@@ -29,8 +29,10 @@
 | 路径 | 内容 |
 |------|------|
 | `flake.nix` | 系统入口与依赖锁定 |
-| `nixos/` | 系统级配置（`modules/` 按主题拆分） |
-| `home/` | Home Manager 用户配置 |
+| `host.nix` | 机器参数（init.sh 与 flake 的唯一参数源） |
+| `hosts/westwood/` | 机器专属配置（disko 分区、hardware-configuration） |
+| `modules/nixos/` | 系统级模块（按主题拆分） |
+| `modules/home/` | Home Manager 用户配置 |
 | `dotfiles/` | 应用配置（活链接到 `~/.config`，改动无需 rebuild） |
 | `secrets/` | agenix 密钥（密文入库，明文只在 `/run/agenix/`） |
 | `init.sh` | Live ISO 两阶段安装脚本（会格式化磁盘） |

@@ -1,3 +1,5 @@
+[中文](README.md) | English
+
 ## Overview
 ![Desktop Screenshot](./space.png)
 ![Fastfetch Screenshot](./ff.png)
@@ -61,13 +63,13 @@ cd nix-dotfiles
 ./init.sh
 ```
 
-The script asks for these values and writes them back to `nixos/host.nix`. Square brackets `[]` show the current value; press Enter to keep it. Parentheses `()` show valid choices.
+The script asks for these values and writes them back to `host.nix`. Square brackets `[]` show the current value; press Enter to keep it. Parentheses `()` show valid choices.
 ```bash
-User name [huzch]:
-User email [huzch123@gmail.com]:
-Host name [space]:
+User name [claudia]:
+User email [3453289292@qq.com]:
+Host name [westwood]:
 Target disk [/dev/nvme0n1]:
-CPU (amd/intel) [amd]:
+CPU (amd/intel) [intel]:
 GPU (nvidia/amd/intel) [nvidia]:
 ```
 
@@ -91,12 +93,13 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 
 ## Project Structure
 - **`flake.nix`**: System entry point.
-- **`nixos/`**: System-level configuration.
-  - `configuration.nix`: System settings, drivers, networking, fonts, and services.
-  - `host.nix`: Current machine settings for username, email, hostname, disk, CPU, and GPU type.
+- **`host.nix`**: Current machine settings for username, email, hostname, disk, CPU, and GPU type.
+- **`hosts/westwood/`**: Machine-specific configuration.
+  - `default.nix`: Imports aggregation and `system.stateVersion`.
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
-- **`home/`**: Home Manager user-level configuration.
+- **`modules/nixos/`**: System-level modules (drivers, networking, fonts, services; split by topic).
+- **`modules/home/`**: Home Manager user-level configuration.
 - **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
 
 ---
@@ -105,8 +108,8 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 Use `~/Documents/nix-dotfiles` as the source of truth.
 
 ### Install New Packages
-- System components: edit `nixos/configuration.nix`.
-- User apps: edit `home/app.nix` or another file under `home/`.
+- System components: the matching topic file under `modules/nixos/`.
+- User apps: edit `modules/home/app.nix` or another file under `modules/home/`.
 
 You can search for package names on [search.nixos.org](https://search.nixos.org/packages).
 

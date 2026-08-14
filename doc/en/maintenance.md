@@ -35,15 +35,15 @@ Pick an older generation in the GRUB boot menu. A broken new generation never af
 
 | Change | Location |
 |--------|----------|
-| GUI/CLI packages | `home/app.nix` / `home/desktop.nix` / `home/shell.nix` |
-| System components | Matching topic file in `nixos/modules/` |
-| New app config dir | `dotfiles/<name>/` (register in `configs` in `home/default.nix`) |
-| Machine parameters | Always via `nixos/host.nix`, never hardcode |
+| GUI/CLI packages | `modules/home/app.nix` / `modules/home/desktop.nix` / `modules/home/shell.nix` |
+| System components | Matching topic file in `modules/nixos/` |
+| New app config dir | `dotfiles/<name>/` (register in `configs` in `modules/home/default.nix`) |
+| Machine parameters | Always via `host.nix`, never hardcode |
 
 ## Caveats
 
 | Item | Notes |
 |------|-------|
 | kitsfmt `++` bug | Formats `++` into `+`; always dry-build and check after running it (see AGENTS.md) |
-| wemeet block | The overrideAttrs in `home/app.nix` is hand-formatted (formatter bug) — leave its style alone |
+| wemeet block | The overrideAttrs in `modules/home/app.nix` is hand-formatted (formatter bug) — leave its style alone |
 | Secrets | After changing `secrets/`, run `nh os switch` to refresh `/run/agenix/` plaintext |
