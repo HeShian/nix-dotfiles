@@ -6,7 +6,7 @@
 }:
 {
     networking = {
-      hostName = hostName;
+      inherit hostName;
       networkmanager.enable = true;
       # Waydroid 需要
       nftables.enable = true;
