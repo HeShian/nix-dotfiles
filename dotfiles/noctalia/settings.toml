@@ -178,6 +178,12 @@ transition_on_startup = true
     [wallpaper.monitors.eDP-1]
     path = "@HOME@/Pictures/wallpapers/tropic_island_morning.jpg"
 
+# overview 背景：当前壁纸的模糊暗色副本（配合 niri layer-rule ^noctalia-backdrop）
+[backdrop]
+enabled = true
+blur_intensity = 0.5
+tint_intensity = 0.3
+
 [widget.brightness]
 show_label = false
 

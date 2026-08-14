@@ -285,7 +285,7 @@ prepare_user_files() {
 
   if [ ! -d "${WALLPAPERS_TARGET}/.git" ]; then
     rm -rf "${WALLPAPERS_TARGET}"
-    git clone https://github.com/huzch/wallpapers.git "${WALLPAPERS_TARGET}"
+    git clone https://codeberg.org/claudia010/wallpapers.git "${WALLPAPERS_TARGET}"
   fi
 
   nixos-enter --root /mnt -c "chown -R ${USER_NAME}:users /home/${USER_NAME}/Documents /home/${USER_NAME}/Pictures"

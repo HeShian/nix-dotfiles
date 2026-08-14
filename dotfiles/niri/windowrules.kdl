@@ -24,15 +24,23 @@ window-rule {
     default-window-height { fixed 600; }
 }
 
-// Noctalia 壁纸层放在 backdrop 上（固定壁纸方案）
-layer-rule {
-    match namespace="^noctalia-wallpaper"
-    place-within-backdrop true
+// WPS 弹出菜单（字体/字号下拉、选中文字的浮动工具栏等）：app-id 与 title 相同的无标题工具窗，
+// 必须浮动否则被平铺；open-focused false 防止工具窗抢占焦点导致 WPS 立即将其收起
+//（锚定精确匹配，避免误伤标题含这些词的主窗口；wps/et/wpp/wpspdf 分别为文字/表格/演示/PDF 组件）
+window-rule {
+    match app-id=r#"^wps$"# title=r#"^wps$"#
+    match app-id=r#"^et$"# title=r#"^et$"#
+    match app-id=r#"^wpp$"# title=r#"^wpp$"#
+    match app-id=r#"^wpspdf$"# title=r#"^wpspdf$"#
+    match app-id=r#"^wps$"# title=r#"^WPS (文字|表格|演示)$"#
+    open-floating true
+    open-focused false
 }
 
-// 透明背景使 backdrop 可见
-layout {
-    background-color "transparent"
+// Noctalia backdrop 层（当前壁纸的模糊暗色副本）放入 niri overview 背景
+layer-rule {
+    match namespace="^noctalia-backdrop"
+    place-within-backdrop true
 }
 
 debug {

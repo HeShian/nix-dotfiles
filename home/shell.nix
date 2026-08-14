@@ -7,9 +7,12 @@
   ...
 }:
 {
-    # 终端工具：yazi（文件管理）、neovim、lazygit、fastfetch（系统信息）、btop（资源监控）
+    # 终端工具：yazi（文件管理）、neovim、lazygit、fastfetch（系统信息）、btop（资源监控）；
+    # rtk：代理命令行输出的 token 压缩工具（配合 pi/opencode 等 agent 使用，rtk init 安装 hook）；
+    # codegraph：代码知识图谱（codegraph init 建索引，MCP 服务经项目 .mcp.json 接入 pi）；
+    # nodejs：npm/npx 运行时（pi 扩展安装器、codegraph 等 npm 工具依赖）
     home.packages = builtins.attrValues {
-      inherit (pkgs) yazi neovim lazygit fastfetch btop;
+      inherit (pkgs) yazi neovim lazygit fastfetch btop rtk codegraph nodejs;
     };
     home.sessionVariables = {
       EDITOR = "nvim";

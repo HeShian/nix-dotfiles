@@ -11,11 +11,14 @@ Categorized software list. Declared in: `home/app.nix` (daily apps), `home/deskt
 | Browsers | zen-twilight (pywalfox-native follows the palette), brave |
 | IM/Meetings | telegram-desktop, discord, qq, wechat, wemeet (via wemeet-xwayland wrapper) |
 | Notes/Reading | obsidian, z-library-desktop, readest |
+| Office | wpsoffice-cn (WPS 365, see font note below), onlyoffice-desktopeditors |
 | Development | vscode, opencode, pi-coding-agent, kimi-code, kitsfmt, uv, python3 |
 | Creation | obs-studio, krita |
 | Network tools | gopeed (download), localsend (LAN transfer), go-musicfox (NetEase), remmina (RDP) |
 | Gaming | gamescope, prismlauncher (Minecraft), protonplus, lutris, heroic |
 | Wine/Containers | wine (stableFull), winetricks, waydroid-helper |
+
+**WPS missing fonts**: corefonts (Arial/Times New Roman/Courier New etc.) and vista-fonts (Calibri etc.) are installed system-wide; SimSun (宋体), SimHei (黑体), Wingdings and Symbol are not redistributable — manually copy `simsun.ttc`, `simhei.ttf`, `wingding.ttf`, `symbol.ttf` (optionally `simfang.ttf`/`simkai.ttf`/`msyh.ttc`) from `C:\Windows\Fonts\` on any Windows machine into `~/.local/share/fonts/`, then run `fc-cache -f`.
 
 ## System Modules
 
@@ -30,10 +33,8 @@ Categorized software list. Declared in: `home/app.nix` (daily apps), `home/deskt
 | Software | Purpose |
 |----------|---------|
 | Flatseal | Flatpak permission manager |
-| WPS 365 | Office suite |
 | Betterbird | Email |
 | Bottles | Windows app containers |
-| Wonderpen | Writing (bypasses document portal, direct host dir) |
 | Baidu NetDisk | Cloud storage |
 
 ## Desktop Tools

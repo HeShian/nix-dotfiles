@@ -6,7 +6,7 @@
 ## 初始配置种子（重装自动恢复）
 
 - `config.toml`：`~/.config/noctalia/config.toml` 的副本（自定义模板登记），仓库路径写成 `@REPO@` 占位符。
-- `settings.toml`：`~/.local/state/noctalia/settings.toml` 的副本（v5 全部设置：bar 布局、桌面/锁屏小组件、主题选择、壁纸），家目录写成 `@HOME@` 占位符。
+- `settings.toml`：`~/.local/state/noctalia/settings.toml` 的副本（v5 全部设置：bar 布局、桌面/锁屏小组件、主题选择、壁纸、overview backdrop），家目录写成 `@HOME@` 占位符。
 - `state/`：社区调色板（community-palettes）与社区模板（community-templates）的缓存副本，保证重装后主题离线可用。
 
 `home/default.nix` 的 `home.activation.noctaliaSeed` 在每次 rebuild 时检查：**目标文件不存在才拷贝**（之后由 Noctalia 运行时维护/覆写），拷贝时把占位符替换为实际路径。

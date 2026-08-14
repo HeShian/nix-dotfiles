@@ -29,6 +29,7 @@
       # 终端/代码：nerd-fonts.jetbrains-mono
       # 中文：noto-fonts-cjk-sans（思源黑体）、noto-fonts-cjk-serif（思源宋体）
       # Emoji：noto-fonts-color-emoji
+      # 办公兼容：corefonts（Arial/Times New Roman 等）、vista-fonts（Calibri 等），供 WPS/Office 文档
       packages = with pkgs;
       [
               inter
@@ -37,6 +38,8 @@
               noto-fonts-cjk-sans
               noto-fonts-cjk-serif
               noto-fonts-color-emoji
+              corefonts
+              vista-fonts
             ];
     };
     i18n = {
