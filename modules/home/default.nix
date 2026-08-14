@@ -4,6 +4,7 @@
   lib,
   userName,
   nixkits,
+  mylib,
   ...
 }:
 let
@@ -20,7 +21,7 @@ let
     ];
     # 逐文件链接（~/.config/niri 需是真实目录）
     niriDir = ../../dotfiles/niri;
-    regularFilesIn =     dir: lib.mapAttrsToList (name: _: name) (lib.filterAttrs (_: type: type == "regular") (builtins.readDir dir));
+    inherit (mylib) regularFilesIn;
     niriFiles = regularFilesIn niriDir ++ map (file: "scripts/${file}") (regularFilesIn (niriDir + "/scripts"));
 in
   {

@@ -45,5 +45,5 @@
 | 事项 | 说明 |
 |------|------|
 | kitsfmt `++` bug | 会把 `++` 格式化成 `+`，运行后必须 dry-build 验证并检查（见 AGENTS.md） |
-| wemeet 块 | `modules/home/app.nix` 的 overrideAttrs 是手工格式（formatter bug），不要对它有格式洁癖 |
+| wemeet 块 | `overlays/wemeet.nix` 的 overrideAttrs 是手工格式（formatter bug），不要对它有格式洁癖 |
 | 密钥 | 改动 `secrets/` 后需 `nh os switch` 才刷新 `/run/agenix/` 明文 |

@@ -46,19 +46,10 @@
     # 游戏：gamescope、prismlauncher（MC）、protonplus、lutris、heroic（steam/KDE Connect 由系统模块提供）
     # Wine/容器：wine stableFull（单包覆盖 wow64+gecko+mono）、winetricks、waydroid-helper
     home.packages = builtins.attrValues {
-      inherit (pkgs) brave pywalfox-native telegram-desktop discord qq wechat obsidian obs-studio krita z-library-desktop readest onlyoffice-desktopeditors wpsoffice-cn vscode opencode pi-coding-agent uv python3 gopeed localsend go-musicfox remmina gamescope prismlauncher protonplus lutris heroic winetricks waydroid-helper;
+      inherit (pkgs) brave pywalfox-native telegram-desktop discord qq wechat obsidian obs-studio krita z-library-desktop readest onlyoffice-desktopeditors wpsoffice-cn vscode opencode pi-coding-agent uv python3 gopeed localsend go-musicfox remmina gamescope prismlauncher protonplus lutris heroic winetricks waydroid-helper mazi51 wemeet;
       inherit (pkgs.wineWow64Packages) stableFull;
       kimi-code-cli = kimi-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
       kitsfmt = nixkits.packages.${pkgs.stdenv.hostPlatform.system}.kitsfmt;
-      mazi51 = (import ../../pkgs { inherit pkgs; }).mazi51;
-      # wemeet 绿屏方案：Exec 改走 wemeet-xwayland 包装（x11/xcb），原生 Wayland 版勿用
-      # 注：此 overrideAttrs 块保持手工格式（kitsfmt 会排乱，已知 bug）
-      wemeet = pkgs.wemeet.overrideAttrs (old: {
-        postInstall = (old.postInstall or "") + ''
-          substituteInPlace $out/share/applications/wemeetapp.desktop \
-            --replace-fail "Exec=wemeet %u" "Exec=wemeet-xwayland %u"
-        '';
-      });
       zen-twilight = zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight;
     };
   }

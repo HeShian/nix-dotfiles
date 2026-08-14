@@ -47,16 +47,8 @@
       inputMethod = {
         enable = true;
         fcitx5 = {
-          addons = with pkgs;
-          [
-                      # 附加 rime-ice 雾凇拼音词库
-                      (fcitx5-rime.override {
-            rimeDataPkgs = [
-              rime-data
-              rime-ice
-            ];
-          })
-                    ];
+          # fcitx5-rime 的词库定制（rime-ice）在 overlays/fcitx5-rime.nix
+          addons = [ pkgs.fcitx5-rime ];
           waylandFrontend = true;
         };
         type = "fcitx5";

@@ -7,4 +7,5 @@ lib.pipe ./. [
     name: type: type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix"
   ))
   (lib.mapAttrs (name: _: import (./. + "/${name}") { inherit lib; }))
+  (lib.mapAttrs' (name: value: lib.nameValuePair (lib.removeSuffix ".nix" name) value))
 ]
