@@ -9,7 +9,7 @@
 | 项目 | 说明 |
 |------|------|
 | 解密私钥 | 主机 SSH host key `/etc/ssh/ssh_host_ed25519_key`（`age.identityPaths` 指定） |
-| 接收方 | `secrets/secrets.nix` 登记：`westwood`（host key，系统激活用）、`claudia`（用户 `~/.ssh/id_ed25519`，CLI 查看/编辑用） |
+| 接收方 | `secrets/secrets.nix` 登记：`aspire-a715`（host key，系统激活用）、`claudia`（用户 `~/.ssh/id_ed25519`，CLI 查看/编辑用） |
 | 声明 | `modules/nixos/secrets.nix` 的 `lib.genAttrs` 列表，新增密钥加一行 |
 | 读取 | `owner = userName`，用户可直接读 `/run/agenix/<name>` |
 
@@ -57,7 +57,7 @@ nix run github:ryantm/agenix -- -r
 `nix run github:ryantm/agenix` 需要下载 agenix。网络不通时可用 store 里已有的 `age` 二进制直接加密（效果等价，agenix 密文就是标准 age 格式）：
 
 ```bash
-printf '%s\n%s\n' "<westwood 公钥>" "<claudia 公钥>" > /tmp/recipients.txt
+printf '%s\n%s\n' "<aspire-a715 公钥>" "<claudia 公钥>" > /tmp/recipients.txt
 echo -n "明文" | /nix/store/*-age-*/bin/age -R /tmp/recipients.txt -o <name>.age
 rm /tmp/recipients.txt
 ```

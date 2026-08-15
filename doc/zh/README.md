@@ -8,7 +8,7 @@
 
 | 项目 | 值 |
 |------|-----|
-| 主机 | westwood |
+| 主机 | aspire-a715 |
 | 用户 | claudia |
 | 桌面 | Niri（Wayland 滚动平铺）+ Noctalia v5（Quickshell） |
 | 管理 | Nix Flakes（flake-parts + den）+ Home Manager + Disko + agenix |

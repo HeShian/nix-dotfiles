@@ -66,7 +66,7 @@ cd nix-dotfiles
 ```bash
 User name [claudia]:
 User email [3453289292@qq.com]:
-Host name [westwood]:
+Host name [aspire-a715]:
 Target disk [/dev/nvme0n1]:
 CPU (amd/intel) [intel]:
 GPU (nvidia/amd/intel) [nvidia]:
@@ -93,7 +93,7 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 ## 📁 目录结构说明 (Project Structure)
 - **`flake.nix`**: 系统入口（flake-parts + den + treefmt-nix；装配逻辑在 `modules/flake/`）。
 - **`modules/flake/`**: flake-parts 装配层。`hosts.nix` 自动发现 `hosts/*`，经 den 生成每台主机的 `<host>`/`<host>-install` 配置并挂载用户 HM；`defaults.nix` 全局默认（外部 OS 模块、overlays）；`formatting.nix` 格式化配置（`nix fmt`）。
-- **`hosts/westwood/`**: 机器专属配置（每台机器一个 `hosts/<host>/` 目录，目录名即主机名）。
+- **`hosts/aspire-a715/`**: 机器专属配置（每台机器一个 `hosts/<host>/` 目录，目录名即主机名）。
   - `host.nix`: 当前机器的用户名、邮箱、磁盘、CPU/GPU 类型与用户清单。
   - `default.nix`: 硬件/disko imports 与 `system.stateVersion`。
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
@@ -124,7 +124,7 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 cd ~/Documents/nix-dotfiles
 
 git add .
-nh os switch    # 首选系统管理命令（别名 nrs）；底层等价于 sudo nixos-rebuild switch --flake .#westwood
+nh os switch    # 首选系统管理命令（别名 nrs）；底层等价于 sudo nixos-rebuild switch --flake .#aspire-a715
 ```
 
 升级锁定版本：

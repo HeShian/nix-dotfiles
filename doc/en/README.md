@@ -8,7 +8,7 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 
 | Item | Value |
 |------|-------|
-| Host | westwood |
+| Host | aspire-a715 |
 | User | claudia |
 | Desktop | Niri (Wayland scrolling tiling) + Noctalia v5 (Quickshell) |
 | Management | Nix Flakes (flake-parts + den) + Home Manager + Disko + agenix |

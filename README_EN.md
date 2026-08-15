@@ -67,7 +67,7 @@ The script asks for these values and writes them back to `hosts/<host>/host.nix`
 ```bash
 User name [claudia]:
 User email [3453289292@qq.com]:
-Host name [westwood]:
+Host name [aspire-a715]:
 Target disk [/dev/nvme0n1]:
 CPU (amd/intel) [intel]:
 GPU (nvidia/amd/intel) [nvidia]:
@@ -94,7 +94,7 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 ## Project Structure
 - **`flake.nix`**: System entry point (flake-parts + den + treefmt-nix; wiring lives in `modules/flake/`).
 - **`modules/flake/`**: flake-parts wiring layer. `hosts.nix` auto-discovers `hosts/*` and uses den to build each machine's `<host>`/`<host>-install` configurations plus user HM attachment; `defaults.nix` global defaults (external OS modules, overlays); `formatting.nix` formatter config (`nix fmt`).
-- **`hosts/westwood/`**: Machine-specific configuration (one `hosts/<host>/` directory per machine; the directory name is the host name).
+- **`hosts/aspire-a715/`**: Machine-specific configuration (one `hosts/<host>/` directory per machine; the directory name is the host name).
   - `host.nix`: Current machine settings for username, email, disk, CPU/GPU type, and user list.
   - `default.nix`: Hardware/disko imports and `system.stateVersion`.
   - `hardware-configuration.nix`: Machine-specific hardware config.
@@ -127,7 +127,7 @@ Run a rebuild after changing `.nix` files, packages, services, or Nix-managed fi
 cd ~/Documents/nix-dotfiles
 
 git add .
-nh os switch    # preferred system management command (alias: nrs); equivalent to sudo nixos-rebuild switch --flake .#westwood
+nh os switch    # preferred system management command (alias: nrs); equivalent to sudo nixos-rebuild switch --flake .#aspire-a715
 ```
 
 To update locked package versions, run:

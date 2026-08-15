@@ -9,7 +9,7 @@ Secrets management: ciphertext (`.age`) is committed in `secrets/`; plaintext is
 | Item | Notes |
 |------|-------|
 | Decryption key | Host SSH host key `/etc/ssh/ssh_host_ed25519_key` (set via `age.identityPaths`) |
-| Recipients | In `secrets/secrets.nix`: `westwood` (host key, activation) and `claudia` (user `~/.ssh/id_ed25519`, CLI view/edit) |
+| Recipients | In `secrets/secrets.nix`: `aspire-a715` (host key, activation) and `claudia` (user `~/.ssh/id_ed25519`, CLI view/edit) |
 | Declaration | `lib.genAttrs` list in `modules/nixos/secrets.nix`; add one line for a new secret |
 | Reading | `owner = userName`; the user can read `/run/agenix/<name>` directly |
 
@@ -57,7 +57,7 @@ After modifying a `.age` file, run `nh os switch` to refresh `/run/agenix/` plai
 `nix run github:ryantm/agenix` downloads agenix. When the network is down, use the `age` binary already in the store (equivalent — agenix ciphertext is standard age format):
 
 ```bash
-printf '%s\n%s\n' "<westwood pubkey>" "<claudia pubkey>" > /tmp/recipients.txt
+printf '%s\n%s\n' "<aspire-a715 pubkey>" "<claudia pubkey>" > /tmp/recipients.txt
 echo -n "plaintext" | /nix/store/*-age-*/bin/age -R /tmp/recipients.txt -o <name>.age
 rm /tmp/recipients.txt
 ```
