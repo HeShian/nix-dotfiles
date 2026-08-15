@@ -71,6 +71,9 @@ else
   NOTIFY_PID=""
 fi
 
+# 任何提前退出（set -e 触发）都要收掉心跳子进程，否则会留下无限 notify-send 的孤儿循环
+trap '[ -n "${NOTIFY_PID:-}" ] && kill "$NOTIFY_PID" 2> /dev/null || true' EXIT
+
 send_notify "Wallpaper" "Downloading from Alcy..." "--expire-time=5000"
 
 USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"

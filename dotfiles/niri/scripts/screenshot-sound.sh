@@ -16,6 +16,10 @@ if ! command -v pw-play > /dev/null; then
   notify-send "错误: 未找到 pw-play"
   exit 1
 fi
+if ! command -v wl-paste > /dev/null; then
+  notify-send "错误: 未找到 wl-paste"
+  exit 1
+fi
 
 # 信号处理：收到 SIGUSR1 即「上膛」（刷新扳机文件的修改时间，不存在则创建）
 arm_trigger() {
@@ -25,7 +29,10 @@ arm_trigger() {
 trap arm_trigger SIGUSR1
 
 # 后台监听剪贴板：wl-paste --watch 只在剪贴板内容变化时唤醒子进程
+# 子进程先 cat 排空 stdin——wl-paste 会把整张图片写进管道，不读的话大图撑爆
+# 管道缓冲（64K）后 wl-paste 可能吃到 EPIPE，监听静默终止
 wl-paste --watch bash -c "
+    cat > /dev/null
     if wl-paste --list-types 2>/dev/null | grep -q 'image/'; then
 
         if [ -f \"$TRIGGER_FILE\" ]; then
@@ -48,7 +55,9 @@ wl-paste --watch bash -c "
 WATCHER_PID=$!
 
 # 主循环：无限睡眠只响应信号，退出时杀掉监听子进程
-trap "kill $WATCHER_PID; exit" INT TERM EXIT
+# trap 拆分：INT/TERM 只负责 exit（由 EXIT trap 清理），避免对已死进程重复 kill 刷噪音
+trap 'kill "$WATCHER_PID" 2> /dev/null' EXIT
+trap 'exit' INT TERM
 
 # 写入当前 PID 方便调试（可选）
 # echo $$ > /tmp/niri-sound.pid

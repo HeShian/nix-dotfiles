@@ -5,6 +5,16 @@
 # 每组 SVG 的颜色变量在顶部定义，方便微调
 # ==============================================================================
 
+# 任何一步失败都必须中止：否则末尾仍会把图标主题翻到半成品目录（图标全破）
+set -euo pipefail
+
+for cmd in magick gsettings; do
+  command -v "$cmd" > /dev/null 2>&1 || {
+    echo "recolor.sh: missing dependency: $cmd" >&2
+    exit 1
+  }
+done
+
 # ==============================================================================
 # [一] 颜色变量配置区 (用户修改此处)
 # ==============================================================================
@@ -224,6 +234,11 @@ s/#8ff0a4/$COLOR_AUDIO_PALE/g"
 # ==============================================================================
 
 TEMPLATE_DIR="$HOME/Documents/nix-dotfiles/dotfiles/noctalia/templates/gtk-folder/Adwaita-Matugen"
+# 模板目录缺失（仓库挪位置等）时必须失败响铃，而不是把空主题翻上去
+[ -d "$TEMPLATE_DIR/scalable" ] || {
+  echo "recolor.sh: template dir not found or incomplete: $TEMPLATE_DIR" >&2
+  exit 1
+}
 CURRENT_THEME=$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")
 
 if [[ "$CURRENT_THEME" == "Adwaita-Matugen-A" ]]; then
@@ -239,7 +254,7 @@ cp -rf --reflink=auto --no-preserve=mode,ownership "$TEMPLATE_DIR/"* "$TARGET_DI
 sed -i "s/Name=.*/Name=$TARGET_THEME/" "$TARGET_DIR/index.theme"
 
 # 2. 处理 PNG (统一使用文件夹颜色)
-find "$TARGET_DIR" -name "*.png" -print0 | xargs -0 -P0 -I {} magick "{}" \
+find "$TARGET_DIR" -name "*.png" -print0 | xargs -0 -r -P0 -I {} magick "{}" \
     -channel RGB -colorspace gray -sigmoidal-contrast 10,50% \
     +level-colors "$COLOR_FOLDER_SHADOW","$COLOR_FOLDER_BODY" \
     +channel "{}"
@@ -249,35 +264,35 @@ find "$TARGET_DIR" -name "*.png" -print0 | xargs -0 -P0 -I {} magick "{}" \
 # [Group 1] Folders
 find "$TARGET_DIR/scalable" \
     \( -name "folder*.svg" -o -name "user-home*.svg" -o -name "user-desktop*.svg" -o -name "user-bookmarks*.svg" -o -name "inode-directory*.svg" \) \
-    -print0 | xargs -0 -P0 sed -i "$CMD_FOLDER"
+    -print0 | xargs -0 -r -P0 sed -i "$CMD_FOLDER"
 
 # [Group 2] Network
-find "$TARGET_DIR/scalable" -name "network*.svg" -print0 | xargs -0 -P0 sed -i --follow-symlinks "$CMD_NETWORK"
+find "$TARGET_DIR/scalable" -name "network*.svg" -print0 | xargs -0 -r -P0 sed -i --follow-symlinks "$CMD_NETWORK"
 
 # [Group 3] Trash
-find "$TARGET_DIR/scalable" -name "user-trash*.svg" -print0 | xargs -0 -P0 sed -i --follow-symlinks "$CMD_TRASH"
+find "$TARGET_DIR/scalable" -name "user-trash*.svg" -print0 | xargs -0 -r -P0 sed -i --follow-symlinks "$CMD_TRASH"
 
 # [Group 4] Mimetypes - Script & Executable
 find "$TARGET_DIR/scalable/mimetypes" \
     \( -name "text-x-script*.svg" -o -name "application-x-executable*.svg" \) \
-    -print0 | xargs -0 -P0 sed -i "$CMD_SCRIPT"
+    -print0 | xargs -0 -r -P0 sed -i "$CMD_SCRIPT"
 
 # [Group 5] Mimetypes - Addon
-find "$TARGET_DIR/scalable/mimetypes" -name "application-x-addon*.svg" -print0 | xargs -0 -P0 sed -i "$CMD_ADDON"
+find "$TARGET_DIR/scalable/mimetypes" -name "application-x-addon*.svg" -print0 | xargs -0 -r -P0 sed -i "$CMD_ADDON"
 
 # [Group 6] Mimetypes - HTML
-find "$TARGET_DIR/scalable/mimetypes" -name "text-html*.svg" -print0 | xargs -0 -P0 sed -i "$CMD_HTML"
+find "$TARGET_DIR/scalable/mimetypes" -name "text-html*.svg" -print0 | xargs -0 -r -P0 sed -i "$CMD_HTML"
 
 # [Group 7] Mimetypes - Font
-find "$TARGET_DIR/scalable/mimetypes" -name "font-x-generic*.svg" -print0 | xargs -0 -P0 sed -i "$CMD_FONT"
+find "$TARGET_DIR/scalable/mimetypes" -name "font-x-generic*.svg" -print0 | xargs -0 -r -P0 sed -i "$CMD_FONT"
 
 # [Group 8] Mimetypes - Document
-find "$TARGET_DIR/scalable/mimetypes" -name "x-office-document*.svg" -print0 | xargs -0 -P0 sed -i "$CMD_DOC"
+find "$TARGET_DIR/scalable/mimetypes" -name "x-office-document*.svg" -print0 | xargs -0 -r -P0 sed -i "$CMD_DOC"
 
 # [Group 9] Mimetypes - Presentation
-find "$TARGET_DIR/scalable/mimetypes" -name "x-office-presentation*.svg" -print0 | xargs -0 -P0 sed -i "$CMD_PRES"
+find "$TARGET_DIR/scalable/mimetypes" -name "x-office-presentation*.svg" -print0 | xargs -0 -r -P0 sed -i "$CMD_PRES"
 # [Group 10] Mimetypes - Audio
-find "$TARGET_DIR/scalable/mimetypes" -name "audio-x-generic*.svg" -print0 | xargs -0 -P0 sed -i "$CMD_AUDIO"
+find "$TARGET_DIR/scalable/mimetypes" -name "audio-x-generic*.svg" -print0 | xargs -0 -r -P0 sed -i "$CMD_AUDIO"
 # 4. 应用变更
 gsettings set org.gnome.desktop.interface icon-theme "$TARGET_THEME"
 

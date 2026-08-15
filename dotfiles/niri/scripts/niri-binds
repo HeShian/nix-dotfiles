@@ -27,7 +27,9 @@ if [[ -z $MENU_ITEMS ]]; then
 fi
 
 # fzf 命令串：交给下方各终端的 bash -c 执行（选中结果丢弃，纯展示）
-FZF_CMD="echo \"$MENU_ITEMS\" | fzf --reverse --prompt='󰌌 快捷键: ' --info=hidden --border=none > /dev/null"
+# MENU_ITEMS 经环境变量传给子 shell，不能把文本内嵌进命令串（绑定描述含 $(...) 会被执行）
+export MENU_ITEMS
+FZF_CMD='printf "%s\n" "$MENU_ITEMS" | fzf --reverse --prompt="󰌌 快捷键: " --info=hidden --border=none > /dev/null'
 
 # 按优先级探测终端，用各自的参数启动菜单窗口
 if command -v foot > /dev/null 2>&1; then

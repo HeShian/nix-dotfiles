@@ -181,11 +181,14 @@ if [[ $KILL_FAMILY == true ]]; then
   printf -v final_msg "$STR_SUCC_MSG_FAMILY" "$app_name" "$pid_count"
 
 else
-  # 单窗口模式（默认）：只杀窗口对应的真实 PID
-  kill -9 "$real_pid" 2> /dev/null
-
-  printf -v final_title "$STR_SUCC_TITLE" "$proto_str"
-  printf -v final_msg "$STR_SUCC_MSG_SINGLE" "$app_name" "$real_pid"
+  # 单窗口模式（默认）：只杀窗口对应的真实 PID；kill 失败（进程已退出/权限不足）时如实报失败
+  if kill -9 "$real_pid" 2> /dev/null; then
+    printf -v final_title "$STR_SUCC_TITLE" "$proto_str"
+    printf -v final_msg "$STR_SUCC_MSG_SINGLE" "$app_name" "$real_pid"
+  else
+    final_title="$STR_ERR_KILL_TITLE"
+    final_msg="$STR_ERR_KILL_MSG"
+  fi
 fi
 
 notify_and_play "$final_title" "$final_msg"

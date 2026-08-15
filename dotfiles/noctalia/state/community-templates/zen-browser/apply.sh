@@ -7,7 +7,8 @@ css_content="$cache_dir/noctalia/zen-browser/zen-userContent.css"
 line_chrome="@import \"$css_chrome\";"
 line_content="@import \"$css_content\";"
 
-find "${XDG_CONFIG_HOME:-$HOME/.config}/zen" "$HOME/.zen" -mindepth 2 -maxdepth 2 -type f -name "prefs.js" -print0 2>/dev/null |
+# find 任一起始目录不存在（如无 ~/.zen）会以 1 退出，pipefail 下会让脚本假失败，必须吞掉
+{ find "${XDG_CONFIG_HOME:-$HOME/.config}/zen" "$HOME/.zen" -mindepth 2 -maxdepth 2 -type f -name "prefs.js" -print0 2> /dev/null || true; } |
     while IFS= read -r -d '' prefs_file; do
         profile_dir=$(dirname "$prefs_file")
         chrome_dir="$profile_dir/chrome"
