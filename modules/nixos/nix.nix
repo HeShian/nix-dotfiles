@@ -1,5 +1,4 @@
-_:
-{
+_: {
   # 国内镜像 + noctalia/nixkits cachix
   nix.settings = {
     experimental-features = [

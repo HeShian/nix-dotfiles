@@ -1,5 +1,4 @@
-_:
-{
+_: {
   # 信任网桥，否则 VM 拿不到 IP
   networking.firewall.trustedInterfaces = [
     "virbr0"

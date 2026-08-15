@@ -1,7 +1,6 @@
 # treefmt 配置：`nix fmt` 一键格式化，`nix flake check` 含 formatting 检查
 # nixfmt = RFC 166 官方标准；stylua/shfmt/deadnix/statix 由 treefmt-nix 预置
-_:
-{
+_: {
   perSystem = _: {
     treefmt = {
       projectRootFile = "flake.nix";
