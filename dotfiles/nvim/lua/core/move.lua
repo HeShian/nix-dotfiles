@@ -1,4 +1,3 @@
-
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.laststatus = 2
@@ -23,12 +22,11 @@ vim.opt.hlsearch = true
 -- vim.keymap.set('v', '<Up>', '<Nop>', { noremap = true, silent = true })
 
 -- 快速跳至行首和行尾
-vim.keymap.set('n', 'H', '^', { noremap = true , silent = true })
-vim.keymap.set('n', 'L', '$', { noremap = true , silent = true })
+vim.keymap.set('n', 'H', '^', { noremap = true, silent = true })
+vim.keymap.set('n', 'L', '$', { noremap = true, silent = true })
 
 -- 快速窗格选择
-vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true , silent = true })
-vim.keymap.set('n', '<C-j>', '<C-w>j', { noremap = true , silent = true })
-vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true , silent = true })
-vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true , silent = true })
-
+vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })

@@ -9,47 +9,47 @@ NIRI_DIR="$HOME/.config/niri"
 MENU_WIDTH=90
 MENU_HEIGHT=20
 
-if [[ ! -d "$NIRI_DIR" ]]; then
-    echo "Error: 找不到配置目录 $NIRI_DIR"
-    exit 1
+if [[ ! -d $NIRI_DIR ]]; then
+  echo "Error: 找不到配置目录 $NIRI_DIR"
+  exit 1
 fi
 
 # 从所有 .kdl 提取带 hotkey-overlay-title 的绑定（排除注释行），用 column 对齐
-MENU_ITEMS=$(grep -Rh 'hotkey-overlay-title=' "$NIRI_DIR" --include="*.kdl" | \
-             grep -v '^[ \t]*//' | \
-             sed -n -E 's/^[ \t]*(.*)[ \t]+hotkey-overlay-title="([^"]+)".*/\1|\2/p' | \
-             sed -E 's/[ \t]*\|/\|/' | \
-             column -t -s '|')
+MENU_ITEMS=$(grep -Rh 'hotkey-overlay-title=' "$NIRI_DIR" --include="*.kdl" |
+  grep -v '^[ \t]*//' |
+  sed -n -E 's/^[ \t]*(.*)[ \t]+hotkey-overlay-title="([^"]+)".*/\1|\2/p' |
+  sed -E 's/[ \t]*\|/\|/' |
+  column -t -s '|')
 
-if [[ -z "$MENU_ITEMS" ]]; then
-    echo "没有找到有效的快捷键配置。"
-    exit 1
+if [[ -z $MENU_ITEMS ]]; then
+  echo "没有找到有效的快捷键配置。"
+  exit 1
 fi
 
 # fzf 命令串：交给下方各终端的 bash -c 执行（选中结果丢弃，纯展示）
 FZF_CMD="echo \"$MENU_ITEMS\" | fzf --reverse --prompt='󰌌 快捷键: ' --info=hidden --border=none > /dev/null"
 
 # 按优先级探测终端，用各自的参数启动菜单窗口
-if command -v foot >/dev/null 2>&1; then
-    foot --app-id "niri-hotkey-menu" --title "快捷键菜单" \
-         --window-size-chars=${MENU_WIDTH}x${MENU_HEIGHT} \
-         bash -c "$FZF_CMD"
+if command -v foot > /dev/null 2>&1; then
+  foot --app-id "niri-hotkey-menu" --title "快捷键菜单" \
+    --window-size-chars=${MENU_WIDTH}x${MENU_HEIGHT} \
+    bash -c "$FZF_CMD"
 
-elif command -v alacritty >/dev/null 2>&1; then
-    alacritty --class "niri-hotkey-menu" --title "快捷键菜单" \
-              -o window.dimensions.columns=${MENU_WIDTH} -o window.dimensions.lines=${MENU_HEIGHT} \
-              -e bash -c "$FZF_CMD"
+elif command -v alacritty > /dev/null 2>&1; then
+  alacritty --class "niri-hotkey-menu" --title "快捷键菜单" \
+    -o window.dimensions.columns=${MENU_WIDTH} -o window.dimensions.lines=${MENU_HEIGHT} \
+    -e bash -c "$FZF_CMD"
 
-elif command -v wezterm >/dev/null 2>&1; then
-    wezterm start --class "niri-hotkey-menu" -- bash -c "$FZF_CMD"
+elif command -v wezterm > /dev/null 2>&1; then
+  wezterm start --class "niri-hotkey-menu" -- bash -c "$FZF_CMD"
 
-elif [[ -n "$TERMINAL" ]]; then
-    $TERMINAL -e bash -c "$FZF_CMD"
+elif [[ -n $TERMINAL ]]; then
+  $TERMINAL -e bash -c "$FZF_CMD"
 
 else
-    echo "Error: 未检测到支持的终端模拟器。"
-    if command -v fuzzel >/dev/null 2>&1; then
-         # 无终端可用时降级到 fuzzel --dmenu（同样使用上方 MENU_WIDTH）
-         echo "$MENU_ITEMS" | fuzzel --dmenu -i -p "󰌌 快捷键: " -w ${MENU_WIDTH} > /dev/null
-    fi
+  echo "Error: 未检测到支持的终端模拟器。"
+  if command -v fuzzel > /dev/null 2>&1; then
+    # 无终端可用时降级到 fuzzel --dmenu（同样使用上方 MENU_WIDTH）
+    echo "$MENU_ITEMS" | fuzzel --dmenu -i -p "󰌌 快捷键: " -w ${MENU_WIDTH} > /dev/null
+  fi
 fi

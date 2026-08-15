@@ -9,7 +9,7 @@
 # 警告：会分区并格式化 host.nix 指定的整块磁盘，运行中需输入 "ERASE <disk>" 确认
 # 依赖：NixOS Live ISO 环境（自带 nix、nixos-install、nixos-enter、git）
 
-set -e  # 任何命令失败立即中止（配合 run_once：失败步骤不落标记，重跑时重试）
+set -e # 任何命令失败立即中止（配合 run_once：失败步骤不落标记，重跑时重试）
 
 # 安装期代理：Live ISO 阶段拉取 flake 依赖需经此代理，属安装刚需而非可选项
 export http_proxy="http://10.244.79.176:7890"
@@ -89,7 +89,7 @@ read_host_config() {
   # 用 nix 求值读取 host.nix 属性（Live ISO 自带 nix），比 sed 解析文本更稳健。
   # 求值失败时输出为空，由 validate_config 统一兜底报错（保持原有报错路径）。
   eval_host_attr() {
-    nix --experimental-features "nix-command flakes" eval --impure --expr "(import ./hosts/${TEMPLATE_HOST}/host.nix).$1" --raw 2>/dev/null || true
+    nix --experimental-features "nix-command flakes" eval --impure --expr "(import ./hosts/${TEMPLATE_HOST}/host.nix).$1" --raw 2> /dev/null || true
   }
   USER_NAME="$(eval_host_attr userName)"
   USER_EMAIL="$(eval_host_attr userEmail)"
@@ -131,11 +131,11 @@ prompt_value() {
 
 validate_user_name() {
   case "$1" in
-    "" | *[!a-z0-9_-]* | [!a-z_]*)
-      echo "invalid userName: $1"
-      echo "use lowercase letters, digits, '_' or '-', and start with a letter or '_'."
-      exit 1
-      ;;
+  "" | *[!a-z0-9_-]* | [!a-z_]*)
+    echo "invalid userName: $1"
+    echo "use lowercase letters, digits, '_' or '-', and start with a letter or '_'."
+    exit 1
+    ;;
   esac
 }
 
@@ -145,20 +145,20 @@ validate_user_email() {
   nl='
 '
   case "$1" in
-    "" | *\"* | *\\* | *"$nl"*)
-      echo "invalid userEmail: must not be empty or contain '\"', '\' or newlines."
-      exit 1
-      ;;
+  "" | *\"* | *\\* | *"$nl"*)
+    echo "invalid userEmail: must not be empty or contain '\"', '\' or newlines."
+    exit 1
+    ;;
   esac
 }
 
 validate_host_name() {
   case "$1" in
-    "" | *[!A-Za-z0-9-]* | -* | *-)
-      echo "invalid hostName: $1"
-      echo "use letters, digits or '-', and do not start/end with '-'."
-      exit 1
-      ;;
+  "" | *[!A-Za-z0-9-]* | -* | *-)
+    echo "invalid hostName: $1"
+    echo "use letters, digits or '-', and do not start/end with '-'."
+    exit 1
+    ;;
   esac
 }
 
@@ -195,7 +195,7 @@ ask_host_config() {
 }
 
 write_host_config() {
-  cat > "hosts/${HOST_NAME}/host.nix" <<EOF
+  cat > "hosts/${HOST_NAME}/host.nix" << EOF
 {
   userName = "${USER_NAME}";
   userEmail = "${USER_EMAIL}";
@@ -318,7 +318,7 @@ activate_full_system() {
   # activation 报错。先确认 host key 就位，给用户处理机会，再跑 nixos-rebuild switch。
   # 用户 Ctrl-C 中止后重跑本脚本，断点状态机会从本步骤继续。
   while [ ! -f /mnt/etc/ssh/ssh_host_ed25519_key ]; do
-    cat <<'EOF'
+    cat << 'EOF'
 ==> 未找到主机 SSH host key: /mnt/etc/ssh/ssh_host_ed25519_key
     完整配置启用了 agenix，激活时需要用它解密 secrets/ 下的密钥，否则本步骤必然失败。
     请选择处理方式：

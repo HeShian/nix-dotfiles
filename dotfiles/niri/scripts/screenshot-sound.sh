@@ -12,14 +12,14 @@ TIMEOUT_SEC=15
 # ------------------------------
 
 # 环境检查
-if ! command -v pw-play >/dev/null; then
-    notify-send "错误: 未找到 pw-play"
-    exit 1
+if ! command -v pw-play > /dev/null; then
+  notify-send "错误: 未找到 pw-play"
+  exit 1
 fi
 
 # 信号处理：收到 SIGUSR1 即「上膛」（刷新扳机文件的修改时间，不存在则创建）
 arm_trigger() {
-    touch "$TRIGGER_FILE"
+  touch "$TRIGGER_FILE"
 }
 
 trap arm_trigger SIGUSR1
@@ -56,5 +56,6 @@ trap "kill $WATCHER_PID; exit" INT TERM EXIT
 echo "截图音效服务已启动，等待 SIGUSR1 信号..."
 
 while true; do
-    sleep infinity & wait $!
+  sleep infinity &
+  wait $!
 done

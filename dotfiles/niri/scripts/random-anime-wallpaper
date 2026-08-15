@@ -18,19 +18,19 @@ SILENT_MODE=false
 
 # ---------- 参数解析 ----------
 usage() {
-    echo "用法: $(basename "$0") [-k] [-s] [-h]"
-    echo "  -k  (Keep)    保留模式：不清理旧壁纸"
-    echo "  -s  (Silent)  静默模式：不发送任何 notify-send 通知"
-    echo "  -h  帮助信息"
-    exit 0
+  echo "用法: $(basename "$0") [-k] [-s] [-h]"
+  echo "  -k  (Keep)    保留模式：不清理旧壁纸"
+  echo "  -s  (Silent)  静默模式：不发送任何 notify-send 通知"
+  echo "  -h  帮助信息"
+  exit 0
 }
 
 while getopts "ksh" opt; do
   case $opt in
-    k) ENABLE_CLEANUP=false ;;
-    s) SILENT_MODE=true ;;
-    h) usage ;;
-    *) usage ;;
+  k) ENABLE_CLEANUP=false ;;
+  s) SILENT_MODE=true ;;
+  h) usage ;;
+  *) usage ;;
   esac
 done
 
@@ -38,14 +38,14 @@ done
 
 # 统一通知函数（兼容 set -u 下未传 $3 的情况）
 send_notify() {
-    if [ "$SILENT_MODE" = false ]; then
-        notify-send "$1" "$2" ${3:-}
-    fi
+  if [ "$SILENT_MODE" = false ]; then
+    notify-send "$1" "$2" ${3:-}
+  fi
 }
 
 # 失败回退：换一张本地随机壁纸
 fallback_random() {
-    noctalia msg wallpaper-random >/dev/null 2>&1 || true
+  noctalia msg wallpaper-random > /dev/null 2>&1 || true
 }
 
 # ---------- 主逻辑 ----------
@@ -59,16 +59,16 @@ FINAL_PATH="${SAVE_DIR}/wall_${TIMESTAMP}.png"
 # 第一步：下载（后台心跳通知，避免长耗时看起来卡死）
 
 if [ "$SILENT_MODE" = false ]; then
-    (
-        sleep 8
-        while true; do
-            notify-send "Wallpaper" "Downloading is still in progress..." --expire-time=5000 --icon=drive-harddisk --replace-id=999 || true
-            sleep 8
-        done
-    ) &
-    NOTIFY_PID=$!
+  (
+    sleep 8
+    while true; do
+      notify-send "Wallpaper" "Downloading is still in progress..." --expire-time=5000 --icon=drive-harddisk --replace-id=999 || true
+      sleep 8
+    done
+  ) &
+  NOTIFY_PID=$!
 else
-    NOTIFY_PID=""
+  NOTIFY_PID=""
 fi
 
 send_notify "Wallpaper" "Downloading from Alcy..." "--expire-time=5000"
@@ -77,70 +77,70 @@ USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 
 # 下载失败走回退分支（if 包裹避免 curl 非零退出直接触发 set -e）
 if ! curl -L -s -A "$USER_AGENT" --connect-timeout 10 -m 120 -o "$RAW_PATH" "$API_URL"; then
-    [ -n "${NOTIFY_PID:-}" ] && kill "$NOTIFY_PID" 2>/dev/null || true
-    send_notify "Wallpaper Error" "Download failed (Network/API Error), fallback to local random"
-    rm -f "$RAW_PATH"
-    fallback_random
-    exit 1
+  [ -n "${NOTIFY_PID:-}" ] && kill "$NOTIFY_PID" 2> /dev/null || true
+  send_notify "Wallpaper Error" "Download failed (Network/API Error), fallback to local random"
+  rm -f "$RAW_PATH"
+  fallback_random
+  exit 1
 fi
 
 # 下载结束，停掉心跳通知
 if [ -n "${NOTIFY_PID:-}" ]; then
-    kill "$NOTIFY_PID" 2>/dev/null || true
+  kill "$NOTIFY_PID" 2> /dev/null || true
 fi
 
 # 校验文件大小（过小视为下载失败）
 if [ ! -f "$RAW_PATH" ] || [ "$(wc -c < "$RAW_PATH")" -lt 20480 ]; then
-    send_notify "Wallpaper Error" "Download failed (File too small/Invalid), fallback to local random"
-    rm -f "$RAW_PATH"
-    fallback_random
-    exit 1
+  send_notify "Wallpaper Error" "Download failed (File too small/Invalid), fallback to local random"
+  rm -f "$RAW_PATH"
+  fallback_random
+  exit 1
 fi
 
 # 校验 MIME 类型（API 出错时可能返回 HTML 而非图片）
 FILE_TYPE=$(file --mime-type -b "$RAW_PATH" || echo "unknown")
-if [[ "$FILE_TYPE" != image/* ]]; then
-    send_notify "Wallpaper Error" "Not an image file ($FILE_TYPE), fallback to local random"
-    rm -f "$RAW_PATH"
-    fallback_random
-    exit 1
+if [[ $FILE_TYPE != image/* ]]; then
+  send_notify "Wallpaper Error" "Not an image file ($FILE_TYPE), fallback to local random"
+  rm -f "$RAW_PATH"
+  fallback_random
+  exit 1
 fi
 
 # 第二步：转为 PNG（兼容新版 magick 与旧版 convert 两种命令名）
 if command -v magick > /dev/null 2>&1; then
-    IMG_TOOL="magick"
+  IMG_TOOL="magick"
 elif command -v convert > /dev/null 2>&1; then
-    IMG_TOOL="convert"
+  IMG_TOOL="convert"
 else
-    send_notify "Wallpaper Error" "ImageMagick not found. Please install it."
-    rm -f "$RAW_PATH"
-    fallback_random
-    exit 1
+  send_notify "Wallpaper Error" "ImageMagick not found. Please install it."
+  rm -f "$RAW_PATH"
+  fallback_random
+  exit 1
 fi
 
 if ! $IMG_TOOL "$RAW_PATH" "$FINAL_PATH"; then
-    send_notify "Wallpaper Error" "Failed to convert image to PNG format"
-    rm -f "$RAW_PATH" "$FINAL_PATH"
-    fallback_random
-    exit 1
+  send_notify "Wallpaper Error" "Failed to convert image to PNG format"
+  rm -f "$RAW_PATH" "$FINAL_PATH"
+  fallback_random
+  exit 1
 fi
 
 rm -f "$RAW_PATH"
 
 # 第三步：设为壁纸（不带 connector 参数 = 应用到所有显示器）
 if ! noctalia msg wallpaper-set "$FINAL_PATH"; then
-    send_notify "Wallpaper Error" "Failed to set wallpaper via Noctalia, fallback to local random"
-    fallback_random
-    exit 1
+  send_notify "Wallpaper Error" "Failed to set wallpaper via Noctalia, fallback to local random"
+  fallback_random
+  exit 1
 fi
 
 # 第四步：后台清理旧壁纸，只保留最新 KEEP_COUNT 张
 (
-    if [ "$ENABLE_CLEANUP" = true ]; then
-        DELETE_START=$((KEEP_COUNT + 1))
-        # 文件名只含时间戳、无特殊字符，xargs rm 是安全的
-        cd "$SAVE_DIR" && ls -t | tail -n +"$DELETE_START" | xargs -I {} rm -- {} 2>/dev/null || true
-    fi
+  if [ "$ENABLE_CLEANUP" = true ]; then
+    DELETE_START=$((KEEP_COUNT + 1))
+    # 文件名只含时间戳、无特殊字符，xargs rm 是安全的
+    cd "$SAVE_DIR" && ls -t | tail -n +"$DELETE_START" | xargs -I {} rm -- {} 2> /dev/null || true
+  fi
 ) &
 
 send_notify "Wallpaper Updated" "PNG applied successfully via Noctalia!"

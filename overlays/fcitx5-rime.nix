@@ -1,5 +1,5 @@
 # fcitx5-rime 附加 rime-ice 雾凇拼音词库
-final: prev: {
+_final: prev: {
   fcitx5-rime = prev.fcitx5-rime.override {
     rimeDataPkgs = [
       prev.rime-data

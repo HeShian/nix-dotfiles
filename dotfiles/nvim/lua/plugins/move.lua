@@ -1,20 +1,20 @@
 return {
-	{
-		'ibhagwan/fzf-lua',
-		keys = {
-			{ "<c-P>", ":FzfLua files<CR>", desc = "Fzf Files" },
-			{ "g/", ":FzfLua live_grep<CR>", desc = "Project Search" },
-		},
-		config = function()
-			require("fzf-lua").setup({})
-		end
-	},
+  {
+    'ibhagwan/fzf-lua',
+    keys = {
+      { '<c-P>', ':FzfLua files<CR>', desc = 'Fzf Files' },
+      { 'g/', ':FzfLua live_grep<CR>', desc = 'Project Search' },
+    },
+    config = function()
+      require('fzf-lua').setup({})
+    end,
+  },
 
-	{
-		"folke/flash.nvim",
-		event = "VeryLazy",
-		---@type Flash.Config
-		opts = {},
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    ---@type Flash.Config
+    opts = {},
 		-- stylua: ignore
 		keys = {
 			{ "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
@@ -23,5 +23,5 @@ return {
 			{ "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
 			{ "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
 		},
-	},
+  },
 }

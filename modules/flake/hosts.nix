@@ -27,7 +27,12 @@ let
     hostParams.${name}
     // {
       inherit mylib;
-      inherit (inputs) noctalia zen-browser kimi-code nixkits;
+      inherit (inputs)
+        noctalia
+        zen-browser
+        kimi-code
+        nixkits
+        ;
     };
 
   # home-manager 全局行为（HM OS 模块由 den 在用户声明时自动导入；
@@ -53,10 +58,13 @@ let
         type == "regular"
         && lib.hasSuffix ".nix" name
         && name != "default.nix"
-        && !(installMode && builtins.elem name [
-          "secrets.nix"
-          "flatpak.nix"
-        ])
+        && !(
+          installMode
+          && builtins.elem name [
+            "secrets.nix"
+            "flatpak.nix"
+          ]
+        )
       ))
       (lib.mapAttrsToList (name: _: ../../modules/nixos + "/${name}"))
     ];
@@ -65,10 +73,11 @@ let
     name: installMode:
     { lib, ... }:
     {
-      imports =
-        [ (hostsDir + "/${name}") ]
-        ++ nixosModuleFiles installMode
-        ++ lib.optionals (!installMode) [ hmGlobal ];
+      imports = [
+        (hostsDir + "/${name}")
+      ]
+      ++ nixosModuleFiles installMode
+      ++ lib.optionals (!installMode) [ hmGlobal ];
       networking.hostName = name;
       _module.args = moduleArgs name;
     };

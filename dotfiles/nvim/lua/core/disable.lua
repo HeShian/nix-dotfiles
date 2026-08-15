@@ -1,4 +1,3 @@
-
 vim.opt.shortmess:append('I') --省略初始化信息
 
 vim.opt.hidden = true --允许在不同缓冲区间自由切换，而不强制保存当前文件
