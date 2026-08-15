@@ -18,6 +18,8 @@ return {
     'williamboman/mason-lspconfig.nvim',
     dependencies = { 'williamboman/mason.nvim', 'neovim/nvim-lspconfig' },
     opts = {
+      -- 注意：automatic_installation 在 mason-lspconfig v2 已移除（改用 automatic_enable），
+      -- 启用本文件前需先按 v2 API 调整
       automatic_installation = true,
       ensure_installed = {
         'gopls',
@@ -94,8 +96,12 @@ return {
           vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
           vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-          vim.keymap.set('n', '[g', vim.diagnostic.goto_prev, opts)
-          vim.keymap.set('n', ']g', vim.diagnostic.goto_next, opts)
+          vim.keymap.set('n', '[g', function()
+            vim.diagnostic.jump({ count = -1 })
+          end, opts)
+          vim.keymap.set('n', ']g', function()
+            vim.diagnostic.jump({ count = 1 })
+          end, opts)
           vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
           vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
           vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, opts)

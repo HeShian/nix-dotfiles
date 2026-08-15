@@ -47,6 +47,13 @@ in
           mkdir -p "$stateDir" || exit 1
           cp -r --no-preserve=mode ${../../dotfiles/noctalia/state}/. "$stateDir/" || exit 1
         fi
+        # niri 冷启动兜底：config.kdl include 的 noctalia.kdl 由 Noctalia 运行时生成，
+        # 首次启动缺失会致 niri 解析失败回退默认配置（Noctalia 又靠 niri spawn，互相等待）
+        niriKdl="$HOME/.config/niri/noctalia.kdl"
+        if [ ! -f "$niriKdl" ]; then
+          mkdir -p "$HOME/.config/niri" || exit 1
+          touch "$niriKdl" || exit 1
+        fi
       '';
   home.file = {
     ".local/share/fcitx5/rime/default.custom.yaml".source = link "rime/default.custom.yaml";

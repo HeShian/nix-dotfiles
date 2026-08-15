@@ -1,3 +1,6 @@
+-- 字节码缓存加速模块加载（必须最先执行，否则 core 模块吃不到缓存）
+vim.loader.enable()
+
 --========= Core =========
 
 require('core')
@@ -6,7 +9,7 @@ require('core')
 
 -- 自动安装 lazy.nvim 插件管理器
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
     'git',
     'clone',
@@ -17,8 +20,5 @@ if not vim.loop.fs_stat(lazypath) then
   })
 end
 vim.opt.rtp:prepend(lazypath)
-
--- 字节码缓存加速模块加载
-vim.loader.enable()
 
 require('lazy').setup(require('plugins'))
