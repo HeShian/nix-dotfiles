@@ -84,8 +84,12 @@ run_always() {
 }
 
 read_host_config() {
-  # 多主机布局：以 hosts/ 下第一个主机目录的 host.nix 为模板提供提示默认值
-  TEMPLATE_HOST="$(ls hosts | head -n 1)"
+  # 多主机布局：以 hosts/ 下第一个主机目录的 host.nix 为模板提供提示默认值（只取目录，防普通文件混入）
+  TEMPLATE_HOST=""
+  for d in hosts/*/; do
+    TEMPLATE_HOST="$(basename "$d")"
+    break
+  done
   # 用 nix 求值读取 host.nix 属性（Live ISO 自带 nix），比 sed 解析文本更稳健。
   # 求值失败时输出为空，由 validate_config 统一兜底报错（保持原有报错路径）。
   eval_host_attr() {
@@ -162,6 +166,24 @@ validate_host_name() {
   esac
 }
 
+validate_disk() {
+  # DISK 会插值进未引用 heredoc 生成 host.nix（与 userEmail 同理必须拦截注入字符），
+  # 且必须是 /dev/ 下的块设备路径
+  case "$1" in
+  /dev/*[!A-Za-z0-9/._-]* | "")
+    echo "invalid disk: $1"
+    echo "use a /dev/ path with only letters, digits, '/', '.', '_' or '-' (e.g. /dev/nvme0n1)."
+    exit 1
+    ;;
+  /dev/*) ;; # /dev/ 前缀且字符集干净
+  *)
+    echo "invalid disk: $1"
+    echo "must be a /dev/ path (e.g. /dev/nvme0n1)."
+    exit 1
+    ;;
+  esac
+}
+
 validate_choice() {
   value="$1"
   choices="$2"
@@ -190,6 +212,7 @@ ask_host_config() {
   validate_user_name "${USER_NAME}"
   validate_user_email "${USER_EMAIL}"
   validate_host_name "${HOST_NAME}"
+  validate_disk "${DISK}"
   validate_choice "${CPU}" "amd intel" "cpu"
   validate_choice "${GPU}" "nvidia amd intel" "gpu"
 }
@@ -287,7 +310,7 @@ generate_hardware_config() {
 
 copy_config() {
   cp /mnt/etc/nixos/hardware-configuration.nix "hosts/${HOST_NAME}/"
-  cp -r flake.* ./hosts/ ./home/ ./modules/ ./dotfiles/ ./secrets/ /mnt/etc/nixos/
+  cp -r flake.* ./hosts/ ./home/ ./modules/ ./dotfiles/ ./secrets/ ./libs/ ./overlays/ ./pkgs/ /mnt/etc/nixos/
 }
 
 install_nixos() {
@@ -302,6 +325,8 @@ set_user_password() {
 prepare_user_files() {
   mkdir -p "${USER_DOCS}" "${USER_PICTURES}"
   rm -rf "${DOTFILES_TARGET}"
+  # 排除 nix build 产物符号链接（指向 Live ISO 的 store，拷贝进新系统即成悬空链接）
+  rm -f result result-*
   cp -a . "${DOTFILES_TARGET}"
 
   if [ ! -d "${WALLPAPERS_TARGET}/.git" ]; then
