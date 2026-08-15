@@ -54,10 +54,13 @@ in
     }) (lib.filterAttrs (_: type: type == "directory") (builtins.readDir "${nixkits}/skills"));
     # username/homeDirectory 由 HM NixOS 模块按系统用户配置推断（多用户自动正确）
     home.stateVersion = "25.05";
-    imports = [
-      ./desktop.nix
-      ./shell.nix
-      ./app.nix
+    # 共享模块自动导入：目录下每个 .nix（新增模块 = 丢一个文件）
+    imports = lib.pipe ./. [
+      builtins.readDir
+      (lib.filterAttrs (
+        name: type: type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix"
+      ))
+      (lib.mapAttrsToList (name: _: ./. + "/${name}"))
     ];
     xdg.configFile = lib.genAttrs configs (name:
     {

@@ -1,12 +1,7 @@
+{ lib, pkgs, ... }:
 {
-  hostName,
-  lib,
-  pkgs,
-  ...
-}:
-{
+    # networking.hostName 由 modules/flake/hosts.nix 按主机目录名设置
     networking = {
-      inherit hostName;
       networkmanager.enable = true;
       # Waydroid 需要
       nftables.enable = true;

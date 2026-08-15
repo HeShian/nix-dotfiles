@@ -11,8 +11,8 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | Host | westwood |
 | User | claudia |
 | Desktop | Niri (Wayland scrolling tiling) + Noctalia v5 (Quickshell) |
-| Management | Nix Flakes + Home Manager + Disko + agenix |
-| Machine parameters | `hosts/<host>/host.nix` (userName/hostName/disk/cpu/gpu) |
+| Management | Nix Flakes (flake-parts + den) + Home Manager + Disko + agenix |
+| Machine parameters | `hosts/<host>/host.nix` (userName/userEmail/disk/cpu/gpu/users) |
 
 ## Documents
 
@@ -28,9 +28,10 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 
 | Path | Content |
 |------|---------|
-| `flake.nix` | System entry point and dependency lock (auto-discovers `hosts/*`) |
-| `hosts/<host>/` | Per-machine config: `host.nix` parameters, `disko.nix` layout, `hardware-configuration.nix` |
-| `modules/nixos/` | System-level modules (split by topic) |
+| `flake.nix` | System entry point and dependency lock (flake-parts + den + treefmt-nix) |
+| `modules/flake/` | flake-parts wiring layer (auto-discovers `hosts/*`, den host/user assembly, `nix fmt` config) |
+| `hosts/<host>/` | Per-machine config: `host.nix` parameters, `disko.nix` layout, `hardware-configuration.nix`; directory name is the host name |
+| `modules/nixos/` | System-level modules (split by topic, auto-aggregated by the wiring layer) |
 | `modules/home/` | Shared Home Manager config (every user gets it automatically) |
 | `home/<user>/` | Thin per-user identity layer (imports the shared layer + git identity) |
 | `overlays/` | Custom nixpkgs overlays (auto-aggregated) |

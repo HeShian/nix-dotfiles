@@ -93,7 +93,8 @@ read_host_config() {
   }
   USER_NAME="$(eval_host_attr userName)"
   USER_EMAIL="$(eval_host_attr userEmail)"
-  HOST_NAME="$(eval_host_attr hostName)"
+  # 主机名的权威来源是 hosts/ 目录名（flake 以目录名为 den host 名），模板默认取目录名
+  HOST_NAME="${TEMPLATE_HOST}"
   DISK="$(eval_host_attr disk)"
   CPU="$(eval_host_attr cpu)"
   GPU="$(eval_host_attr gpu)"
@@ -198,7 +199,6 @@ write_host_config() {
 {
   userName = "${USER_NAME}";
   userEmail = "${USER_EMAIL}";
-  hostName = "${HOST_NAME}";
   disk = "${DISK}";
   cpu = "${CPU}";
   gpu = "${GPU}";

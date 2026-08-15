@@ -1,13 +1,20 @@
 {
   description = "NixOS with Niri + Noctalia";
+
   inputs = {
     agenix = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:ryantm/agenix";
     };
+    # 主机/用户 aspect 装配框架（flake-parts 模块；den 无 flake 输入，依赖在求值期内置拉取）
+    den.url = "github:denful/den";
     disko = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/disko";
+    };
+    flake-parts = {
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+      url = "github:hercules-ci/flake-parts";
     };
     home-manager = {
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,75 +38,27 @@
     };
     # 锁定 cachix 分支（命中二进制缓存）
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
+    # nix fmt 统一格式化（nixfmt/stylua/shfmt + deadnix/statix）
+    treefmt-nix = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:numtide/treefmt-nix";
+    };
     zen-browser = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:0xc000022070/zen-browser-flake";
     };
   };
-  outputs =   {
-    nixpkgs,
-    home-manager,
-    disko,
-    noctalia,
-    noctalia-greeter,
-    zen-browser,
-    kimi-code,
-    nixkits,
-    agenix,
-    nix-flatpak,
-    ...
-  }:
-let
-      inherit (nixpkgs) lib;
-      system = "x86_64-linux";
-      # 自定义函数库与 overlay（见 libs/、overlays/），mylib 经 specialArgs 注入所有模块
-      mylib = import ./libs {
-        inherit lib;
-      };
-      # 自动发现 hosts/*：目录名即 hostName，机器参数读自各目录的 host.nix
-      hostDirs = lib.filterAttrs (_: type: type == "directory") (builtins.readDir ./hosts);
-      hosts = lib.mapAttrs (name: _: import (./hosts + "/${name}/host.nix") // {
-      hostName = name;
-    }) hostDirs;
-      # installMode：新机无 host key，排除 secrets 以免中断安装
-      mkHost =       name: cfg: installMode: lib.nixosSystem {
-              inherit system;
-              modules = [
-                ./hosts/${name}
-                disko.nixosModules.disko
-                noctalia-greeter.nixosModules.default
-                agenix.nixosModules.default
-                nix-flatpak.nixosModules.nix-flatpak
-                {
-                  nixpkgs.overlays = import ./overlays {
-                    inherit lib;
-                  };
-                }
-              ] ++ lib.optionals (!installMode) [
-                home-manager.nixosModules.home-manager
-                {
-                  home-manager = {
-                    backupFileExtension = "backup";
-                    extraSpecialArgs = cfg // {
-                      inherit noctalia zen-browser kimi-code nixkits mylib;
-                    };
-                    useGlobalPkgs = true;
-                    useUserPackages = true;
-                    # 只挂载存在 home/<user>/ 目录的用户
-                    users = lib.genAttrs (builtins.filter (u: builtins.pathExists (./home + "/${u}")) cfg.users) (u: import (./home + "/${u}"));
-                  };
-                }
-              ];
-              specialArgs = cfg // {
-                inherit noctalia zen-browser kimi-code nixkits mylib installMode;
-              };
-            };
-in
-    {
-      nixosConfigurations = lib.concatMapAttrs (name: cfg:
-      {
-            "${name}-install" = mkHost name cfg true;
-            ${name} = mkHost name cfg false;
-          }) hosts;
+
+  # 装配层在 modules/flake/（flake-parts 模块）：
+  # hosts/ 自动发现 + den 主机/用户装配（hosts.nix）、全局默认（defaults.nix）、格式化（formatting.nix）
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
+      imports = [
+        inputs.den.flakeModule
+        inputs.treefmt-nix.flakeModule
+        ./modules/flake
+      ];
     };
 }

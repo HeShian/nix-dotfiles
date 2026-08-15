@@ -91,14 +91,15 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 ---
 
 ## 📁 目录结构说明 (Project Structure)
-- **`flake.nix`**: 系统入口（自动发现 `hosts/*` 生成全部系统配置）。
-- **`hosts/westwood/`**: 机器专属配置（每台机器一个 `hosts/<host>/` 目录）。
+- **`flake.nix`**: 系统入口（flake-parts + den + treefmt-nix；装配逻辑在 `modules/flake/`）。
+- **`modules/flake/`**: flake-parts 装配层。`hosts.nix` 自动发现 `hosts/*`，经 den 生成每台主机的 `<host>`/`<host>-install` 配置并挂载用户 HM；`defaults.nix` 全局默认（外部 OS 模块、overlays）；`formatting.nix` 格式化配置（`nix fmt`）。
+- **`hosts/westwood/`**: 机器专属配置（每台机器一个 `hosts/<host>/` 目录，目录名即主机名）。
   - `host.nix`: 当前机器的用户名、邮箱、磁盘、CPU/GPU 类型与用户清单。
-  - `default.nix`: imports 聚合与 `system.stateVersion`。
+  - `default.nix`: 硬件/disko imports 与 `system.stateVersion`。
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
   - `disko.nix`: 分区规则。
-- **`modules/nixos/`**: 系统级模块（驱动、网络、字体、服务等，按主题拆分）。
-- **`modules/home/`**: 共享 Home Manager 配置（桌面/shell/应用，所有用户自动获得）。
+- **`modules/nixos/`**: 系统级模块（驱动、网络、字体、服务等，按主题拆分；由装配层自动聚合，新增模块 = 丢一个文件）。
+- **`modules/home/`**: 共享 Home Manager 配置（桌面/shell/应用，所有用户自动获得；目录内文件自动导入）。
 - **`home/claudia/`**: 用户薄身份层（imports 共享层 + git 署名；每个用户一个 `home/<user>/` 目录）。
 - **`dotfiles/`**: Niri、Noctalia、Neovim 等应用配置。
 
@@ -130,6 +131,9 @@ nh os switch    # 首选系统管理命令（别名 nrs）；底层等价于 sud
 ```bash
 nh os switch -u    # 等价于 nix flake update + nh os switch
 ```
+
+### 4. 如何格式化代码？
+统一用 `nix fmt`（treefmt：nixfmt/stylua/shfmt + deadnix/statix；配置在 `modules/flake/formatting.nix`）。`nix flake check` 会校验格式。
 
 ---
 

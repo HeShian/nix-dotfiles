@@ -92,14 +92,15 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 ---
 
 ## Project Structure
-- **`flake.nix`**: System entry point (auto-discovers `hosts/*` to build all system configurations).
-- **`hosts/westwood/`**: Machine-specific configuration (one `hosts/<host>/` directory per machine).
+- **`flake.nix`**: System entry point (flake-parts + den + treefmt-nix; wiring lives in `modules/flake/`).
+- **`modules/flake/`**: flake-parts wiring layer. `hosts.nix` auto-discovers `hosts/*` and uses den to build each machine's `<host>`/`<host>-install` configurations plus user HM attachment; `defaults.nix` global defaults (external OS modules, overlays); `formatting.nix` formatter config (`nix fmt`).
+- **`hosts/westwood/`**: Machine-specific configuration (one `hosts/<host>/` directory per machine; the directory name is the host name).
   - `host.nix`: Current machine settings for username, email, disk, CPU/GPU type, and user list.
-  - `default.nix`: Imports aggregation and `system.stateVersion`.
+  - `default.nix`: Hardware/disko imports and `system.stateVersion`.
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
-- **`modules/nixos/`**: System-level modules (drivers, networking, fonts, services; split by topic).
-- **`modules/home/`**: Shared Home Manager configuration (desktop/shell/apps; every user gets it automatically).
+- **`modules/nixos/`**: System-level modules (drivers, networking, fonts, services; split by topic; auto-aggregated by the wiring layer — adding a module means dropping in a file).
+- **`modules/home/`**: Shared Home Manager configuration (desktop/shell/apps; every user gets it automatically; files in the directory are auto-imported).
 - **`home/claudia/`**: Thin per-user identity layer (imports the shared layer + git identity; one `home/<user>/` directory per user).
 - **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
 
@@ -133,6 +134,9 @@ To update locked package versions, run:
 ```bash
 nh os switch -u    # equivalent to nix flake update + nh os switch
 ```
+
+### Format Code
+Use `nix fmt` for everything (treefmt: nixfmt/stylua/shfmt + deadnix/statix; config in `modules/flake/formatting.nix`). `nix flake check` validates formatting.
 
 ---
 

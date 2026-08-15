@@ -11,8 +11,8 @@
 | 主机 | westwood |
 | 用户 | claudia |
 | 桌面 | Niri（Wayland 滚动平铺）+ Noctalia v5（Quickshell） |
-| 管理 | Nix Flakes + Home Manager + Disko + agenix |
-| 机器参数 | `hosts/<host>/host.nix`（userName/hostName/disk/cpu/gpu） |
+| 管理 | Nix Flakes（flake-parts + den）+ Home Manager + Disko + agenix |
+| 机器参数 | `hosts/<host>/host.nix`（userName/userEmail/disk/cpu/gpu/users） |
 
 ## 文档索引
 
@@ -28,9 +28,10 @@
 
 | 路径 | 内容 |
 |------|------|
-| `flake.nix` | 系统入口与依赖锁定（自动发现 `hosts/*`） |
-| `hosts/<host>/` | 每主机配置：`host.nix` 机器参数、`disko.nix` 分区、`hardware-configuration.nix` |
-| `modules/nixos/` | 系统级模块（按主题拆分） |
+| `flake.nix` | 系统入口与依赖锁定（flake-parts + den + treefmt-nix） |
+| `modules/flake/` | flake-parts 装配层（自动发现 `hosts/*`、den 主机/用户装配、`nix fmt` 配置） |
+| `hosts/<host>/` | 每主机配置：`host.nix` 机器参数、`disko.nix` 分区、`hardware-configuration.nix`；目录名即主机名 |
+| `modules/nixos/` | 系统级模块（按主题拆分，装配层自动聚合） |
 | `modules/home/` | 共享 Home Manager 配置（所有用户自动获得） |
 | `home/<user>/` | 每用户薄身份层（imports 共享层 + git 署名） |
 | `overlays/` | 自定义 nixpkgs overlay（自动聚合） |
