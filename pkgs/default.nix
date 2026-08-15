@@ -2,4 +2,5 @@
 { pkgs }:
 {
     mazi51 = pkgs.callPackage ./51mazi.nix {};
+    dsh = pkgs.callPackage ./dsh {};
   }

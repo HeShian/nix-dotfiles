@@ -12,7 +12,7 @@ Categorized software list. Declared in: `modules/home/app.nix` (daily apps), `mo
 | IM/Meetings | telegram-desktop, discord, qq, wechat, wemeet (via wemeet-xwayland wrapper) |
 | Notes/Reading | obsidian, z-library-desktop, readest |
 | Office | wpsoffice-cn (WPS 365, see font note below), onlyoffice-desktopeditors |
-| Development | vscode, opencode, pi-coding-agent, kimi-code, kitsfmt, uv, python3 |
+| Development | vscode, opencode, pi-coding-agent, kimi-code, kitsfmt, dsh (DeepSeek Harness, `dsh web` starts the Web UI), uv, python3 |
 | Creation | obs-studio, krita |
 | Network tools | gopeed (download), localsend (LAN transfer), go-musicfox (NetEase), remmina (RDP) |
 | Gaming | gamescope, prismlauncher (Minecraft), protonplus, lutris, heroic |

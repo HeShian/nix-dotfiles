@@ -152,11 +152,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786733733,
-        "narHash": "sha256-eNf5Q7ffGRH5EFp7ERpT1oeQugs0GckN85ojG9iMWWU=",
+        "lastModified": 1786774183,
+        "narHash": "sha256-Qn50vXX61eJODflMsUE7O5mpe86H8n/k7ZuoqMDgQM0=",
         "owner": "MoonshotAI",
         "repo": "kimi-code",
-        "rev": "d96cd037702637305422222e985139e51ff83c8c",
+        "rev": "6b72345f8bb03487e3bcc05b541e65484818428c",
         "type": "github"
       },
       "original": {
@@ -168,7 +168,7 @@
     "llama-cpp-ver": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-g8eXmHWiZheABZJ0FVU1TaEnZXcXwVPYJ4wnrGbXAtY=",
+        "narHash": "sha256-jgubuokIRDJmm6kI40+cIGcbnEe2/J47AodWcACxW1Q=",
         "type": "file",
         "url": "https://api.github.com/repos/ggml-org/llama.cpp/releases/latest"
       },
