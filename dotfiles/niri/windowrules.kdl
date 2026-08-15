@@ -159,6 +159,14 @@ window-rule {
     opacity 0.9
 }
 
+// 浏览器不透明（放在全局透明度规则之后，确保覆盖）
+window-rule {
+    match app-id="zen"
+    match app-id="zen-twilight"
+    match app-id="brave-browser"
+    opacity 1.0
+}
+
 // Krita 不透明（放在全局透明度规则之后，确保覆盖）
 window-rule {
     match app-id="krita"

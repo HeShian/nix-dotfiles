@@ -12,6 +12,7 @@ result-*
 .pi/
 .mcp.json
 opencode.json
+AGENTS.md
 
 # 常见兜底规则
 .env*
