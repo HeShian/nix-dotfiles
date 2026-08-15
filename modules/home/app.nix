@@ -3,7 +3,6 @@
   lib,
   zen-browser,
   kimi-code,
-  nixkits,
   ...
 }:
 {
@@ -44,7 +43,7 @@
   # IM/会议：telegram、discord、qq、wechat、wemeet（见下方绿屏方案）
   # 笔记/阅读：obsidian、z-library、readest、onlyoffice-desktopeditors
   # 办公：wpsoffice-cn（WPS 365）
-  # 开发：vscode、opencode、pi-coding-agent、kimi-code、kitsfmt（后三个来自 flake 输入）、dsh（DeepSeek Harness，pkgs/ 自打包 npm 包）、uv、python3
+  # 开发：vscode、opencode、pi-coding-agent、kimi-code（flake 输入）、dsh（DeepSeek Harness，pkgs/ 自打包 npm 包）、uv、python3
   # 创作：obs-studio、krita、mazi51（51mazi 小说写作，pkgs/ 自打包 AppImage）
   # 网络工具：gopeed（下载）、localsend（局域网传文件）、go-musicfox（网易云）、remmina（远程桌面）
   # 游戏：gamescope、prismlauncher（MC）、protonplus、lutris、heroic（steam/KDE Connect 由系统模块提供）
@@ -86,7 +85,6 @@
       ;
     inherit (pkgs.wineWow64Packages) stableFull;
     kimi-code-cli = kimi-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    kitsfmt = nixkits.packages.${pkgs.stdenv.hostPlatform.system}.kitsfmt;
     zen-twilight = zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight;
   };
 }

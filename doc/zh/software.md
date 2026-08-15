@@ -12,7 +12,7 @@
 | IM/会议 | telegram-desktop、discord、qq、wechat、wemeet（走 wemeet-xwayland 包装） |
 | 笔记/阅读 | obsidian、z-library-desktop、readest |
 | 办公 | wpsoffice-cn（WPS 365，缺字体见下方说明）、onlyoffice-desktopeditors |
-| 开发 | vscode、opencode、pi-coding-agent、kimi-code、kitsfmt、dsh（DeepSeek Harness，`dsh web` 启动 Web UI）、uv、python3 |
+| 开发 | vscode、opencode、pi-coding-agent、kimi-code、dsh（DeepSeek Harness，`dsh web` 启动 Web UI）、uv、python3 |
 | 创作 | obs-studio、krita |
 | 网络工具 | gopeed（下载）、localsend（局域网传文件）、go-musicfox（网易云）、remmina（远程桌面） |
 | 游戏 | gamescope、prismlauncher（MC）、protonplus、lutris、heroic |

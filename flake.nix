@@ -26,7 +26,7 @@
     };
     # 跟随最新 stable tag
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-    # nixpkgs.follows 避免重复下载 nixpkgs 源码；代价：kitsfmt 无法命中上游 cachix，需本地编译
+    # nixpkgs.follows 避免重复下载 nixpkgs 源码（nixkits 仅以源码形式引用 skills，无构建）
     nixkits = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:Kihara777/NixKits";

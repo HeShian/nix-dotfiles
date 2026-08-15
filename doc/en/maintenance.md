@@ -44,6 +44,5 @@ Pick an older generation in the GRUB boot menu. A broken new generation never af
 
 | Item | Notes |
 |------|-------|
-| kitsfmt `++` bug | Formats `++` into `+`; always dry-build and check after running it (see AGENTS.md) |
-| wemeet block | The overrideAttrs in `overlays/wemeet.nix` is hand-formatted (formatter bug) — leave its style alone |
+| Formatting | Always use `nix fmt` (treefmt: nixfmt/stylua/shfmt + deadnix/statix; config in `modules/flake/formatting.nix`); kitsfmt is no longer used in this repo |
 | Secrets | After changing `secrets/`, run `nh os switch` to refresh `/run/agenix/` plaintext |

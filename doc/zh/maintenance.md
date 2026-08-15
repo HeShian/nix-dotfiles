@@ -44,6 +44,5 @@
 
 | 事项 | 说明 |
 |------|------|
-| kitsfmt `++` bug | 会把 `++` 格式化成 `+`，运行后必须 dry-build 验证并检查（见 AGENTS.md） |
-| wemeet 块 | `overlays/wemeet.nix` 的 overrideAttrs 是手工格式（formatter bug），不要对它有格式洁癖 |
+| 格式化 | 统一用 `nix fmt`（treefmt：nixfmt/stylua/shfmt + deadnix/statix，配置在 `modules/flake/formatting.nix`）；本仓库不再使用 kitsfmt |
 | 密钥 | 改动 `secrets/` 后需 `nh os switch` 才刷新 `/run/agenix/` 明文 |
