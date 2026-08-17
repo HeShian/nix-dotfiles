@@ -12,12 +12,13 @@
 | 用户 | claudia |
 | 桌面 | Niri（Wayland 滚动平铺）+ Noctalia v5（Quickshell） |
 | 管理 | Nix Flakes（flake-parts + den）+ Home Manager + Disko + agenix |
-| 机器参数 | `hosts/<host>/host.nix`（userName/userEmail/disk/cpu/gpu/users） |
+| 机器参数 | `hosts/<host>/host.nix`（disk/cpu/gpu/primaryUser/proxy/users 元数据） |
 
 ## 文档索引
 
 | 文档 | 内容 |
 |------|------|
+| [架构](architecture.md) | den 装配结构、aspect 清单、install 变体 |
 | [快捷键](shortcuts.md) | Niri 全部键位 |
 | [软件](software.md) | 已安装软件分类清单 |
 | [维护](maintenance.md) | 日常维护、升级与回滚 |
@@ -31,9 +32,7 @@
 | `flake.nix` | 系统入口与依赖锁定（flake-parts + den + treefmt-nix） |
 | `modules/flake/` | flake-parts 装配层（自动发现 `hosts/*`、den 主机/用户装配、`nix fmt` 配置） |
 | `hosts/<host>/` | 每主机配置：`host.nix` 机器参数、`disko.nix` 分区、`hardware-configuration.nix`；目录名即主机名 |
-| `modules/nixos/` | 系统级模块（按主题拆分，装配层自动聚合） |
-| `modules/home/` | 共享 Home Manager 配置（所有用户自动获得） |
-| `home/<user>/` | 每用户薄身份层（imports 共享层 + git 署名） |
+| `modules/features/` | feature aspects（一个文件一个 feature，文件名即 aspect 名；可同时含两类配置；自动聚合） |
 | `overlays/` | 自定义 nixpkgs overlay（自动聚合） |
 | `libs/` | 自定义函数库（聚合为 `mylib`，注入所有模块） |
 | `dotfiles/` | 应用配置（活链接到 `~/.config`，改动无需 rebuild） |

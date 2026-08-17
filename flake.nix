@@ -6,6 +6,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:ryantm/agenix";
     };
+    # 非官方 Linux 封装：复用上游 Nix/HM 模块，避免在不可变系统上运行发行版安装脚本
+    codex-desktop-linux = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:distsystem/codex-desktop-linux";
+    };
     # 主机/用户 aspect 装配框架（flake-parts 模块；den 无 flake 输入，依赖在求值期内置拉取）
     den.url = "github:denful/den";
     disko = {
@@ -50,7 +55,8 @@
   };
 
   # 装配层在 modules/flake/（flake-parts 模块）：
-  # hosts/ 自动发现 + den 主机/用户装配（hosts.nix）、全局默认（defaults.nix）、格式化（formatting.nix）
+  # hosts/ 自动发现 + den 主机/用户装配（hosts.nix）、元数据类型声明（schema.nix）、
+  # 全局默认（defaults.nix）、格式化（formatting.nix）；feature aspects 在 modules/features/（自动聚合）
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {

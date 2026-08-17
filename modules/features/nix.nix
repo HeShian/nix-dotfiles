@@ -1,0 +1,29 @@
+# Nix 本体：实验特性、国内镜像与 cachix 缓存、allowUnfree、nix-ld FHS 兼容层
+_: {
+  den.aspects.nix.nixos = _: {
+    # 国内镜像 + noctalia/nixkits cachix
+    nix.settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      # 保持构建隔离；确需访问宿主资源的个别派生应显式声明，而不是全局放开。
+      sandbox = true;
+      substituters = [
+        "https://mirrors.ustc.edu.cn/nix-channels/store"
+        "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
+        "https://cache.nixos.org"
+        "https://noctalia.cachix.org"
+        "https://nixkits.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+        "nixkits.cachix.org-1:ycmoZnAnvjGsSzIMdGNmFdc65LeRW/GZ7GdN7KkRL8c="
+      ];
+    };
+    nixpkgs.config.allowUnfree = true;
+    # FHS 兼容层
+    programs.nix-ld.enable = true;
+  };
+}

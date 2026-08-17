@@ -11,6 +11,7 @@
 | `nrs`（= `nh os switch`） | 应用 `.nix` 改动，切换系统世代 |
 | `nh os build` | 仅构建验证，不切换（改动后首选验证方式） |
 | `nix flake update` | 升级全部 flake 输入 |
+| `nix flake update <name>` | 只升级一个 flake 输入 |
 | `nh os switch -u` | 升级输入并应用 |
 | `niri msg action load-config-file` | 热重载 Niri 配置 |
 | `niri validate` | 校验 Niri 配置 |
@@ -35,10 +36,23 @@
 
 | 改动类型 | 位置 |
 |------|------|
-| GUI/CLI 软件 | `modules/home/app.nix` / `modules/home/desktop.nix` / `modules/home/shell.nix` |
-| 系统级组件 | `modules/nixos/` 对应主题文件 |
-| 应用配置目录 | `dotfiles/<name>/`（在 `modules/home/default.nix` 的 `configs` 登记） |
+| GUI/CLI 软件 | `modules/features/apps.nix` / `modules/features/desktop.nix` / `modules/features/shell.nix`（homeManager 部分） |
+| 系统级组件 | `modules/features/` 对应文件的 nixos 部分 |
+| 应用配置目录 | `dotfiles/<name>/`（在 `modules/features/dotfiles.nix` 的 `configs` 登记） |
 | 机器相关参数 | 一律走 `hosts/<host>/host.nix`，不要硬编码 |
+
+## 手动维护场景
+
+| 场景 | 步骤 |
+|------|------|
+| 新增 feature 模块 | 在 `modules/features/` 加文件（文件名即 aspect 名，目录自动聚合）→ 把名字加入 `modules/flake/hosts.nix` 的 `hostFeatureNames` 或 `userFeatureNames`；仅常规系统需要的 host feature 再加入 `installExcludedFeatureNames` |
+| 新增主机 | 复制 `hosts/aspire-a715/` 为 `hosts/<新名>/`，改 `host.nix` 机器参数并生成 `hardware-configuration.nix`；全新机器直接用 `init.sh` |
+| 新增用户 | 在 `hosts/<host>/host.nix` 增加 `users.<name> = { email = ...; isAdmin = ...; sshAuthorizedKeys = [ ... ]; };`；只有主用户还需设置 `primaryUser = "<name>"` |
+| 修改机器参数 | 编辑 `hosts/<host>/host.nix`；`cpu`/`gpu` 取值受 `den.schema.host` 枚举约束（amd/intel、nvidia/amd/intel），拼错属性名会在装配层报错 |
+| 升级单个 flake 输入 | `nix flake update <name>`（如 noctalia 发新版） |
+| 验证改动 | 新增 Nix 文件先 `git add -N <file>` → `nix fmt` → `nix flake check`（含 ShellCheck）→ `nh os build`，确认无误再 `nrs` |
+
+改 feature 挂载或装配逻辑前建议先读 [架构](architecture.md)。
 
 ## 注意
 

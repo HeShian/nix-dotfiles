@@ -9,7 +9,7 @@
 - `settings.toml`：`~/.local/state/noctalia/settings.toml` 的副本（v5 全部设置：bar 布局、桌面/锁屏小组件、主题选择、壁纸、overview backdrop），家目录写成 `@HOME@` 占位符。
 - `state/`：社区调色板（community-palettes）与社区模板（community-templates）的缓存副本，保证重装后主题离线可用。
 
-`modules/home/default.nix` 的 `home.activation.noctaliaSeed` 在每次 rebuild 时检查：**目标文件不存在才拷贝**（之后由 Noctalia 运行时维护/覆写），拷贝时把占位符替换为实际路径。
+`modules/features/dotfiles.nix` 的 `home.activation.noctaliaSeed` 在每次 rebuild 时检查：**目标文件不存在才拷贝**（之后由 Noctalia 运行时维护/覆写），拷贝时把占位符替换为实际路径。
 
 **当前配置调整满意后想更新种子**，手动同步回来（占位符替换不可少）：
 
@@ -55,7 +55,7 @@ post_hook   = "(fcitx5 -r >/dev/null 2>&1 &)"
 - **热重载必须用 `fcitx5 -r`（替换实例）而非 `fcitx5-remote -r`**：后者只重读配置、
   不会重读主题文件本身（参考 shorin-arch-setup 的做法）。`fcitx5 -r` 无缝替换进程，
   输入仅瞬断，新实例自动接管 DBus 与 Wayland 连接。
-- `modules/nixos/locale.nix` 安装的 `fcitx5-nord` / `catppuccin-fcitx5` 皮肤包仍保留作备选，
+- `modules/features/locale.nix` 安装的 `fcitx5-nord` / `catppuccin-fcitx5` 皮肤包仍保留作备选，
   在 fcitx5 配置工具里随时可切回。
 
 ## 内置模板
@@ -64,7 +64,7 @@ niri / gtk3 / gtk4 / foot / qt 等配色使用 Noctalia 内置模板，在 Nocta
 （`noctalia theme --list-templates` 可列出全部内置模板 id）：
 
 - niri → 生成 `~/.config/niri/noctalia.kdl`（`config.kdl` 已 include；该路径是真实目录，不进 git）
-- foot → 生成 `~/.config/foot/themes/noctalia`（`modules/home/desktop.nix` 的 foot 配置已 include）
+- foot → 生成 `~/.config/foot/themes/noctalia`（`modules/features/desktop.nix` 的 foot 配置已 include）
 - gtk3/gtk4 → 生成 `~/.config/gtk-*/noctalia.css` 并维护 `gtk.css` 的 `@import`
 
 ## 社区模板（含 VSCode）
@@ -89,7 +89,7 @@ neovim、obsidian、vscode、discord、obs、opencode、prismlauncher、steam、
 生成 `~/.local/share/icons/Adwaita-Matugen-{A,B}` 双主题并通过 gsettings 翻转，强制应用刷新图标。
 
 - 需要 `adwaita-icon-theme`（Inherits 基础）与 `gsettings-desktop-schemas`（gsettings schema），
-  均已在 `modules/home/desktop.nix` 安装；`modules/nixos/desktop.nix` 的 `sessionVariables.XDG_DATA_DIRS`
+  均已在 `modules/features/desktop.nix` 安装；同文件系统侧的 `sessionVariables.XDG_DATA_DIRS`
   已追加 schema 路径（改动后需重新登录）。
 - `xsettingsd.conf` 的 `Net/IconThemeName` 静态指向 `Adwaita-Matugen-B`，
   GTK3 应用在 A/B 翻转时可能滞后一代换色（与参考仓库一致的行为）。

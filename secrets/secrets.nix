@@ -3,31 +3,21 @@ let
   aspire-a715 = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID0r8ojOXN2n9Ufqn6owjKu1twZndbyvrJ9tsnxTByYO";
   # 用户密钥（本机 agenix CLI 查看/编辑用）
   claudia = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFRoL7nbbokjssmkeAjrXIQrz5mp5mgd1mZMP6g2UaE3";
+  # 所有密钥的共同接收者：主机（激活时解密）+ 用户（CLI 查看/编辑）
+  allKeys = [
+    aspire-a715
+    claudia
+  ];
 in
 {
   # DeepSeek API key（VSCode Copilot）
-  "deepseek_api_copilot.age".publicKeys = [
-    aspire-a715
-    claudia
-  ];
+  "deepseek_api_copilot.age".publicKeys = allKeys;
   # DeepSeek API key（opencode）
-  "deepseek_api_opencode.age".publicKeys = [
-    aspire-a715
-    claudia
-  ];
+  "deepseek_api_opencode.age".publicKeys = allKeys;
   # DeepSeek API key（pi-coding-agent）
-  "deepseek_api_pi.age".publicKeys = [
-    aspire-a715
-    claudia
-  ];
+  "deepseek_api_pi.age".publicKeys = allKeys;
   # DeepSeek API key（deepseek-harness / dsh）
-  "deepseek_api_dsh.age".publicKeys = [
-    aspire-a715
-    claudia
-  ];
+  "deepseek_api_dsh.age".publicKeys = allKeys;
   # GitHub PAT（ghp_ 前缀）
-  "github_token_codeberg.age".publicKeys = [
-    aspire-a715
-    claudia
-  ];
+  "github_token_codeberg.age".publicKeys = allKeys;
 }

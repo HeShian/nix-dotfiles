@@ -1,8 +1,8 @@
 中文 | [English](README_EN.md)
 
 ## 概览 (Overview)
-![Desktop Screenshot](./space.png)
-![Fastfetch Screenshot](./ff.png)
+![Desktop Screenshot](./doc/img/space.png)
+![Fastfetch Screenshot](./doc/img/ff.png)
 
 > 基于 NixOS + Niri + Noctalia v5 的个人桌面配置。这里记录安装前要确认的内容和日常维护命令。
 
@@ -35,10 +35,19 @@
   export https_proxy="http://192.168.42.129:7890"
   ```
 
+  也可以在运行时直接用环境变量覆盖（`init.sh` 里的值只是默认值）：
+  ```bash
+  sudo http_proxy="http://192.168.42.129:7890" https_proxy="http://192.168.42.129:7890" ./init.sh
+  ```
+
 - **安装后**
   重启进入新系统后，通常就可以使用电脑本机的代理客户端。此时系统代理应指向本机地址，而不是手机网关：
   ```nix
-  networking.proxy.default = "http://127.0.0.1:7890";
+  # hosts/<host>/host.nix
+  proxy = {
+    default = "http://127.0.0.1:7890";
+    noProxy = "127.0.0.1,::1,localhost";
+  };
   ```
 
   如果你的代理端口不是 `7890`，按实际端口修改。
@@ -57,7 +66,7 @@ sudo -i
 git clone https://github.com/huzch/nix-dotfiles.git
 cd nix-dotfiles
 ```
-2. 执行安装脚本，按提示确认用户名、邮箱、主机名、磁盘、CPU/GPU。脚本会显示 `lsblk`，并要求输入 `ERASE <disk>` 才会格式化：
+2. 执行安装脚本，按提示确认用户名、邮箱、主机名、磁盘、CPU/GPU、安装后代理和 SSH 公钥。脚本会显示 `lsblk`，并要求输入 `ERASE <disk>` 才会格式化：
 ```bash
 ./init.sh
 ```
@@ -70,17 +79,20 @@ Host name [aspire-a715]:
 Target disk [/dev/nvme0n1]:
 CPU (amd/intel) [intel]:
 GPU (nvidia/amd/intel) [nvidia]:
+Installed-system proxy [http://127.0.0.1:7890]:
+SSH authorized key (optional) [ssh-ed25519 ...]:
 ```
 
 | 优先级 | 配置项 | 需要确认的事 |
 | --- | --- | --- |
 | P0 | `DISK` | 确认不是 U 盘、移动硬盘或有重要数据的硬盘。 |
-| P1 | `GPU` / `USER_NAME` | GPU 影响桌面启动；用户名影响登录和 home 目录。 |
+| P1 | `GPU` / `USER_NAME` / SSH 公钥 | GPU 影响桌面启动；用户名影响 home 目录；错误公钥会授予远程登录。 |
+| P1 | 安装后代理 | 必须是新系统启动代理客户端后可用的地址，通常为 `127.0.0.1`。 |
 | P2 | `CPU` / `HOST_NAME` | CPU 影响微码；主机名影响 flake 输出名。 |
 
 安装完成后重启。脚本会准备 `~/Documents/nix-dotfiles` 和 `~/Pictures/wallpapers`。
 
-脚本支持断点重试。需要从头开始时使用：
+脚本支持断点重试；断点会绑定主机、磁盘、用户和硬件参数，并校验 `/mnt` 所属磁盘。需要从头开始时，先核对并卸载 `/mnt`，再使用：
 ```bash
 ./init.sh --reset
 ```
@@ -92,23 +104,21 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 
 ## 📁 目录结构说明 (Project Structure)
 - **`flake.nix`**: 系统入口（flake-parts + den + treefmt-nix；装配逻辑在 `modules/flake/`）。
-- **`modules/flake/`**: flake-parts 装配层。`hosts.nix` 自动发现 `hosts/*`，经 den 生成每台主机的 `<host>`/`<host>-install` 配置并挂载用户 HM；`defaults.nix` 全局默认（外部 OS 模块、overlays）；`formatting.nix` 格式化配置（`nix fmt`）。
+- **`modules/flake/`**: flake-parts 装配层。`hosts.nix` 自动发现 `hosts/*`，经 den 生成每台主机的 `<host>`/`<host>-install` 配置并挑选 feature aspects；`schema.nix` 元数据类型声明；`defaults.nix` 全局默认；`install-tools.nix` 导出锁定的 Disko app；`formatting.nix`/`checks.nix` 提供格式化和静态检查。装配细节见 [doc/zh/architecture.md](doc/zh/architecture.md)。
 - **`hosts/aspire-a715/`**: 机器专属配置（每台机器一个 `hosts/<host>/` 目录，目录名即主机名）。
-  - `host.nix`: 当前机器的用户名、邮箱、磁盘、CPU/GPU 类型与用户清单。
+  - `host.nix`: 当前机器的磁盘、CPU/GPU、主用户、代理及逐用户权限/邮箱/SSH 公钥。
   - `default.nix`: 硬件/disko imports 与 `system.stateVersion`。
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
   - `disko.nix`: 分区规则。
-- **`modules/nixos/`**: 系统级模块（驱动、网络、字体、服务等，按主题拆分；由装配层自动聚合，新增模块 = 丢一个文件）。
-- **`modules/home/`**: 共享 Home Manager 配置（桌面/shell/应用，所有用户自动获得；目录内文件自动导入）。
-- **`home/claudia/`**: 用户薄身份层（imports 共享层 + git 署名；每个用户一个 `home/<user>/` 目录）。
+- **`modules/features/`**: feature aspects（一个文件一个 feature，文件名即 aspect 名；可同时含 nixos/homeManager 两类配置；目录自动聚合）。
 - **`dotfiles/`**: Niri、Noctalia、Neovim 等应用配置。
 
 ---
 
 ## 🛠️ 如何维护你的配置 (Maintenance)
 ### 1. 如何安装新软件？
-- 系统组件：编辑 `modules/nixos/` 下对应主题文件。
-- 日常软件：编辑 `modules/home/app.nix` 或其他 `modules/home/` 配置。
+- 系统组件：编辑 `modules/features/` 下对应文件的 nixos 部分。
+- 日常软件：编辑 `modules/features/apps.nix`（或其他 feature 的 homeManager 部分）。
 
 包名可在 [search.nixos.org](https://search.nixos.org/packages) 搜索。
 
@@ -116,7 +126,10 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 - Niri 合成器：编辑 `dotfiles/niri/config.kdl`，然后运行 `niri msg action load-config-file` 热重载。
 - Noctalia Shell：通过 Noctalia 设置面板（`Super + F2`）或用 `Super + Z` 打开启动器后搜索设置。
 
-### 3. 如何应用你的修改？
+### 3. 如何新增 feature 模块、主机或用户？
+装配结构（den aspect/includes、install 变体）见 [doc/zh/architecture.md](doc/zh/architecture.md)；具体步骤见 [doc/zh/maintenance.md](doc/zh/maintenance.md) 的「手动维护场景」。
+
+### 4. 如何应用你的修改？
 只修改 `dotfiles/` 下已有文件，通常不需要 rebuild。
 
 修改 `.nix`、软件包、服务，或新增 Nix 管理的文件后执行：
@@ -132,8 +145,8 @@ nh os switch    # 首选系统管理命令（别名 nrs）；底层等价于 sud
 nh os switch -u    # 等价于 nix flake update + nh os switch
 ```
 
-### 4. 如何格式化代码？
-统一用 `nix fmt`（treefmt：nixfmt/stylua/shfmt + deadnix/statix；配置在 `modules/flake/formatting.nix`）。`nix flake check` 会校验格式。
+### 5. 如何格式化代码？
+统一用 `nix fmt`（treefmt：nixfmt/stylua/shfmt + deadnix/statix；配置在 `modules/flake/formatting.nix`）。`nix flake check` 会校验格式并对一方 Shell 脚本运行 ShellCheck。
 
 ---
 

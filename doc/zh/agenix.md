@@ -10,8 +10,8 @@
 |------|------|
 | 解密私钥 | 主机 SSH host key `/etc/ssh/ssh_host_ed25519_key`（`age.identityPaths` 指定） |
 | 接收方 | `secrets/secrets.nix` 登记：`aspire-a715`（host key，系统激活用）、`claudia`（用户 `~/.ssh/id_ed25519`，CLI 查看/编辑用） |
-| 声明 | `modules/nixos/secrets.nix` 的 `lib.genAttrs` 列表，新增密钥加一行 |
-| 读取 | `owner = userName`，用户可直接读 `/run/agenix/<name>` |
+| 声明 | `modules/features/secrets.nix` 的 `lib.genAttrs` 列表，新增密钥加一行 |
+| 读取 | `owner = host.primaryUser`，主用户可直接读 `/run/agenix/<name>` |
 
 ## 现有密钥
 
@@ -20,6 +20,7 @@
 | `deepseek_api_copilot` | VSCode Copilot 自定义端点 |
 | `deepseek_api_opencode` | opencode |
 | `deepseek_api_pi` | pi-coding-agent |
+| `deepseek_api_dsh` | DeepSeek Harness（dsh） |
 | `github_token_codeberg` | GitHub PAT（ghp_ 前缀） |
 
 ## 常用命令

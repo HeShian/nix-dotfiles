@@ -10,8 +10,8 @@ Secrets management: ciphertext (`.age`) is committed in `secrets/`; plaintext is
 |------|-------|
 | Decryption key | Host SSH host key `/etc/ssh/ssh_host_ed25519_key` (set via `age.identityPaths`) |
 | Recipients | In `secrets/secrets.nix`: `aspire-a715` (host key, activation) and `claudia` (user `~/.ssh/id_ed25519`, CLI view/edit) |
-| Declaration | `lib.genAttrs` list in `modules/nixos/secrets.nix`; add one line for a new secret |
-| Reading | `owner = userName`; the user can read `/run/agenix/<name>` directly |
+| Declaration | `lib.genAttrs` list in `modules/features/secrets.nix`; add one line for a new secret |
+| Reading | `owner = host.primaryUser`; the primary user can read `/run/agenix/<name>` directly |
 
 ## Current Secrets
 
@@ -20,6 +20,7 @@ Secrets management: ciphertext (`.age`) is committed in `secrets/`; plaintext is
 | `deepseek_api_copilot` | VSCode Copilot custom endpoint |
 | `deepseek_api_opencode` | opencode |
 | `deepseek_api_pi` | pi-coding-agent |
+| `deepseek_api_dsh` | DeepSeek Harness (dsh) |
 | `github_token_codeberg` | GitHub PAT (ghp_ prefix) |
 
 ## Commands

@@ -2,7 +2,7 @@
 
 # Software
 
-Categorized software list. Declared in: `modules/home/app.nix` (daily apps), `modules/home/desktop.nix` (desktop tools), `modules/home/shell.nix` (terminal tools), `modules/nixos/desktop.nix` (system modules), `modules/nixos/flatpak.nix` (Flatpak).
+Categorized software list. Declared in `modules/features/` (`apps.nix` daily apps, `desktop.nix` desktop tools and system desktop, `shell.nix` terminal tools, `flatpak.nix` Flatpak).
 
 ## Daily Apps
 
@@ -12,9 +12,9 @@ Categorized software list. Declared in: `modules/home/app.nix` (daily apps), `mo
 | IM/Meetings | telegram-desktop, discord, qq, wechat, wemeet (via wemeet-xwayland wrapper) |
 | Notes/Reading | obsidian, z-library-desktop, readest |
 | Office | wpsoffice-cn (WPS 365, see font note below), onlyoffice-desktopeditors |
-| Development | vscode, opencode, pi-coding-agent, kimi-code, dsh (DeepSeek Harness, `dsh web` starts the Web UI), uv, python3 |
-| Creation | obs-studio, krita |
-| Network tools | gopeed (download), localsend (LAN transfer), go-musicfox (NetEase), remmina (RDP) |
+| Development | Codex Desktop (unofficial Linux wrapper) + codex CLI, vscode, opencode, pi-coding-agent, kimi-code, dsh (DeepSeek Harness, `dsh web` starts the Web UI), uv, python3 |
+| Creation | obs-studio, krita, mazi51 (51mazi novel editor) |
+| Network tools | flclash (proxy), gopeed (download), localsend (LAN transfer), go-musicfox (NetEase), remmina (RDP) |
 | Gaming | gamescope, prismlauncher (Minecraft), protonplus, lutris, heroic |
 | Wine/Containers | wine (stableFull), winetricks, waydroid-helper |
 
@@ -55,3 +55,6 @@ Categorized software list. Declared in: `modules/home/app.nix` (daily apps), `mo
 | neovim | Editor (config in `dotfiles/nvim/`) |
 | lazygit | git TUI |
 | fastfetch / btop | System info / resource monitor |
+| rtk | Compress command output to reduce AI-agent token use |
+| codegraph | Code knowledge graph and MCP index |
+| nodejs | npm/npx runtime and CLI dependency |

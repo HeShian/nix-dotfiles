@@ -11,9 +11,10 @@
 
 set -e # 任何命令失败立即中止（配合 run_once：失败步骤不落标记，重跑时重试）
 
-# 安装期代理：Live ISO 阶段拉取 flake 依赖需经此代理，属安装刚需而非可选项
-export http_proxy="http://10.244.79.176:7890"
-export https_proxy="http://10.244.79.176:7890"
+# 安装期代理：Live ISO 阶段拉取 flake 依赖需经此代理，属安装刚需而非可选项。
+# 默认值是手机 USB 共享网关；环境已有 http_proxy/https_proxy 时以环境为准
+export http_proxy="${http_proxy:-http://10.244.79.176:7890}"
+export https_proxy="${https_proxy:-http://10.244.79.176:7890}"
 
 USER_NAME=""
 USER_EMAIL=""
@@ -21,13 +22,17 @@ HOST_NAME=""
 DISK=""
 CPU=""
 GPU=""
+SYSTEM_PROXY=""
+SSH_AUTHORIZED_KEY=""
 USER_HOME=""
 USER_DOCS=""
 USER_PICTURES=""
 DOTFILES_TARGET=""
 WALLPAPERS_TARGET=""
 STATE_DIR="/mnt/var/lib/nix-dotfiles-install-state"
+STATE_CONTEXT="${STATE_DIR}/context"
 RESET_STATE=0
+DISK_CANONICAL=""
 
 if [ "$#" -gt 1 ] || { [ "$#" -eq 1 ] && [ "$1" != "--reset" ]; }; then
   echo "Usage: $0 [--reset]"
@@ -48,14 +53,93 @@ fi
 # 先切到脚本所在目录（即仓库根），避免隐含依赖调用时的 cwd
 cd "$(dirname "$0")"
 
-# 断点状态机：每个步骤完成后在 STATE_DIR 下落一个 <step>.done 标记文件
+# 断点状态机：context 绑定本次安装参数，每个步骤完成后另落一个 <step>.done 标记文件
 step_done() {
   [ -f "${STATE_DIR}/$1.done" ]
 }
 
-mark_done() {
+write_state_context() {
   mkdir -p "${STATE_DIR}"
+  {
+    printf 'host=%s\n' "${HOST_NAME}"
+    printf 'disk=%s\n' "${DISK_CANONICAL}"
+    printf 'user=%s\n' "${USER_NAME}"
+    printf 'cpu=%s\n' "${CPU}"
+    printf 'gpu=%s\n' "${GPU}"
+  } > "${STATE_CONTEXT}"
+}
+
+mark_done() {
+  write_state_context
   touch "${STATE_DIR}/$1.done"
+}
+
+state_value() {
+  sed -n "s/^$1=//p" "${STATE_CONTEXT}"
+}
+
+state_markers_exist() {
+  for marker in "${STATE_DIR}"/*.done; do
+    if [ -e "${marker}" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# 当前磁盘布局不经过 LUKS/LVM；根分区的直接父设备就是 disko 操作的整盘。
+mounted_root_disk() {
+  root_source="$(findmnt -rn -o SOURCE --mountpoint /mnt 2> /dev/null || true)"
+  [ -n "${root_source}" ] || return 1
+  root_source="${root_source%%\[*}"
+  root_parent="$(lsblk -ndo PKNAME "${root_source}" 2> /dev/null | head -n 1)"
+  if [ -n "${root_parent}" ]; then
+    printf '/dev/%s\n' "${root_parent}"
+  else
+    printf '%s\n' "${root_source}"
+  fi
+}
+
+validate_target_mount() {
+  mounted_disk="$(mounted_root_disk || true)"
+  if [ -z "${mounted_disk}" ]; then
+    echo "checkpoint says Disko completed, but /mnt is not a mount point."
+    echo "mount the target layout again or rerun with --reset after unmounting /mnt."
+    exit 1
+  fi
+
+  mounted_disk="$(readlink -f -- "${mounted_disk}")"
+  if [ "${mounted_disk}" != "${DISK_CANONICAL}" ]; then
+    echo "checkpoint target mismatch: /mnt belongs to ${mounted_disk}, expected ${DISK_CANONICAL}."
+    echo "refusing to continue with files from a different disk."
+    exit 1
+  fi
+}
+
+validate_resume_state() {
+  if [ -f "${STATE_CONTEXT}" ]; then
+    saved_host="$(state_value host)"
+    saved_disk="$(state_value disk)"
+    saved_user="$(state_value user)"
+    saved_cpu="$(state_value cpu)"
+    saved_gpu="$(state_value gpu)"
+
+    if [ "${saved_host}" != "${HOST_NAME}" ] || [ "${saved_disk}" != "${DISK_CANONICAL}" ] || [ "${saved_user}" != "${USER_NAME}" ] || [ "${saved_cpu}" != "${CPU}" ] || [ "${saved_gpu}" != "${GPU}" ]; then
+      echo "installation checkpoint does not match the requested host, disk, user, CPU, or GPU."
+      echo "saved:    host=${saved_host} disk=${saved_disk} user=${saved_user} cpu=${saved_cpu} gpu=${saved_gpu}"
+      echo "requested: host=${HOST_NAME} disk=${DISK_CANONICAL} user=${USER_NAME} cpu=${CPU} gpu=${GPU}"
+      echo "verify the target, unmount /mnt if needed, then use --reset to start over."
+      exit 1
+    fi
+  elif state_markers_exist; then
+    echo "legacy or incomplete checkpoint found without an installation context."
+    echo "refusing to guess its target; verify and unmount /mnt, then use --reset."
+    exit 1
+  fi
+
+  if step_done "01-disko"; then
+    validate_target_mount
+  fi
 }
 
 # 幂等执行：步骤已完成则跳过，否则执行并落标记（断点续装的核心）
@@ -92,18 +176,18 @@ read_host_config() {
   done
   # 用 nix 求值读取 host.nix 属性（Live ISO 自带 nix），比 sed 解析文本更稳健。
   # 求值失败时输出为空，由 validate_config 统一兜底报错（保持原有报错路径）。
-  eval_host_attr() {
-    nix --experimental-features "nix-command flakes" eval --impure --expr "(import ./hosts/${TEMPLATE_HOST}/host.nix).$1" --raw 2> /dev/null || true
+  eval_host_expr() {
+    nix --experimental-features "nix-command flakes" eval --impure --expr "let host = import ./hosts/${TEMPLATE_HOST}/host.nix; in $1" --raw 2> /dev/null || true
   }
-  USER_NAME="$(eval_host_attr userName)"
-  USER_EMAIL="$(eval_host_attr userEmail)"
+  USER_NAME="$(eval_host_expr 'host.primaryUser')"
+  USER_EMAIL="$(eval_host_expr 'host.users.${host.primaryUser}.email')"
+  SYSTEM_PROXY="$(eval_host_expr 'if (host.proxy or null) == null then "" else host.proxy.default')"
+  SSH_AUTHORIZED_KEY="$(eval_host_expr 'let keys = host.users.${host.primaryUser}.sshAuthorizedKeys or [ ]; in if keys == [ ] then "" else builtins.head keys')"
   # 主机名的权威来源是 hosts/ 目录名（flake 以目录名为 den host 名），模板默认取目录名
   HOST_NAME="${TEMPLATE_HOST}"
-  DISK="$(eval_host_attr disk)"
-  CPU="$(eval_host_attr cpu)"
-  GPU="$(eval_host_attr gpu)"
-  # 模板用户名，seed_home_dir 用它给新用户名复制一份 HM 配置
-  TEMPLATE_USER="${USER_NAME}"
+  DISK="$(eval_host_expr 'host.disk')"
+  CPU="$(eval_host_expr 'host.cpu')"
+  GPU="$(eval_host_expr 'host.gpu')"
 }
 
 set_user_paths() {
@@ -136,7 +220,7 @@ prompt_value() {
 validate_user_name() {
   case "$1" in
   "" | *[!a-z0-9_-]* | [!a-z_]*)
-    echo "invalid userName: $1"
+    echo "invalid user name: $1"
     echo "use lowercase letters, digits, '_' or '-', and start with a letter or '_'."
     exit 1
     ;;
@@ -144,13 +228,51 @@ validate_user_name() {
 }
 
 validate_user_email() {
-  # userEmail 会插值进未引用 heredoc 生成 host.nix，
+  # 用户邮箱会插值进未引用 heredoc 生成 host.nix，
   # 含双引号、反斜杠或换行会产生语法非法的 Nix 文件，必须在此拦截
   nl='
 '
   case "$1" in
-  "" | *\"* | *\\* | *"$nl"*)
-    echo "invalid userEmail: must not be empty or contain '\"', '\' or newlines."
+  "" | *\"* | *\\* | *'$'* | *"$nl"*)
+    printf '%s\n' "invalid user email: must not be empty or contain '\"', '\\', '$' or newlines."
+    exit 1
+    ;;
+  esac
+}
+
+validate_proxy() {
+  nl='
+'
+  case "$1" in
+  http://* | https://*) ;;
+  *)
+    echo "invalid system proxy: $1"
+    echo "use an http:// or https:// URL."
+    exit 1
+    ;;
+  esac
+  case "$1" in
+  *\"* | *\\* | *'$'* | *"$nl"*)
+    echo "invalid system proxy: must not contain quotes, backslashes, '$' or newlines."
+    exit 1
+    ;;
+  esac
+}
+
+validate_ssh_key() {
+  nl='
+'
+  case "$1" in
+  "") return 0 ;;
+  ssh-ed25519\ * | ssh-rsa\ * | ecdsa-sha2-nistp256\ * | ecdsa-sha2-nistp384\ * | ecdsa-sha2-nistp521\ *) ;;
+  *)
+    echo "invalid SSH authorized key: use a complete OpenSSH public key or leave it empty."
+    exit 1
+    ;;
+  esac
+  case "$1" in
+  *\"* | *\\* | *'$'* | *"$nl"*)
+    echo "invalid SSH authorized key: must not contain quotes, backslashes, '$' or newlines."
     exit 1
     ;;
   esac
@@ -167,7 +289,7 @@ validate_host_name() {
 }
 
 validate_disk() {
-  # DISK 会插值进未引用 heredoc 生成 host.nix（与 userEmail 同理必须拦截注入字符），
+  # DISK 会插值进未引用 heredoc 生成 host.nix（与邮箱同理必须拦截注入字符），
   # 且必须是 /dev/ 下的块设备路径
   case "$1" in
   /dev/*[!A-Za-z0-9/._-]* | "")
@@ -208,6 +330,8 @@ ask_host_config() {
   DISK="$(prompt_value "Target disk" "${DISK}")"
   CPU="$(prompt_value "CPU" "${CPU}" "amd/intel")"
   GPU="$(prompt_value "GPU" "${GPU}" "nvidia/amd/intel")"
+  SYSTEM_PROXY="$(prompt_value "Installed-system proxy" "${SYSTEM_PROXY}")"
+  SSH_AUTHORIZED_KEY="$(prompt_value "SSH authorized key (optional)" "${SSH_AUTHORIZED_KEY}")"
 
   validate_user_name "${USER_NAME}"
   validate_user_email "${USER_EMAIL}"
@@ -215,29 +339,48 @@ ask_host_config() {
   validate_disk "${DISK}"
   validate_choice "${CPU}" "amd intel" "cpu"
   validate_choice "${GPU}" "nvidia amd intel" "gpu"
+  validate_proxy "${SYSTEM_PROXY}"
+  validate_ssh_key "${SSH_AUTHORIZED_KEY}"
 }
 
 write_host_config() {
+  if [ -n "${SSH_AUTHORIZED_KEY}" ]; then
+    SSH_KEYS_NIX="[ \"${SSH_AUTHORIZED_KEY}\" ]"
+  else
+    SSH_KEYS_NIX="[ ]"
+  fi
   cat > "hosts/${HOST_NAME}/host.nix" << EOF
 {
-  userName = "${USER_NAME}";
-  userEmail = "${USER_EMAIL}";
-  disk = "${DISK}";
   cpu = "${CPU}";
+  disk = "${DISK}";
   gpu = "${GPU}";
-  users = [ "${USER_NAME}" ];
+  primaryUser = "${USER_NAME}";
+  proxy = {
+    default = "${SYSTEM_PROXY}";
+    noProxy = "127.0.0.1,::1,localhost";
+  };
+  users."${USER_NAME}" = {
+    email = "${USER_EMAIL}";
+    isAdmin = true;
+    sshAuthorizedKeys = ${SSH_KEYS_NIX};
+  };
 }
 EOF
 }
 
 validate_config() {
   if [ -z "${USER_NAME}" ] || [ -z "${USER_EMAIL}" ] || [ -z "${HOST_NAME}" ] || [ -z "${DISK}" ] || [ -z "${CPU}" ] || [ -z "${GPU}" ]; then
-    echo "failed to read userName, userEmail, hostName, disk, cpu, or gpu from hosts/<host>/host.nix"
+    echo "failed to read primaryUser, user email, hostName, disk, cpu, or gpu from hosts/<host>/host.nix"
     exit 1
   fi
 
   # --reset 在确认配置有效后才清除断点状态，避免误清导致从头分区
   if [ "${RESET_STATE}" -eq 1 ]; then
+    if findmnt -rn --mountpoint /mnt > /dev/null 2>&1; then
+      echo "refusing --reset while /mnt is mounted."
+      echo "verify the mounted disk and unmount /mnt before clearing its checkpoint."
+      exit 1
+    fi
     rm -rf "${STATE_DIR}"
   fi
 
@@ -247,6 +390,9 @@ validate_config() {
     lsblk
     exit 1
   fi
+
+  DISK_CANONICAL="$(readlink -f -- "${DISK}")"
+  validate_resume_state
 }
 
 # 分区前最后防线：展示安装摘要与 lsblk 现状，必须逐字输入 "ERASE <disk>" 才继续
@@ -258,6 +404,12 @@ confirm_disko() {
   echo "    Disk: ${DISK}"
   echo "    CPU : ${CPU}"
   echo "    GPU : ${GPU}"
+  echo "    Proxy: ${SYSTEM_PROXY}"
+  if [ -n "${SSH_AUTHORIZED_KEY}" ]; then
+    echo "    SSH : authorized key configured"
+  else
+    echo "    SSH : no authorized key"
+  fi
   echo
   echo "==> Current block devices"
   lsblk
@@ -281,13 +433,6 @@ seed_host_dir() {
   fi
 }
 
-# 新用户名没有对应 home/<user>/ 目录时，从模板用户目录复制一份 HM 配置
-seed_home_dir() {
-  if [ ! -d "home/${USER_NAME}" ] && [ -n "${TEMPLATE_USER}" ]; then
-    cp -r "home/${TEMPLATE_USER}" "home/${USER_NAME}"
-  fi
-}
-
 run_disko() {
   desc="1. Running Disko for partitioning and mounting..."
 
@@ -296,11 +441,17 @@ run_disko() {
     return 0
   fi
 
+  if findmnt -rn --mountpoint /mnt > /dev/null 2>&1; then
+    echo "/mnt is already a mount point but no matching Disko checkpoint exists."
+    echo "unmount /mnt before allowing this script to repartition a disk."
+    exit 1
+  fi
+
   confirm_disko
   echo "==> ${desc}"
-  # disko 直接取 flake.lock 锁定的版本，升级 disko 输入（nix flake update）后无需同步此处
-  DISKO_STORE_PATH="$(nix --experimental-features "nix-command flakes" eval --raw .#inputs.disko.outPath)"
-  nix --experimental-features "nix-command flakes" run "path:${DISKO_STORE_PATH}#disko" -- --mode destroy,format,mount "./hosts/${HOST_NAME}/disko.nix"
+  # 本地 app 直接引用 flake.lock 锁定的 Disko 包，入口由 modules/flake/install-tools.nix 维护。
+  nix --experimental-features "nix-command flakes" run .#disko -- --mode destroy,format,mount "./hosts/${HOST_NAME}/disko.nix"
+  validate_target_mount
   mark_done "01-disko"
 }
 
@@ -310,7 +461,8 @@ generate_hardware_config() {
 
 copy_config() {
   cp /mnt/etc/nixos/hardware-configuration.nix "hosts/${HOST_NAME}/"
-  cp -r flake.* ./hosts/ ./home/ ./modules/ ./dotfiles/ ./secrets/ ./libs/ ./overlays/ ./pkgs/ /mnt/etc/nixos/
+  # 排除式拷贝：新顶层目录默认纳入，避免白名单漏拷（VCS 元数据/构建产物/codegraph 索引除外）
+  tar --exclude='./.git' --exclude='./.codegraph' --exclude='./result' --exclude='./result-*' -cf - . | tar -xf - -C /mnt/etc/nixos/
 }
 
 install_nixos() {
@@ -362,7 +514,6 @@ read_host_config
 ask_host_config
 seed_host_dir
 write_host_config
-seed_home_dir
 set_user_paths
 validate_config
 run_disko

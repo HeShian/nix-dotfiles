@@ -1,8 +1,8 @@
 [中文](README.md) | English
 
 ## Overview
-![Desktop Screenshot](./space.png)
-![Fastfetch Screenshot](./ff.png)
+![Desktop Screenshot](./doc/img/space.png)
+![Fastfetch Screenshot](./doc/img/ff.png)
 
 > Personal NixOS + Niri + Noctalia v5 desktop configuration. This README covers install checks and daily maintenance.
 
@@ -35,10 +35,19 @@ Installing NixOS and fetching GitHub / Nix cache resources may require a proxy.
   export https_proxy="http://192.168.42.129:7890"
   ```
 
+  You can also override it at runtime with environment variables (the values in `init.sh` are just defaults):
+  ```bash
+  sudo http_proxy="http://192.168.42.129:7890" https_proxy="http://192.168.42.129:7890" ./init.sh
+  ```
+
 - **Stage 2: Installed NixOS system**
   After rebooting into the installed system, you can usually use a proxy client on the computer itself. Point the system proxy to localhost, not the phone gateway:
   ```nix
-  networking.proxy.default = "http://127.0.0.1:7890";
+  # hosts/<host>/host.nix
+  proxy = {
+    default = "http://127.0.0.1:7890";
+    noProxy = "127.0.0.1,::1,localhost";
+  };
   ```
 
   Change `7890` if your proxy client uses another port.
@@ -58,7 +67,7 @@ git clone https://github.com/huzch/nix-dotfiles.git
 cd nix-dotfiles
 ```
 
-2. Run the installer and confirm username, email, hostname, disk, and CPU/GPU. It prints `lsblk` and requires `ERASE <disk>` before formatting:
+2. Run the installer and confirm username, email, hostname, disk, CPU/GPU, installed-system proxy, and SSH public key. It prints `lsblk` and requires `ERASE <disk>` before formatting:
 ```bash
 ./init.sh
 ```
@@ -71,17 +80,20 @@ Host name [aspire-a715]:
 Target disk [/dev/nvme0n1]:
 CPU (amd/intel) [intel]:
 GPU (nvidia/amd/intel) [nvidia]:
+Installed-system proxy [http://127.0.0.1:7890]:
+SSH authorized key (optional) [ssh-ed25519 ...]:
 ```
 
 | Priority | Item | What to verify |
 | --- | --- | --- |
 | P0 | `DISK` | Make sure it is not the USB installer, an external drive, or a disk with important data. |
-| P1 | `GPU` / `USER_NAME` | GPU affects desktop startup. Username affects login and the home directory. |
+| P1 | `GPU` / `USER_NAME` / SSH key | GPU affects desktop startup; username affects the home directory; a wrong key grants remote login. |
+| P1 | Installed-system proxy | It must be reachable after the local proxy client starts, usually on `127.0.0.1`. |
 | P2 | `CPU` / `HOST_NAME` | CPU affects microcode. Hostname affects the flake output name. |
 
 After installation finishes, reboot. The script prepares `~/Documents/nix-dotfiles` and `~/Pictures/wallpapers`.
 
-The installer supports checkpoint retries. To start over:
+The installer supports checkpoint retries. A checkpoint is bound to the host, disk, user, and hardware parameters, and `/mnt` must belong to that disk. To start over, verify and unmount `/mnt` first, then run:
 ```bash
 ./init.sh --reset
 ```
@@ -93,15 +105,13 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 
 ## Project Structure
 - **`flake.nix`**: System entry point (flake-parts + den + treefmt-nix; wiring lives in `modules/flake/`).
-- **`modules/flake/`**: flake-parts wiring layer. `hosts.nix` auto-discovers `hosts/*` and uses den to build each machine's `<host>`/`<host>-install` configurations plus user HM attachment; `defaults.nix` global defaults (external OS modules, overlays); `formatting.nix` formatter config (`nix fmt`).
+- **`modules/flake/`**: flake-parts wiring layer. `hosts.nix` auto-discovers `hosts/*` and uses den to build each machine's `<host>`/`<host>-install` configurations; `schema.nix` declares typed metadata; `defaults.nix` holds global defaults; `install-tools.nix` exports the locked Disko app; `formatting.nix`/`checks.nix` provide formatting and static checks. See [doc/en/architecture.md](doc/en/architecture.md).
 - **`hosts/aspire-a715/`**: Machine-specific configuration (one `hosts/<host>/` directory per machine; the directory name is the host name).
-  - `host.nix`: Current machine settings for username, email, disk, CPU/GPU type, and user list.
+  - `host.nix`: Disk, CPU/GPU, primary user, proxy, and per-user permissions/email/SSH keys.
   - `default.nix`: Hardware/disko imports and `system.stateVersion`.
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
-- **`modules/nixos/`**: System-level modules (drivers, networking, fonts, services; split by topic; auto-aggregated by the wiring layer — adding a module means dropping in a file).
-- **`modules/home/`**: Shared Home Manager configuration (desktop/shell/apps; every user gets it automatically; files in the directory are auto-imported).
-- **`home/claudia/`**: Thin per-user identity layer (imports the shared layer + git identity; one `home/<user>/` directory per user).
+- **`modules/features/`**: Feature aspects (one file per feature, file name = aspect name; a file may carry both nixos and homeManager classes; the directory is auto-aggregated).
 - **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
 
 ---
@@ -110,14 +120,17 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
 Use `~/Documents/nix-dotfiles` as the source of truth.
 
 ### Install New Packages
-- System components: the matching topic file under `modules/nixos/`.
-- User apps: edit `modules/home/app.nix` or another file under `modules/home/`.
+- System components: the nixos part of the matching file under `modules/features/`.
+- User apps: edit `modules/features/apps.nix` (or the homeManager part of another feature).
 
 You can search for package names on [search.nixos.org](https://search.nixos.org/packages).
 
 ### Change Desktop Or App Config
 - Niri compositor: edit `dotfiles/niri/config.kdl`, then run `niri msg action load-config-file` to hot-reload.
 - Noctalia Shell: use the Settings panel (`Super + F2`) or open the launcher with `Super + Z` and search for settings.
+
+### Add a Feature Module, Host, Or User
+The wiring structure (den aspects/includes, install variant) is documented in [doc/en/architecture.md](doc/en/architecture.md); step-by-step instructions are in the "Manual Maintenance Scenarios" table in [doc/en/maintenance.md](doc/en/maintenance.md).
 
 ### Apply Changes
 If you only changed existing files under `dotfiles/`, you usually do not need a rebuild.
@@ -136,7 +149,7 @@ nh os switch -u    # equivalent to nix flake update + nh os switch
 ```
 
 ### Format Code
-Use `nix fmt` for everything (treefmt: nixfmt/stylua/shfmt + deadnix/statix; config in `modules/flake/formatting.nix`). `nix flake check` validates formatting.
+Use `nix fmt` for everything (treefmt: nixfmt/stylua/shfmt + deadnix/statix; config in `modules/flake/formatting.nix`). `nix flake check` validates formatting and runs ShellCheck on first-party scripts.
 
 ---
 
@@ -150,6 +163,14 @@ Each `nixos-rebuild switch` creates a new generation. If it breaks, boot an olde
 
 ### One Configuration, Repeatable Setup
 System, user environment, desktop, and app config live in one repository.
+
+---
+
+## Sources And References
+
+- Forked from [huzch/nix-dotfiles](https://github.com/huzch/nix-dotfiles)
+- Main reference: [SHORiN-KiWATA/shorin-arch-setup (noctalia-dotfiles)](https://github.com/SHORiN-KiWATA/shorin-arch-setup/tree/main/noctalia-dotfiles)
+- Animation reference: <https://lagrange-x.lanzouq.com/iQGv93sel3uf>
 
 ---
 

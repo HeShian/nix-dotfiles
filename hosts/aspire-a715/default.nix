@@ -1,6 +1,6 @@
 { ... }:
 {
-  # 共享模块层 modules/nixos/ 由 modules/flake/hosts.nix 按 installMode 聚合挂载
+  # 共享 feature 模块经 den aspects 挂载（modules/features/ 定义、hosts.nix includes）
   imports = [
     ./hardware-configuration.nix
     ./disko.nix

@@ -2,7 +2,7 @@
 
 # 软件
 
-已安装软件分类清单。声明位置：`modules/home/app.nix`（日常应用）、`modules/home/desktop.nix`（桌面工具）、`modules/home/shell.nix`（终端工具）、`modules/nixos/desktop.nix`（系统模块）、`modules/nixos/flatpak.nix`（Flatpak）。
+已安装软件分类清单。声明位置：`modules/features/`（`apps.nix` 日常应用、`desktop.nix` 桌面工具与系统桌面、`shell.nix` 终端工具、`flatpak.nix` Flatpak）。
 
 ## 日常应用
 
@@ -12,9 +12,9 @@
 | IM/会议 | telegram-desktop、discord、qq、wechat、wemeet（走 wemeet-xwayland 包装） |
 | 笔记/阅读 | obsidian、z-library-desktop、readest |
 | 办公 | wpsoffice-cn（WPS 365，缺字体见下方说明）、onlyoffice-desktopeditors |
-| 开发 | vscode、opencode、pi-coding-agent、kimi-code、dsh（DeepSeek Harness，`dsh web` 启动 Web UI）、uv、python3 |
-| 创作 | obs-studio、krita |
-| 网络工具 | gopeed（下载）、localsend（局域网传文件）、go-musicfox（网易云）、remmina（远程桌面） |
+| 开发 | Codex Desktop（非官方 Linux 封装）+ codex CLI、vscode、opencode、pi-coding-agent、kimi-code、dsh（DeepSeek Harness，`dsh web` 启动 Web UI）、uv、python3 |
+| 创作 | obs-studio、krita、mazi51（51mazi 小说写作） |
+| 网络工具 | flclash（代理）、gopeed（下载）、localsend（局域网传文件）、go-musicfox（网易云）、remmina（远程桌面） |
 | 游戏 | gamescope、prismlauncher（MC）、protonplus、lutris、heroic |
 | Wine/容器 | wine（stableFull）、winetricks、waydroid-helper |
 
@@ -55,3 +55,6 @@
 | neovim | 编辑器（配置在 `dotfiles/nvim/`） |
 | lazygit | git TUI |
 | fastfetch / btop | 系统信息 / 资源监控 |
+| rtk | 压缩代理命令输出，减少 AI agent token 消耗 |
+| codegraph | 代码知识图谱与 MCP 索引 |
+| nodejs | npm/npx 运行时及 CLI 工具依赖 |
