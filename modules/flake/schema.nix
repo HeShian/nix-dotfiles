@@ -47,6 +47,11 @@ _: {
           );
           description = "可选的主机级代理配置";
         };
+        waydroidDrmDevice = lib.mkOption {
+          default = null;
+          type = lib.types.nullOr lib.types.str;
+          description = "Waydroid 固定使用的 DRM render 节点";
+        };
       };
     };
   den.schema.user =

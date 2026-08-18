@@ -1,9 +1,9 @@
-# 桌面环境：系统侧（niri/greeter/portal/keyring/音频/Thunar）+ 用户侧（指针/foot/截图录屏/GTK 主题）。
+# 桌面基础：两套 Wayland 会话共享的 greeter、portal、音频、文件管理、游戏与用户工具。
 # 用户侧经 provides.to-users 投递给主机上所有用户（install 变体的非 HM 用户不受影响）
 _: {
   den.aspects.desktop = {
     nixos =
-      { pkgs, noctalia, ... }:
+      { pkgs, ... }:
       {
         environment = {
           sessionVariables = {
@@ -14,24 +14,19 @@ _: {
             ];
             XDG_SESSION_TYPE = "wayland";
           };
-          # 基础工具 vim/git/wget；glib/dconf 提供 gsettings CLI；
-          # xwayland-satellite 补 niri 缺失的 XWayland；最后是 Noctalia 桌面 Shell 本体
+          # 基础工具 vim/git/wget；glib/dconf 提供 gsettings CLI。
           systemPackages = with pkgs; [
             vim
             git
             wget
-            xwayland-satellite
             glib
             dconf
-            noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
           ];
         };
         # 系统模块自动放行端口
         programs.kdeconnect.enable = true;
-        programs.niri.enable = true;
         programs.noctalia-greeter = {
           enable = true;
-          greeter-args = "--session niri";
           settings = {
             cursor = {
               size = 24;
@@ -40,7 +35,6 @@ _: {
             idle.timeout = 300;
             keyboard.layout = "us";
             keyboard.numlock = true;
-            session.default = "niri";
           };
         };
         # 系统模块提供 udev 规则与端口
@@ -80,26 +74,8 @@ _: {
         services.tumbler.enable = true;
         # Thunar 侧边栏挂载
         services.udisks2.enable = true;
-        # 分工：gnome=截图/录屏/外观，gtk=文件选择器，Secret=gnome-keyring
+        # 会话各自声明 portal 路由；这里只提供共享后端。
         xdg.portal = {
-          config.niri = {
-            "org.freedesktop.impl.portal.Access" = [
-              "gtk"
-            ];
-            "org.freedesktop.impl.portal.FileChooser" = [
-              "gtk"
-            ];
-            "org.freedesktop.impl.portal.Notification" = [
-              "gtk"
-            ];
-            "org.freedesktop.impl.portal.Secret" = [
-              "gnome-keyring"
-            ];
-            default = [
-              "gnome"
-              "gtk"
-            ];
-          };
           enable = true;
           extraPortals = builtins.attrValues {
             inherit (pkgs) xdg-desktop-portal-gnome xdg-desktop-portal-gtk;
@@ -108,21 +84,8 @@ _: {
       };
 
     provides.to-users.homeManager =
-      { pkgs, lib, ... }:
+      { pkgs, ... }:
       {
-        # foot 主题兜底（缺失时 foot 会报错退出）
-        home.activation.footThemeFallback =
-          lib.hm.dag.entryAfter
-            [
-              "writeBoundary"
-            ]
-            ''
-              footThemeDir="$HOME/.config/foot/themes"
-              if [ ! -f "$footThemeDir/noctalia" ]; then
-                mkdir -p "$footThemeDir" || exit 1
-                install -m 644 ${../../dotfiles/foot/themes/noctalia} "$footThemeDir/noctalia" || exit 1
-              fi
-            '';
         # Xfce 默认终端
         home.file.".config/xfce4/helpers.rc".text = ''
           TerminalEmulator=foot
@@ -186,7 +149,6 @@ _: {
             };
             main = {
               font = "JetBrainsMono Nerd Font:size=18";
-              include = "~/.config/foot/themes/noctalia";
               pad = "10x10 center";
             };
           };

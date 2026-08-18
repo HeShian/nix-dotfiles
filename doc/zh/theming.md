@@ -2,7 +2,7 @@
 
 # 主题
 
-Noctalia 配色体系：壁纸 → 调色板 → 模板渲染到各应用，全局一键换色。
+Niri/Noctalia 配色体系：壁纸 → 调色板 → 模板渲染到各应用，全局一键换色。Mango 使用独立、静态的深棕 Gruvbox 主题，不读取 Noctalia 运行时状态。
 
 ## 工作机制
 
@@ -35,4 +35,4 @@ Noctalia 配色体系：壁纸 → 调色板 → 模板渲染到各应用，全�
 
 ## 配置种子
 
-`~/.config/noctalia` 不入 git（运行时状态），由 `home.activation.noctaliaSeed` 在目标**缺失时**从 `dotfiles/noctalia/` 种子（含社区调色板缓存，离线可用）。想更新种子内容，按 `dotfiles/noctalia/README.md` 手动同步回仓库。
+`~/.config/noctalia` 不入 git（运行时状态），由 Niri feature 的 `home.activation.niriSeeds` 在目标**缺失时**从 `dotfiles/noctalia/` 种子（含社区调色板缓存，离线可用）。想更新种子内容，按 `dotfiles/noctalia/README.md` 手动同步回仓库。

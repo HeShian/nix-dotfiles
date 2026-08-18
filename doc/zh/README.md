@@ -2,7 +2,7 @@
 
 # NixOS Dotfiles 文档
 
-个人 NixOS 桌面配置：NixOS（nixos-unstable）+ Niri + Noctalia v5。
+个人 NixOS 双桌面配置：NixOS（nixos-unstable）+ Niri/Noctalia v5 + Mango。
 
 ## 基本信息
 
@@ -10,7 +10,7 @@
 |------|-----|
 | 主机 | aspire-a715 |
 | 用户 | claudia |
-| 桌面 | Niri（Wayland 滚动平铺）+ Noctalia v5（Quickshell） |
+| 桌面 | 默认 Niri + Noctalia v5；备选 Mango + Waybar/SwayNC/Rofi |
 | 管理 | Nix Flakes（flake-parts + den）+ Home Manager + Disko + agenix |
 | 机器参数 | `hosts/<host>/host.nix`（disk/cpu/gpu/primaryUser/proxy/users 元数据） |
 
@@ -19,7 +19,7 @@
 | 文档 | 内容 |
 |------|------|
 | [架构](architecture.md) | den 装配结构、aspect 清单、install 变体 |
-| [快捷键](shortcuts.md) | Niri 全部键位 |
+| [快捷键](shortcuts.md) | Niri 键位、Mango 对应键位与差异 |
 | [软件](software.md) | 已安装软件分类清单 |
 | [维护](maintenance.md) | 日常维护、升级与回滚 |
 | [agenix](agenix.md) | 密钥管理 |

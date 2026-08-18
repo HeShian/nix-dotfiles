@@ -6,7 +6,7 @@
 #   类型声明见 schema.nix（拼写/缺漏在声明处即报错），
 #   feature aspect 以 parametric 形式（{ host, ... } / { user, ... }）读取
 # - 每台主机产出两个 nixosConfigurations：<name> 与 <name>-install
-#   （install 变体：新机无 host key，includes 排除 secrets/flatpak/hm-global，
+#   （install 变体：新机无 host key，includes 排除 secrets/flatpak/hm-global/mango，
 #   用户 classes 覆盖为 [ "user" ] 从而不挂 Home Manager）
 # - host.nix users 清单中的用户即 HM 用户（homeManager 类由 den 转发给 home-manager.users.<user>）
 {
@@ -29,7 +29,9 @@ let
     "hardware"
     "hm-global"
     "locale"
+    "mango"
     "networking"
+    "niri"
     "nix"
     "secrets"
     "users"
@@ -40,11 +42,12 @@ let
     "dotfiles"
     "shell"
   ];
-  # install 变体排除 secrets（新机无 host key，解密必失败）与 flatpak（装机阶段不预装应用）；
-  # hm-global 引用 home-manager.* 选项，无 HM 模块的 install 变体引用会报“选项不存在”
+  # install 变体排除 secrets（新机无 host key，解密必失败）、flatpak（装机阶段不预装应用）和
+  # mango（其完整会话依赖 HM 用户服务）；hm-global 引用 home-manager.* 选项，无 HM 模块时不可用。
   installExcludedFeatureNames = [
     "flatpak"
     "hm-global"
+    "mango"
     "secrets"
   ];
   installFeatureNames = lib.filter (
@@ -92,6 +95,7 @@ let
       primaryUser
       ;
     proxy = hostParams.${name}.proxy or null;
+    waydroidDrmDevice = hostParams.${name}.waydroidDrmDevice or null;
     users = lib.mapAttrs (_: metadata: metadata // extraUser) hostParams.${name}.users;
   };
 

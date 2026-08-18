@@ -14,7 +14,7 @@
 | `den.schema` | 实体的类型化元数据声明（host.nix 拼错即报错） | schema.nix 的 `den.schema.host`/`den.schema.user` |
 | `den.default` | 对所有实体生效的配置（外部 OS 模块、overlays、`_module.args`） | defaults.nix |
 | class | 配置类别：`nixos` / `homeManager` | 各模块文件 |
-| `provides.to-users` | aspect 随主机挂载、但把 homeManager 内容投递给其用户 | `features/desktop.nix` |
+| `provides.to-users` | aspect 随主机挂载、但把 homeManager 内容投递给其用户 | `features/desktop.nix`、`niri.nix`、`mango.nix` |
 
 ## 数据流
 
@@ -37,18 +37,20 @@ modules/features/<feature>.nix
 | aspect | 类 | 源文件 | 说明 |
 |--------|-----|--------|------|
 | `boot` | nixos | `modules/features/boot.nix` | GRUB/内核/静默启动 |
-| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | 桌面环境；用户侧经 `provides.to-users` 投递 |
+| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | 双会话共享的 greeter/portal/音频/文件管理与用户工具 |
 | `flatpak` | nixos | `modules/features/flatpak.nix` | Flatpak 应用与镜像 |
 | `hardware` | nixos | `modules/features/hardware.nix` | flat-form，读 `host.cpu`/`host.gpu` |
 | `hm-global` | nixos | `modules/features/hm-global.nix` | home-manager 全局行为；仅常规主机 |
 | `locale` | nixos | `modules/features/locale.nix` | 字体/输入法/时区 |
+| `mango` | nixos + homeManager | `modules/features/mango.nix` | Mango + Waybar/SwayNC/Rofi；仅常规主机 |
 | `networking` | nixos | `modules/features/networking.nix` | 网络/SSH/v2raya |
+| `niri` | nixos + homeManager | `modules/features/niri.nix` | Niri + Noctalia；决定 greeter 默认会话 |
 | `nix` | nixos | `modules/features/nix.nix` | nix 设置/缓存/nix-ld |
 | `secrets` | nixos | `modules/features/secrets.nix` | agenix；仅常规主机 |
 | `users` | nixos | `modules/features/users.nix` | flat-form，读 `host.users`/`host.primaryUser` |
 | `virtualisation` | nixos | `modules/features/virtualisation.nix` | libvirtd/waydroid |
 | `apps` | homeManager | `modules/features/apps.nix` | 应用程序清单 |
-| `dotfiles` | homeManager | `modules/features/dotfiles.nix` | dotfiles 活链接/种子 |
+| `dotfiles` | homeManager | `modules/features/dotfiles.nix` | 与合成器无关的通用 dotfiles 活链接 |
 | `shell` | homeManager | `modules/features/shell.nix` | zsh/CLI 工具 |
 
 ## install 变体
@@ -57,10 +59,12 @@ modules/features/<feature>.nix
 
 | 差异 | 实现 |
 |------|------|
-| 不含 secrets/flatpak | 从 `hostFeatureNames` 派生时由 `installExcludedFeatureNames` 排除（新机无 host key，解密必失败） |
+| 不含 secrets/flatpak/mango | 从 `hostFeatureNames` 派生时由 `installExcludedFeatureNames` 排除；Mango 依赖完整 HM 用户服务，避免构建半成品会话 |
 | 不挂 Home Manager | 用户 `classes = [ "user" ]`（覆盖 schema 默认的 `homeManager`） |
 | 无 hm-global | 无 HM 模块时引用 `home-manager.*` 选项会报「选项不存在」 |
 | 同一网络名 | 实体 `hostName` 显式指回常规主机名 |
+
+常规主机同时包含 `desktop`、`niri`、`mango`；install 变体保留 `desktop` + `niri`，因此安装环境仍有当前稳定的默认 Niri 会话。三个名字也进入共享 aspect 名称冲突检查，无需增加 host schema 字段。
 
 ## 约束
 

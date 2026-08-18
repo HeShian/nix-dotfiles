@@ -1,16 +1,14 @@
-# 用户基础环境：dotfiles 活链接、Noctalia 配置种子、.agents skills、英文用户目录
+# 用户基础环境：通用 dotfiles 活链接、.agents skills、Rime 与英文用户目录。
 _: {
   den.aspects.dotfiles.homeManager =
     {
       config,
       lib,
       nixkits,
-      mylib,
       ...
     }:
     let
       dotfiles = "${config.home.homeDirectory}/Documents/nix-dotfiles/dotfiles";
-      repo = builtins.dirOf dotfiles;
       # 活链接（指向仓库本身）
       link = path: config.lib.file.mkOutOfStoreSymlink "${dotfiles}/${path}";
       # 整目录链接：dotfiles/<name> → ~/.config/<name>
@@ -20,44 +18,8 @@ _: {
         "nvim"
         "xsettingsd"
       ];
-      # 逐文件链接（~/.config/niri 需是真实目录）
-      niriDir = ../../dotfiles/niri;
-      inherit (mylib) regularFilesIn;
-      niriFiles =
-        regularFilesIn niriDir ++ map (file: "scripts/${file}") (regularFilesIn (niriDir + "/scripts"));
     in
     {
-      # Noctalia 配置种子（仅目标缺失时拷贝）
-      home.activation.noctaliaSeed =
-        lib.hm.dag.entryAfter
-          [
-            "writeBoundary"
-          ]
-          ''
-            repo="${repo}"
-            cfgDir="$HOME/.config/noctalia"
-            stateDir="$HOME/.local/state/noctalia"
-            if [ ! -f "$cfgDir/config.toml" ]; then
-              mkdir -p "$cfgDir" || exit 1
-              sed "s|@REPO@|$repo|g" ${../../dotfiles/noctalia/config.toml} > "$cfgDir/config.toml" || exit 1
-            fi
-            if [ ! -f "$stateDir/settings.toml" ]; then
-              mkdir -p "$stateDir" || exit 1
-              sed "s|@HOME@|$HOME|g" ${../../dotfiles/noctalia/settings.toml} > "$stateDir/settings.toml" || exit 1
-              touch "$stateDir/.setup-complete" || exit 1
-            fi
-            if [ ! -d "$stateDir/community-palettes" ]; then
-              mkdir -p "$stateDir" || exit 1
-              cp -r --no-preserve=mode ${../../dotfiles/noctalia/state}/. "$stateDir/" || exit 1
-            fi
-            # niri 冷启动兜底：config.kdl include 的 noctalia.kdl 由 Noctalia 运行时生成，
-            # 首次启动缺失会致 niri 解析失败回退默认配置（Noctalia 又靠 niri spawn，互相等待）
-            niriKdl="$HOME/.config/niri/noctalia.kdl"
-            if [ ! -f "$niriKdl" ]; then
-              mkdir -p "$HOME/.config/niri" || exit 1
-              touch "$niriKdl" || exit 1
-            fi
-          '';
       home.file = {
         ".local/share/fcitx5/rime/default.custom.yaml".source = link "rime/default.custom.yaml";
       }
@@ -67,16 +29,9 @@ _: {
       }) (lib.filterAttrs (_: type: type == "directory") (builtins.readDir "${nixkits}/skills"));
       # username/homeDirectory 由 HM NixOS 模块按系统用户配置推断（多用户自动正确）
       home.stateVersion = "25.05";
-      xdg.configFile =
-        lib.genAttrs configs (name: {
-          source = link name;
-        })
-        // builtins.listToAttrs (
-          map (file: {
-            name = "niri/${file}";
-            value.source = link "niri/${file}";
-          }) niriFiles
-        );
+      xdg.configFile = lib.genAttrs configs (name: {
+        source = link name;
+      });
       # 固定英文目录名，防止应用创建中文目录
       xdg.userDirs = {
         createDirectories = true;

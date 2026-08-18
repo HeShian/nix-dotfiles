@@ -1,0 +1,74 @@
+@define-color background rgba(32, 27, 20, 0.90);
+@define-color surface rgba(60, 56, 54, 0.94);
+@define-color surface_alt #504945;
+@define-color foreground #ebdbb2;
+@define-color muted #a89984;
+@define-color accent #d79921;
+@define-color green #98971a;
+@define-color blue #458588;
+@define-color purple #b16286;
+@define-color red #cc241d;
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 14px;
+  font-weight: 600;
+}
+
+window#waybar {
+  background: transparent;
+  color: @foreground;
+}
+
+.modules-left, .modules-center, .modules-right {
+  background: @background;
+  border: 1px solid @surface_alt;
+  border-radius: 12px;
+  margin: 6px 8px 0;
+  padding: 2px 6px;
+}
+
+#workspaces button {
+  color: @muted;
+  background: transparent;
+  border-radius: 8px;
+  padding: 0 8px;
+}
+
+#workspaces button.active, #workspaces button.focused {
+  color: @background;
+  background: @accent;
+}
+
+#workspaces button.urgent {
+  color: @foreground;
+  background: @red;
+}
+
+#layout, #window, #language, #keymode, #tray, #network, #pulseaudio,
+#backlight, #battery, #clock, #custom-notifications, #custom-power {
+  padding: 0 9px;
+  color: @foreground;
+}
+
+#layout { color: @accent; }
+#language { color: @blue; }
+#keymode { color: @purple; }
+#network { color: @green; }
+#pulseaudio { color: @accent; }
+#backlight { color: @purple; }
+#battery { color: @green; }
+#battery.warning { color: @accent; }
+#battery.critical { color: @red; }
+#custom-notifications { color: @blue; }
+#custom-power { color: @red; }
+
+tooltip {
+  background: @background;
+  color: @foreground;
+  border: 1px solid @accent;
+  border-radius: 8px;
+}

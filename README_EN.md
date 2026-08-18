@@ -4,7 +4,7 @@
 ![Desktop Screenshot](./doc/img/space.png)
 ![Fastfetch Screenshot](./doc/img/ff.png)
 
-> Personal NixOS + Niri + Noctalia v5 desktop configuration. This README covers install checks and daily maintenance.
+> Two NixOS Wayland sessions: Niri + Noctalia v5 is the default desktop, with Mango + Waybar/SwayNC/Rofi as an independent alternative.
 
 ---
 
@@ -99,7 +99,7 @@ The installer supports checkpoint retries. A checkpoint is bound to the host, di
 ```
 
 ### Shortcut Help
-Niri does not show the shortcut overlay at startup (`skip-at-startup`). During daily use, press **`Super + Shift + /`** to open the shortcut cheatsheet.
+The greeter enters Niri by default; press **`F3`** to select Mango. In Niri, press **`Super + Shift + /`** for the shortcut overlay. See the [shortcut documentation](doc/en/shortcuts.md) for both sessions and their differences.
 
 ---
 
@@ -112,7 +112,7 @@ Niri does not show the shortcut overlay at startup (`skip-at-startup`). During d
   - `hardware-configuration.nix`: Machine-specific hardware config.
   - `disko.nix`: Partitioning layout.
 - **`modules/features/`**: Feature aspects (one file per feature, file name = aspect name; a file may carry both nixos and homeManager classes; the directory is auto-aggregated).
-- **`dotfiles/`**: Niri, Noctalia, Neovim, and other app configs.
+- **`dotfiles/`**: Niri, Noctalia, Mango companion components, Neovim, and other app configs.
 
 ---
 
@@ -128,6 +128,7 @@ You can search for package names on [search.nixos.org](https://search.nixos.org/
 ### Change Desktop Or App Config
 - Niri compositor: edit `dotfiles/niri/config.kdl`, then run `niri msg action load-config-file` to hot-reload.
 - Noctalia Shell: use the Settings panel (`Super + F2`) or open the launcher with `Super + Z` and search for settings.
+- Mango compositor: core settings live in `modules/features/mango.nix` and require a rebuild; Waybar/SwayNC/Rofi styling lives under `dotfiles/mango/` and only needs the matching `mango-*` user service restarted.
 
 ### Add a Feature Module, Host, Or User
 The wiring structure (den aspects/includes, install variant) is documented in [doc/en/architecture.md](doc/en/architecture.md); step-by-step instructions are in the "Manual Maintenance Scenarios" table in [doc/en/maintenance.md](doc/en/maintenance.md).
@@ -149,7 +150,7 @@ nh os switch -u    # equivalent to nix flake update + nh os switch
 ```
 
 ### Format Code
-Use `nix fmt` for everything (treefmt: nixfmt/stylua/shfmt + deadnix/statix; config in `modules/flake/formatting.nix`). `nix flake check` validates formatting and runs ShellCheck on first-party scripts.
+Use `nix fmt` for everything (treefmt: nixfmt/stylua/shfmt + deadnix/statix; config in `modules/flake/formatting.nix`). `nix flake check` also validates Niri, upstream `mango -p`, Mango JSON, and first-party shell scripts.
 
 ---
 
@@ -170,6 +171,7 @@ System, user environment, desktop, and app config live in one repository.
 
 - Forked from [huzch/nix-dotfiles](https://github.com/huzch/nix-dotfiles)
 - Main reference: [SHORiN-KiWATA/shorin-arch-setup (noctalia-dotfiles)](https://github.com/SHORiN-KiWATA/shorin-arch-setup/tree/main/noctalia-dotfiles)
+- Mango: [official Nix options](https://mangowm.github.io/docs/nix-options/); visual/component ideas adapted from [DreamMaoMao/mango-config](https://github.com/DreamMaoMao/mango-config)
 - Animation reference: <https://lagrange-x.lanzouq.com/iQGv93sel3uf>
 
 ---

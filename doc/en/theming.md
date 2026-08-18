@@ -2,7 +2,7 @@
 
 # Theming
 
-The Noctalia color pipeline: wallpaper → palette → templates rendered into every app — one-action global recolor.
+The Niri/Noctalia color pipeline: wallpaper → palette → templates rendered into every app. Mango uses a separate static deep-brown Gruvbox theme and does not read Noctalia runtime state.
 
 ## Pipeline
 
@@ -35,4 +35,4 @@ The Noctalia color pipeline: wallpaper → palette → templates rendered into e
 
 ## Config Seeding
 
-`~/.config/noctalia` is not in git (runtime state). `home.activation.noctaliaSeed` seeds it from `dotfiles/noctalia/` **only when missing** (including community palette cache, works offline). To update the seed, sync back manually per `dotfiles/noctalia/README.md`.
+`~/.config/noctalia` is not in git (runtime state). The Niri feature's `home.activation.niriSeeds` seeds it from `dotfiles/noctalia/` **only when missing** (including the offline community palette cache). To update the seed, sync back manually per `dotfiles/noctalia/README.md`.

@@ -2,7 +2,7 @@
 
 # 快捷键
 
-Niri 全部键位（源文件 `dotfiles/niri/binds.kdl`，`Mod` = Super）。`Mod+Shift+/` 可在桌面呼出速查表。
+Niri 全部键位与 Mango 对应键位（`Mod` = Super）。Niri 源文件为 `dotfiles/niri/binds.kdl`；Mango 由 `modules/features/mango.nix` 生成。`Mod+Shift+/` 仅在 Niri 呼出速查表。
 
 ## 特殊功能
 
@@ -89,3 +89,26 @@ Niri 全部键位（源文件 `dotfiles/niri/binds.kdl`，`Mod` = Super）。`Mo
 | `Mod+Shift+S` | 区域截图并标注（satty） |
 | `XF86Audio*` | 音量/播放控制 |
 | `XF86MonBrightness*` | 亮度 |
+
+## Mango 快捷键
+
+| 键位 | 功能 |
+|------|------|
+| `Mod+Return` / `Mod+T` / `Mod+/` | Mango 专用 Foot / 临时终端 |
+| `Mod+Z` / `Mod+Space` / `Mod+Shift+P` | Rofi / SwayNC / Wlogout |
+| `Mod+Alt+V` | cliphist + Rofi 剪贴板历史 |
+| `Mod+O` / `Mod+G` / `Mod+Q` | 总览 / 总览 / 关窗 |
+| `Mod+V` / `Mod+F` / `Mod+Alt+F` | 浮动 / 最大化 / 全屏 |
+| `Mod+H/J/K/L`（或方向键） | 焦点左/下/上/右 |
+| `Mod+Ctrl+H/J/K/L`（或方向键） | 与对应方向的窗口交换 |
+| `Mod+U/I` / `Mod+Ctrl+U/I` | 切换相邻非空 tag / 把窗口移到相邻 tag |
+| `Mod+1-9` / `Mod+Ctrl+1-9` | 查看 tag / 把窗口移到 tag |
+| `Mod+R` / `Mod+Alt+R` | scroller 宽度预设 / 循环 tile、scroller、dwindle |
+| `Mod+-` / `Mod+=` | tile 主区域比例 ±5% |
+| `Print` / `Shift+Print` / `Mod+Shift+S` | 区域 / 全屏 / 区域标注截图 |
+| `Mod+Alt+L` / `Mod+Alt+P` | 锁屏 / 锁屏并挂起 |
+| `Mod+Shift+R` / `Mod+Shift+E` | 重载配置 / 退出 Mango |
+
+## Mango 与 Niri 的差异
+
+Mango 的 1–9 是固定 tag，默认 `tile`；Niri 使用 1–10 的动态工作区。Mango 没有稳定等价项，因此不绑定 Niri 的列吞并/吐出、列居中、整列高度和 `recent-windows` 同类窗口过滤；`Alt+Tab` 改用 Mango 原生 `togglejump`。Mango 的面板、通知、锁屏与启动器来自独立的 Waybar/SwayNC/Swaylock/Rofi 栈，不调用 Noctalia。

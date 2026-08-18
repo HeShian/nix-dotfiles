@@ -2,7 +2,16 @@
 
 # 软件
 
-已安装软件分类清单。声明位置：`modules/features/`（`apps.nix` 日常应用、`desktop.nix` 桌面工具与系统桌面、`shell.nix` 终端工具、`flatpak.nix` Flatpak）。
+已安装软件分类清单。声明位置：`modules/features/`（`apps.nix` 日常应用、`desktop.nix` 共享桌面基础、`niri.nix`/`mango.nix` 会话栈、`shell.nix` 终端工具、`flatpak.nix` Flatpak）。
+
+## 桌面会话
+
+| 会话 | 合成器与 Shell | 独立组件 | 登录行为 |
+|------|----------------|----------|----------|
+| Niri | Niri + Noctalia v5 | Noctalia launcher/control center/notifications/lock | 默认会话 |
+| Mango | Mango（tile/scroller/dwindle） | Waybar、SwayNC、Rofi、Wlogout、SwayOSD、swayidle、swaybg、wlsunset | greeter 按 `F3` 选择 |
+
+Mango 的 applet、Polkit、输入法、剪贴板、自动挂载与空闲服务只绑定 `mango-session.target`；退出 Mango 后会一并停止，不会污染 Niri 会话。
 
 ## 日常应用
 

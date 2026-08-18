@@ -1,5 +1,5 @@
 {
-  description = "NixOS with Niri + Noctalia";
+  description = "NixOS desktop with Niri, Noctalia and Mango";
 
   inputs = {
     agenix = {
@@ -28,6 +28,10 @@
     kimi-code = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:MoonshotAI/kimi-code";
+    };
+    mangowm = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:mangowm/mango";
     };
     # 跟随最新 stable tag
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";

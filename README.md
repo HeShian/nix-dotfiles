@@ -4,7 +4,7 @@
 ![Desktop Screenshot](./doc/img/space.png)
 ![Fastfetch Screenshot](./doc/img/ff.png)
 
-> 基于 NixOS + Niri + Noctalia v5 的个人桌面配置。这里记录安装前要确认的内容和日常维护命令。
+> 基于 NixOS 的双 Wayland 会话：Niri + Noctalia v5 为默认桌面，Mango + Waybar/SwayNC/Rofi 为独立备选桌面。
 
 ---
 
@@ -98,7 +98,7 @@ SSH authorized key (optional) [ssh-ed25519 ...]:
 ```
 
 ### 💡 快捷键帮助
-Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日常使用按 **`Super + Shift + /`** 打开快捷键速查表。
+登录器默认进入 Niri，按 **`F3`** 可选择 Mango。Niri 日常使用按 **`Super + Shift + /`** 打开快捷键速查表；两套会话的键位与差异见 [快捷键文档](doc/zh/shortcuts.md)。
 
 ---
 
@@ -111,7 +111,7 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
   - `hardware-configuration.nix`: 安装时生成的硬件配置。
   - `disko.nix`: 分区规则。
 - **`modules/features/`**: feature aspects（一个文件一个 feature，文件名即 aspect 名；可同时含 nixos/homeManager 两类配置；目录自动聚合）。
-- **`dotfiles/`**: Niri、Noctalia、Neovim 等应用配置。
+- **`dotfiles/`**: Niri、Noctalia、Mango 配套组件、Neovim 等应用配置。
 
 ---
 
@@ -125,6 +125,7 @@ Niri 默认不在启动时显示快捷键覆盖层（`skip-at-startup`）。日�
 ### 2. 如何修改桌面外观或快捷键？
 - Niri 合成器：编辑 `dotfiles/niri/config.kdl`，然后运行 `niri msg action load-config-file` 热重载。
 - Noctalia Shell：通过 Noctalia 设置面板（`Super + F2`）或用 `Super + Z` 打开启动器后搜索设置。
+- Mango 合成器：核心配置在 `modules/features/mango.nix`，修改后需 rebuild；Waybar/SwayNC/Rofi 等样式在 `dotfiles/mango/`，重启对应 `mango-*` 用户服务即可。
 
 ### 3. 如何新增 feature 模块、主机或用户？
 装配结构（den aspect/includes、install 变体）见 [doc/zh/architecture.md](doc/zh/architecture.md)；具体步骤见 [doc/zh/maintenance.md](doc/zh/maintenance.md) 的「手动维护场景」。
@@ -146,7 +147,7 @@ nh os switch -u    # 等价于 nix flake update + nh os switch
 ```
 
 ### 5. 如何格式化代码？
-统一用 `nix fmt`（treefmt：nixfmt/stylua/shfmt + deadnix/statix；配置在 `modules/flake/formatting.nix`）。`nix flake check` 会校验格式并对一方 Shell 脚本运行 ShellCheck。
+统一用 `nix fmt`（treefmt：nixfmt/stylua/shfmt + deadnix/statix；配置在 `modules/flake/formatting.nix`）。`nix flake check` 还会校验 Niri、上游 `mango -p`、Mango JSON 和一方 Shell 脚本。
 
 ---
 
@@ -166,6 +167,7 @@ nh os switch -u    # 等价于 nix flake update + nh os switch
 
 - Fork 自：[huzch/nix-dotfiles](https://github.com/huzch/nix-dotfiles)
 - 主要参考：[SHORiN-KiWATA/shorin-arch-setup (noctalia-dotfiles)](https://github.com/SHORiN-KiWATA/shorin-arch-setup/tree/main/noctalia-dotfiles)
+- Mango：[官方 Nix 选项](https://mangowm.github.io/docs/nix-options/)；视觉与组件思路参考 [DreamMaoMao/mango-config](https://github.com/DreamMaoMao/mango-config)
 - 动画参考代码：https://lagrange-x.lanzouq.com/iQGv93sel3uf
 
 ---

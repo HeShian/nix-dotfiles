@@ -2,7 +2,16 @@
 
 # Software
 
-Categorized software list. Declared in `modules/features/` (`apps.nix` daily apps, `desktop.nix` desktop tools and system desktop, `shell.nix` terminal tools, `flatpak.nix` Flatpak).
+Categorized software list. Declarations live in `modules/features/` (`apps.nix` daily apps, `desktop.nix` shared desktop base, `niri.nix`/`mango.nix` session stacks, `shell.nix` terminal tools, and `flatpak.nix` Flatpak).
+
+## Desktop Sessions
+
+| Session | Compositor and shell | Independent components | Login behavior |
+|---------|----------------------|------------------------|----------------|
+| Niri | Niri + Noctalia v5 | Noctalia launcher/control center/notifications/lock | Default session |
+| Mango | Mango (tile/scroller/dwindle) | Waybar, SwayNC, Rofi, Wlogout, SwayOSD, swayidle, swaybg, wlsunset | Select with `F3` in the greeter |
+
+Mango's applets, Polkit agent, input method, clipboard, automount, and idle services are bound only to `mango-session.target`; leaving Mango stops them together so they do not leak into Niri.
 
 ## Daily Apps
 

@@ -1,0 +1,2 @@
+! Mango 的 XWayland 缩放只影响旧 X11 客户端，不改变原生 Wayland 应用。
+Xft.dpi: 120

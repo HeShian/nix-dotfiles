@@ -1,0 +1,84 @@
+@define-color background rgba(32, 27, 20, 0.94);
+@define-color surface rgba(60, 56, 54, 0.92);
+@define-color surface_alt rgba(80, 73, 69, 0.88);
+@define-color foreground #ebdbb2;
+@define-color muted #a89984;
+@define-color accent #d79921;
+@define-color urgent #cc241d;
+
+* {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 15px;
+}
+
+.control-center {
+  background: @background;
+  border: 2px solid @accent;
+  border-radius: 16px;
+  padding: 8px;
+}
+
+.notification-row {
+  outline: none;
+  margin: 5px;
+}
+
+.notification {
+  background: @surface;
+  border: 1px solid @surface_alt;
+  border-radius: 12px;
+  color: @foreground;
+}
+
+.notification-content {
+  padding: 10px;
+}
+
+.close-button {
+  background: @accent;
+  color: @background;
+  border-radius: 999px;
+  margin: 8px;
+}
+
+.notification-action {
+  background: @surface_alt;
+  color: @foreground;
+  border-top: 1px solid @accent;
+}
+
+.summary {
+  color: @foreground;
+  font-weight: bold;
+}
+
+.body, .time {
+  color: @muted;
+}
+
+.widget-title, .widget-dnd, .widget-mpris {
+  background: @surface;
+  color: @foreground;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 5px;
+}
+
+.widget-title > button {
+  background: @accent;
+  color: @background;
+  border-radius: 8px;
+}
+
+.widget-dnd > switch {
+  background: @surface_alt;
+  border-radius: 999px;
+}
+
+.widget-dnd > switch:checked {
+  background: @accent;
+}
+
+.floating-notification {
+  background: transparent;
+}

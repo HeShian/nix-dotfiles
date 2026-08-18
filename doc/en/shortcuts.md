@@ -2,7 +2,7 @@
 
 # Shortcuts
 
-All Niri keybindings (source: `dotfiles/niri/binds.kdl`; `Mod` = Super). Press `Mod+Shift+/` on the desktop for a searchable cheat sheet.
+Niri keybindings plus their Mango counterparts (`Mod` = Super). Niri comes from `dotfiles/niri/binds.kdl`; Mango is generated from `modules/features/mango.nix`. `Mod+Shift+/` opens the searchable overlay only in Niri.
 
 ## Special
 
@@ -89,3 +89,26 @@ All Niri keybindings (source: `dotfiles/niri/binds.kdl`; `Mod` = Super). Press `
 | `Mod+Shift+S` | Region screenshot and annotate (satty) |
 | `XF86Audio*` | Volume / playback |
 | `XF86MonBrightness*` | Brightness |
+
+## Mango Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Mod+Return` / `Mod+T` / `Mod+/` | Mango-specific Foot / quick terminal |
+| `Mod+Z` / `Mod+Space` / `Mod+Shift+P` | Rofi / SwayNC / Wlogout |
+| `Mod+Alt+V` | cliphist + Rofi clipboard history |
+| `Mod+O` / `Mod+G` / `Mod+Q` | Overview / overview / close window |
+| `Mod+V` / `Mod+F` / `Mod+Alt+F` | Float / maximize / fullscreen |
+| `Mod+H/J/K/L` (or arrows) | Focus left/down/up/right |
+| `Mod+Ctrl+H/J/K/L` (or arrows) | Exchange with the window in that direction |
+| `Mod+U/I` / `Mod+Ctrl+U/I` | View adjacent occupied tag / send window to adjacent tag |
+| `Mod+1-9` / `Mod+Ctrl+1-9` | View tag / send window to tag |
+| `Mod+R` / `Mod+Alt+R` | Scroller proportion preset / cycle tile, scroller, dwindle |
+| `Mod+-` / `Mod+=` | Tile master ratio ±5% |
+| `Print` / `Shift+Print` / `Mod+Shift+S` | Region / full-screen / annotated region screenshot |
+| `Mod+Alt+L` / `Mod+Alt+P` | Lock / lock and suspend |
+| `Mod+Shift+R` / `Mod+Shift+E` | Reload config / quit Mango |
+
+## Mango vs Niri
+
+Mango uses fixed tags 1–9, all defaulting to `tile`; Niri uses dynamic workspaces 1–10. Mango has no stable equivalents for Niri's consume/expel column operations, column centering, whole-column height controls, or `recent-windows` same-app filtering, so those are intentionally unbound. `Alt+Tab` uses Mango's native `togglejump`. Mango's bar, notifications, lock screen, and launcher come from its independent Waybar/SwayNC/Swaylock/Rofi stack and never call Noctalia.

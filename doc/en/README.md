@@ -2,7 +2,7 @@
 
 # NixOS Dotfiles Documentation
 
-Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v5.
+Personal dual-desktop NixOS configuration: NixOS (nixos-unstable) + Niri/Noctalia v5 + Mango.
 
 ## Overview
 
@@ -10,7 +10,7 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 |------|-------|
 | Host | aspire-a715 |
 | User | claudia |
-| Desktop | Niri (Wayland scrolling tiling) + Noctalia v5 (Quickshell) |
+| Desktop | Default Niri + Noctalia v5; alternative Mango + Waybar/SwayNC/Rofi |
 | Management | Nix Flakes (flake-parts + den) + Home Manager + Disko + agenix |
 | Machine parameters | `hosts/<host>/host.nix` (disk/cpu/gpu/primaryUser/proxy/per-user metadata) |
 
@@ -19,7 +19,7 @@ Personal NixOS desktop configuration: NixOS (nixos-unstable) + Niri + Noctalia v
 | Document | Content |
 |----------|---------|
 | [Architecture](architecture.md) | den wiring, aspect inventory, install variant |
-| [Shortcuts](shortcuts.md) | All Niri keybindings |
+| [Shortcuts](shortcuts.md) | Niri bindings, Mango counterparts, and differences |
 | [Software](software.md) | Categorized software list |
 | [Maintenance](maintenance.md) | Daily maintenance, upgrades, rollback |
 | [agenix](agenix.md) | Secrets management |

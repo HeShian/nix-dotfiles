@@ -14,7 +14,7 @@ This repo uses [den](https://github.com/denful/den) (a flake-parts module) for h
 | `den.schema` | Typed metadata declarations for entities (typos in host.nix fail fast) | `den.schema.host`/`den.schema.user` in schema.nix |
 | `den.default` | Config applied to every entity (external OS modules, overlays, `_module.args`) | defaults.nix |
 | class | Config class: `nixos` / `homeManager` | The module files |
-| `provides.to-users` | Aspect mounts on the host but delivers its homeManager part to its users | `features/desktop.nix` |
+| `provides.to-users` | Aspect mounts on the host but delivers its homeManager part to its users | `features/desktop.nix`, `niri.nix`, `mango.nix` |
 
 ## Data flow
 
@@ -37,18 +37,20 @@ modules/features/<feature>.nix
 | aspect | class | source file | notes |
 |--------|-------|-------------|-------|
 | `boot` | nixos | `modules/features/boot.nix` | GRUB/kernel/quiet boot |
-| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | Desktop; user side delivered via `provides.to-users` |
+| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | Shared greeter/portal/audio/file management and user tools for both sessions |
 | `flatpak` | nixos | `modules/features/flatpak.nix` | Flatpak apps and mirrors |
 | `hardware` | nixos | `modules/features/hardware.nix` | flat-form, reads `host.cpu`/`host.gpu` |
 | `hm-global` | nixos | `modules/features/hm-global.nix` | home-manager globals; regular hosts only |
 | `locale` | nixos | `modules/features/locale.nix` | fonts/input method/timezone |
+| `mango` | nixos + homeManager | `modules/features/mango.nix` | Mango + Waybar/SwayNC/Rofi; regular hosts only |
 | `networking` | nixos | `modules/features/networking.nix` | network/SSH/v2raya |
+| `niri` | nixos + homeManager | `modules/features/niri.nix` | Niri + Noctalia; owns the greeter default session |
 | `nix` | nixos | `modules/features/nix.nix` | nix settings/caches/nix-ld |
 | `secrets` | nixos | `modules/features/secrets.nix` | agenix; regular hosts only |
 | `users` | nixos | `modules/features/users.nix` | flat-form, reads `host.users`/`host.primaryUser` |
 | `virtualisation` | nixos | `modules/features/virtualisation.nix` | libvirtd/waydroid |
 | `apps` | homeManager | `modules/features/apps.nix` | application list |
-| `dotfiles` | homeManager | `modules/features/dotfiles.nix` | dotfiles live links/seeds |
+| `dotfiles` | homeManager | `modules/features/dotfiles.nix` | compositor-independent dotfile live links |
 | `shell` | homeManager | `modules/features/shell.nix` | zsh/CLI tools |
 
 ## The install variant
@@ -57,10 +59,12 @@ Every host also has a `<name>-install` configuration (stage one of a fresh insta
 
 | Difference | Implementation |
 |-----------|----------------|
-| No secrets/flatpak | Derived from `hostFeatureNames` with `installExcludedFeatureNames` (a fresh machine has no host key; decryption would fail) |
+| No secrets/flatpak/mango | Derived from `hostFeatureNames` with `installExcludedFeatureNames`; Mango needs the full HM user services, so the installer never exposes a partial session |
 | No Home Manager | user `classes = [ "user" ]` (overrides the schema default `homeManager`) |
 | No hm-global | referencing `home-manager.*` options without the HM module errors with "option does not exist" |
 | Same network name | the entity's `hostName` points back to the regular host name |
+
+Regular hosts include `desktop`, `niri`, and `mango` together. The install variant keeps `desktop` + `niri`, preserving the known-good default Niri session during installation. All three names participate in the shared aspect collision check; no host schema field is added.
 
 ## Constraints
 

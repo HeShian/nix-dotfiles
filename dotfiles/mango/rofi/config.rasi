@@ -1,0 +1,79 @@
+// Mango 启动器：保持深棕底色，并使用系统已经安装的 Nerd Font。
+configuration {
+    modi: "drun,run";
+    show-icons: true;
+    sort: true;
+    sorting-method: "fzf";
+    drun-display-format: "{name}";
+    display-drun: " Apps";
+    font: "JetBrainsMono Nerd Font 16";
+}
+
+* {
+    background: #201b14ee;
+    background-alt: #3c3836ff;
+    foreground: #ebdbb2ff;
+    muted: #a89984ff;
+    accent: #d79921ff;
+    urgent: #cc241dff;
+}
+
+window {
+    width: 680px;
+    border: 3px;
+    border-radius: 12px;
+    border-color: @accent;
+    background-color: @background;
+    padding: 18px;
+}
+
+mainbox {
+    spacing: 12px;
+}
+
+inputbar {
+    children: [ prompt, entry ];
+    spacing: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: @background-alt;
+}
+
+prompt, entry {
+    text-color: @foreground;
+}
+
+entry {
+    placeholder: "Search applications";
+    placeholder-color: @muted;
+}
+
+listview {
+    columns: 1;
+    lines: 8;
+    cycle: false;
+    scrollbar: false;
+    spacing: 4px;
+}
+
+element {
+    padding: 9px;
+    border-radius: 8px;
+    background-color: transparent;
+    text-color: @foreground;
+}
+
+element selected {
+    background-color: @accent;
+    text-color: @background;
+}
+
+element-icon {
+    size: 28px;
+    margin: 0 10px 0 0;
+}
+
+element-text, element-icon {
+    background-color: inherit;
+    text-color: inherit;
+}

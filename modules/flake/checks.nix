@@ -1,4 +1,4 @@
-# 仓库级检查：安装变体契约、Shell、Niri、静态格式及双语文档
+# 仓库级检查：安装变体契约、双合成器配置、Shell、静态格式及双语文档。
 {
   inputs,
   lib,
@@ -30,7 +30,14 @@ let
     && install.age.secrets == { }
     && builtins.hasAttr "home-manager" normal
     && !(builtins.hasAttr "home-manager" install)
+    && normal.programs.niri.enable
+    && normal.programs.mango.enable
+    && install.programs.niri.enable
+    && !install.programs.mango.enable
+    && normal.programs.noctalia-greeter.settings.session.default == "niri"
+    && install.programs.noctalia-greeter.settings.session.default == "niri"
     && lib.all (user: builtins.hasAttr user normal."home-manager".users) userNames
+    && lib.all (user: normal."home-manager".users.${user}.wayland.windowManager.mango.enable) userNames
     && lib.all (
       user:
       builtins.elem "wheel" normal.users.users.${user}.extraGroups
@@ -48,6 +55,15 @@ let
       )
     );
   failedContractHosts = lib.filter (name: !(hostContractHolds name)) hostNames;
+  # 引用 source 会把上游 HM 模块内置的 `mango -p` 验证纳入 flake check。
+  mangoConfigSources = lib.concatMap (
+    name:
+    let
+      normal = self.nixosConfigurations.${name}.config;
+      userNames = builtins.attrNames hostParams.${name}.users;
+    in
+    map (user: normal."home-manager".users.${user}.xdg.configFile."mango/config.conf".source) userNames
+  ) hostNames;
 in
 {
   perSystem =
@@ -64,7 +80,7 @@ in
 
         shellcheck = pkgs.runCommand "shellcheck" { nativeBuildInputs = [ pkgs.shellcheck ]; } ''
           cd ${self}
-          shellcheck --severity=warning init.sh dotfiles/niri/scripts/*
+          shellcheck --severity=warning init.sh dotfiles/niri/scripts/* dotfiles/mango/scripts/*.sh
           touch "$out"
         '';
 
@@ -73,6 +89,11 @@ in
           chmod -R u+w "$TMPDIR/niri"
           touch "$TMPDIR/niri/noctalia.kdl"
           niri validate --config "$TMPDIR/niri/config.kdl"
+          touch "$out"
+        '';
+
+        mango-config = pkgs.runCommand "mango-config" { } ''
+          ${lib.concatMapStringsSep "\n" (source: "test -s ${source}") mangoConfigSources}
           touch "$out"
         '';
 
@@ -92,9 +113,15 @@ in
 
               find dotfiles/nvim -type f -name '*.lua' -print0 | xargs -0 -n1 luac -p
 
-              for file in dotfiles/nvim/lazy-lock.json pkgs/dsh/package.json pkgs/dsh/package-lock.json; do
+              for file in \
+                dotfiles/nvim/lazy-lock.json \
+                dotfiles/mango/swaync/config.json \
+                dotfiles/mango/waybar/config.json \
+                pkgs/dsh/package.json \
+                pkgs/dsh/package-lock.json; do
                 jq empty "$file"
               done
+              jq --slurp empty dotfiles/mango/wlogout/layout
               sed '/^[[:space:]]*\/\//d' dotfiles/fastfetch/config.jsonc | jq empty
 
               taplo check dotfiles/noctalia/config.toml dotfiles/noctalia/settings.toml
