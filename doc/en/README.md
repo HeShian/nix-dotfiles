@@ -10,7 +10,7 @@ Personal dual-desktop NixOS configuration: NixOS (nixos-unstable) + Niri/Noctali
 |------|-------|
 | Host | aspire-a715 |
 | User | claudia |
-| Desktop | Default Niri + Noctalia v5; alternative Mango + Waybar/SwayNC/Rofi |
+| Desktop | Niri and Mango share Noctalia v5; the greeter remembers the last selection |
 | Management | Nix Flakes (flake-parts + den) + Home Manager + Disko + agenix |
 | Machine parameters | `hosts/<host>/host.nix` (disk/cpu/gpu/primaryUser/proxy/per-user metadata) |
 

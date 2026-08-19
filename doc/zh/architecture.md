@@ -37,14 +37,14 @@ modules/features/<feature>.nix
 | aspect | 类 | 源文件 | 说明 |
 |--------|-----|--------|------|
 | `boot` | nixos | `modules/features/boot.nix` | GRUB/内核/静默启动 |
-| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | 双会话共享的 greeter/portal/音频/文件管理与用户工具 |
+| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | 双会话共享的 Noctalia/greeter/portal/音频/文件管理与用户工具 |
 | `flatpak` | nixos | `modules/features/flatpak.nix` | Flatpak 应用与镜像 |
 | `hardware` | nixos | `modules/features/hardware.nix` | flat-form，读 `host.cpu`/`host.gpu` |
 | `hm-global` | nixos | `modules/features/hm-global.nix` | home-manager 全局行为；仅常规主机 |
 | `locale` | nixos | `modules/features/locale.nix` | 字体/输入法/时区 |
-| `mango` | nixos + homeManager | `modules/features/mango.nix` | Mango + Waybar/SwayNC/Rofi；仅常规主机 |
+| `mango` | nixos + homeManager | `modules/features/mango.nix` | Mango 活链接、共享 Noctalia 与会话服务；仅常规主机 |
 | `networking` | nixos | `modules/features/networking.nix` | 网络/SSH/v2raya |
-| `niri` | nixos + homeManager | `modules/features/niri.nix` | Niri + Noctalia；决定 greeter 默认会话 |
+| `niri` | nixos + homeManager | `modules/features/niri.nix` | Niri 专属配置与会话 portal |
 | `nix` | nixos | `modules/features/nix.nix` | nix 设置/缓存/nix-ld |
 | `secrets` | nixos | `modules/features/secrets.nix` | agenix；仅常规主机 |
 | `users` | nixos | `modules/features/users.nix` | flat-form，读 `host.users`/`host.primaryUser` |
@@ -64,7 +64,7 @@ modules/features/<feature>.nix
 | 无 hm-global | 无 HM 模块时引用 `home-manager.*` 选项会报「选项不存在」 |
 | 同一网络名 | 实体 `hostName` 显式指回常规主机名 |
 
-常规主机同时包含 `desktop`、`niri`、`mango`；install 变体保留 `desktop` + `niri`，因此安装环境仍有当前稳定的默认 Niri 会话。三个名字也进入共享 aspect 名称冲突检查，无需增加 host schema 字段。
+常规主机同时包含 `desktop`、`niri`、`mango`，greeter 从 `/var/lib/noctalia-greeter/sync.toml` 恢复上次有效选择；没有记录时回退到首个有效会话。install 变体只保留 `desktop` + `niri`，因此安装环境仅提供 Niri，而不是声明固定默认值。三个名字也进入共享 aspect 名称冲突检查，无需增加 host schema 字段。
 
 ## 约束
 

@@ -1,4 +1,4 @@
-# 应用程序清单（浏览器/IM/办公/开发/创作/游戏/Wine；pywalfox manifest 与 Steam 中文字体兜底）
+# 应用程序清单（浏览器/IM/办公/开发/创作/游戏/Wine；VSCode/pywalfox/Steam 兼容兜底）
 _: {
   den.aspects.apps.homeManager =
     {
@@ -73,7 +73,6 @@ _: {
           readest
           onlyoffice-desktopeditors
           wpsoffice-cn
-          vscode
           opencode
           pi-coding-agent
           uv
@@ -96,6 +95,11 @@ _: {
           flclash
           ;
         inherit (pkgs.wineWow64Packages) stableFull;
+        # Electron 42 在当前原生 Wayland 会话加载 VSCode 窗口时段错误，切至 XWayland 保留 GPU 与扩展功能；
+        # crashpad 同样会随主进程崩溃，待上游修复并复测原生 Wayland 后一并移除这些参数。
+        vscode = pkgs.vscode.override {
+          commandLineArgs = "--ozone-platform=x11 --disable-crash-reporter";
+        };
         kimi-code-cli = kimi-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
         zen-twilight = zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight;
       };

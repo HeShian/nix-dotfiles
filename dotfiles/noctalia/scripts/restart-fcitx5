@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# 两套 Wayland 会话统一从干净环境替换 Fcitx，避免旧会话残留 GTK_IM_MODULE 触发诊断。
+set -euo pipefail
+
+unset GTK_IM_MODULE
+exec fcitx5 -r

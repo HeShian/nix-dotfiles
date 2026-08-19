@@ -58,4 +58,13 @@ _: {
       };
       time.timeZone = "Asia/Shanghai";
     };
+
+  den.aspects.locale.provides.to-users.homeManager =
+    { lib, ... }:
+    {
+      # Fcitx 安装 addon 不会自动把 Rime 加入用户组；只在缺失时播种或追加，保留配置工具维护的其他输入法。
+      home.activation.fcitx5RimeProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        ${../../dotfiles/noctalia/scripts/ensure-fcitx5-rime} ${../../dotfiles/fcitx5/profile}
+      '';
+    };
 }

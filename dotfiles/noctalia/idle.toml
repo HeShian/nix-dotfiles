@@ -1,0 +1,18 @@
+# Niri 与 Mango 共用的 Noctalia 空闲策略；GUI 运行时设置仍可按上游优先级覆盖。
+[idle]
+behavior_order = [ "lock", "screen-off", "suspend" ]
+
+[idle.behavior.lock]
+action = "lock"
+enabled = true
+timeout = 600
+
+[idle.behavior.screen-off]
+action = "screen_off"
+enabled = true
+timeout = 900
+
+[idle.behavior.suspend]
+action = "lock_and_suspend"
+enabled = true
+timeout = 1800

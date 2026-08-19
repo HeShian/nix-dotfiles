@@ -37,14 +37,14 @@ modules/features/<feature>.nix
 | aspect | class | source file | notes |
 |--------|-------|-------------|-------|
 | `boot` | nixos | `modules/features/boot.nix` | GRUB/kernel/quiet boot |
-| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | Shared greeter/portal/audio/file management and user tools for both sessions |
+| `desktop` | nixos + homeManager | `modules/features/desktop.nix` | Shared Noctalia/greeter/portal/audio/file management and user tools for both sessions |
 | `flatpak` | nixos | `modules/features/flatpak.nix` | Flatpak apps and mirrors |
 | `hardware` | nixos | `modules/features/hardware.nix` | flat-form, reads `host.cpu`/`host.gpu` |
 | `hm-global` | nixos | `modules/features/hm-global.nix` | home-manager globals; regular hosts only |
 | `locale` | nixos | `modules/features/locale.nix` | fonts/input method/timezone |
-| `mango` | nixos + homeManager | `modules/features/mango.nix` | Mango + Waybar/SwayNC/Rofi; regular hosts only |
+| `mango` | nixos + homeManager | `modules/features/mango.nix` | Mango live links, shared Noctalia, and session services; regular hosts only |
 | `networking` | nixos | `modules/features/networking.nix` | network/SSH/v2raya |
-| `niri` | nixos + homeManager | `modules/features/niri.nix` | Niri + Noctalia; owns the greeter default session |
+| `niri` | nixos + homeManager | `modules/features/niri.nix` | Niri-specific config and session portals |
 | `nix` | nixos | `modules/features/nix.nix` | nix settings/caches/nix-ld |
 | `secrets` | nixos | `modules/features/secrets.nix` | agenix; regular hosts only |
 | `users` | nixos | `modules/features/users.nix` | flat-form, reads `host.users`/`host.primaryUser` |
@@ -64,7 +64,7 @@ Every host also has a `<name>-install` configuration (stage one of a fresh insta
 | No hm-global | referencing `home-manager.*` options without the HM module errors with "option does not exist" |
 | Same network name | the entity's `hostName` points back to the regular host name |
 
-Regular hosts include `desktop`, `niri`, and `mango` together. The install variant keeps `desktop` + `niri`, preserving the known-good default Niri session during installation. All three names participate in the shared aspect collision check; no host schema field is added.
+Regular hosts include `desktop`, `niri`, and `mango` together. The greeter restores the last valid selection from `/var/lib/noctalia-greeter/sync.toml`, falling back to the first valid session when no record exists. The install variant keeps only `desktop` + `niri`, so it exposes Niri without declaring a fixed default. All three names participate in the shared aspect collision check; no host schema field is added.
 
 ## Constraints
 

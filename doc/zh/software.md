@@ -6,12 +6,12 @@
 
 ## 桌面会话
 
-| 会话 | 合成器与 Shell | 独立组件 | 登录行为 |
-|------|----------------|----------|----------|
-| Niri | Niri + Noctalia v5 | Noctalia launcher/control center/notifications/lock | 默认会话 |
-| Mango | Mango（tile/scroller/dwindle） | Waybar、SwayNC、Rofi、Wlogout、SwayOSD、swayidle、swaybg、wlsunset | greeter 按 `F3` 选择 |
+| 会话 | 合成器 | 共享 Shell | 登录行为 |
+|------|--------|------------|----------|
+| Niri | Niri | Noctalia v5：bar/launcher/control center/notifications/clipboard/lock/wallpaper/OSD/idle | greeter 按 `F3` 选择并记忆 |
+| Mango | Mango（tile/scroller/dwindle） | 同一套 Noctalia v5 配置与运行时状态 | greeter 按 `F3` 选择并记忆 |
 
-Mango 的 applet、Polkit、输入法、剪贴板、自动挂载与空闲服务只绑定 `mango-session.target`；退出 Mango 后会一并停止，不会污染 Niri 会话。
+Mango 在 `mango-session.target` 下启动 Noctalia、fcitx5、udiskie、xsettingsd、portal 主题监听、截图音效、持久剪贴板、文本/图片 cliphist、延迟随机壁纸、Gopeed 与 XWayland DPI；退出 Mango 后由 guard 一并停止。Noctalia 自己提供 Polkit、网络/蓝牙界面、通知与空闲策略。
 
 ## 日常应用
 

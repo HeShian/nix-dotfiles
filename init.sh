@@ -461,6 +461,9 @@ generate_hardware_config() {
 
 copy_config() {
   cp /mnt/etc/nixos/hardware-configuration.nix "hosts/${HOST_NAME}/"
+  # Git flake 会忽略未跟踪文件；新主机的四个 Nix 文件必须先进入索引，
+  # 后续拷到用户目录的仓库才能产出该主机的完整配置。
+  git add -N -- "hosts/${HOST_NAME}"/*.nix
   # 排除式拷贝：新顶层目录默认纳入，避免白名单漏拷（VCS 元数据/构建产物/codegraph 索引除外）
   tar --exclude='./.git' --exclude='./.codegraph' --exclude='./result' --exclude='./result-*' -cf - . | tar -xf - -C /mnt/etc/nixos/
 }

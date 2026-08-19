@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# 在 Fcitx 进程启动前补齐 Rime；此时旧实例已退出，不会再用旧 profile 覆盖迁移结果。
+set -euo pipefail
+
+seed=${1:?missing Fcitx profile seed}
+profile_dir=${XDG_CONFIG_HOME:-"$HOME/.config"}/fcitx5
+profile=$profile_dir/profile
+
+mkdir -p "$profile_dir"
+if [[ ! -f $profile ]]; then
+  install -m 600 "$seed" "$profile"
+  exit 0
+fi
+
+if grep -Fxq 'Name=rime' "$profile"; then
+  exit 0
+fi
+
+last_item=$(sed -n 's|^\[Groups/0/Items/\([0-9][0-9]*\)\]$|\1|p' "$profile" | sort -n | tail -n 1)
+if [[ -z $last_item ]]; then
+  last_item=-1
+fi
+next_item=$((last_item + 1))
+temporary=$(mktemp "$profile_dir/.profile.XXXXXX")
+trap 'rm -f "$temporary"' EXIT
+
+awk -v item="$next_item" '
+  /^\[GroupOrder\]$/ && !inserted {
+    printf "[Groups/0/Items/%s]\n# Name\nName=rime\n# Layout\nLayout=\n\n", item
+    inserted = 1
+  }
+  { print }
+  END {
+    if (!inserted) {
+      printf "\n[Groups/0/Items/%s]\n# Name\nName=rime\n# Layout\nLayout=\n", item
+    }
+  }
+' "$profile" > "$temporary"
+
+sed -i 's/^DefaultIM=keyboard-us$/DefaultIM=rime/' "$temporary"
+install -m 600 "$temporary" "$profile"

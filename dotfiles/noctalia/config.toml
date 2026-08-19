@@ -28,4 +28,4 @@ post_hook   = "pywalfox update &"
 [theme.templates.user.fcitx5]
 input_path  = "@REPO@/dotfiles/noctalia/templates/fcitx5-theme.conf"
 output_path = "~/.local/share/fcitx5/themes/noctalia/theme.conf"
-post_hook   = "(fcitx5 -r >/dev/null 2>&1 &)"
+post_hook   = "(~/.config/noctalia/scripts/restart-fcitx5 >/dev/null 2>&1 &)"

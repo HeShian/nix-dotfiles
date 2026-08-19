@@ -2,14 +2,14 @@
 
 # Shortcuts
 
-Niri keybindings plus their Mango counterparts (`Mod` = Super). Niri comes from `dotfiles/niri/binds.kdl`; Mango is generated from `modules/features/mango.nix`. `Mod+Shift+/` opens the searchable overlay only in Niri.
+Niri keybindings plus their Mango counterparts (`Mod` = Super). Niri comes from `dotfiles/niri/binds.kdl`; Mango comes from `dotfiles/mango/binds.conf`. `Mod+Shift+/` opens the searchable overlay in both sessions.
 
 ## Special
 
 | Key | Action |
 |-----|--------|
 | `Mod+Shift+/` | Keybinding cheat sheet |
-| `Mod+F1` | Toggle input method (fcitx5) |
+| `Mod+F1` | Restart the input method (`fcitx5 -r`) |
 | `Mod+F2` | Noctalia settings |
 | `Mod+P` | Pick window info / color |
 | `Mod+Escape` | Toggle shortcut inhibit (full keyboard to VM/remote) |
@@ -94,21 +94,27 @@ Niri keybindings plus their Mango counterparts (`Mod` = Super). Niri comes from 
 
 | Key | Action |
 |-----|--------|
-| `Mod+Return` / `Mod+T` / `Mod+/` | Mango-specific Foot / quick terminal |
-| `Mod+Z` / `Mod+Space` / `Mod+Shift+P` | Rofi / SwayNC / Wlogout |
-| `Mod+Alt+V` | cliphist + Rofi clipboard history |
+| `Mod+Return` / `Mod+T` / `Mod+/` | Shared Foot / quick terminal |
+| `Mod+Shift+/` / `Mod+F1` | Shortcut overlay / restart input method |
+| `Mod+F2` | Noctalia settings |
+| `Mod+Z` / `Mod+Space` / `Mod+Shift+P` | Noctalia launcher / control center / session panel |
+| `Mod+Shift+N` / `Mod+Alt+V` | Noctalia notifications / clipboard history |
+| `Mod+Alt+W` / `Mod+F10` / `Mod+Shift+F10` | Wallpaper panel / random wallpaper / download random wallpaper |
+| `Alt+Tab` | Noctalia window switcher |
 | `Mod+O` / `Mod+G` / `Mod+Q` | Overview / overview / close window |
 | `Mod+V` / `Mod+F` / `Mod+Alt+F` | Float / maximize / fullscreen |
+| `Mod+C` | Center a floating window |
 | `Mod+H/J/K/L` (or arrows) | Focus left/down/up/right |
-| `Mod+Ctrl+H/J/K/L` (or arrows) | Exchange with the window in that direction |
-| `Mod+U/I` / `Mod+Ctrl+U/I` | View adjacent occupied tag / send window to adjacent tag |
+| `Mod+Ctrl+H/J/K/L` (or WASD/arrows) | Exchange with the window in that direction |
+| `Mod+Shift+H/J/K/L` / `Mod+Shift+Ctrl+H/J/K/L` | Focus another monitor / send window to another monitor |
+| `Mod+U/I` (or PageDown/PageUp) / `Mod+Ctrl+U/I` | View adjacent occupied tag / send window to adjacent tag |
 | `Mod+1-9` / `Mod+Ctrl+1-9` | View tag / send window to tag |
 | `Mod+R` / `Mod+Alt+R` | Scroller proportion preset / cycle tile, scroller, dwindle |
 | `Mod+-` / `Mod+=` | Tile master ratio ±5% |
-| `Print` / `Shift+Print` / `Mod+Shift+S` | Region / full-screen / annotated region screenshot |
+| `Print` / `Ctrl+Print` / `Shift+Print` / `Mod+Shift+S` | Region / focused window / current monitor / annotated-region screenshot |
 | `Mod+Alt+L` / `Mod+Alt+P` | Lock / lock and suspend |
 | `Mod+Shift+R` / `Mod+Shift+E` | Reload config / quit Mango |
 
 ## Mango vs Niri
 
-Mango uses fixed tags 1–9, all defaulting to `tile`; Niri uses dynamic workspaces 1–10. Mango has no stable equivalents for Niri's consume/expel column operations, column centering, whole-column height controls, or `recent-windows` same-app filtering, so those are intentionally unbound. `Alt+Tab` uses Mango's native `togglejump`. Mango's bar, notifications, lock screen, and launcher come from its independent Waybar/SwayNC/Swaylock/Rofi stack and never call Noctalia.
+Mango uses fixed tags 1–9, all defaulting to `tile`; Niri uses dynamic workspaces 1–10. Mango has no stable equivalents for Niri's consume/expel column operations, whole-column operations, or `recent-windows` same-app filtering, so those are intentionally unbound. Both sessions share Noctalia panels, notifications, window switcher, clipboard, lock screen, screenshots, wallpaper downloads, and idle policy; compositor-specific capabilities do not get misleading approximate bindings.

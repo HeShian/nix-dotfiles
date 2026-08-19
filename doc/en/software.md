@@ -6,12 +6,12 @@ Categorized software list. Declarations live in `modules/features/` (`apps.nix` 
 
 ## Desktop Sessions
 
-| Session | Compositor and shell | Independent components | Login behavior |
-|---------|----------------------|------------------------|----------------|
-| Niri | Niri + Noctalia v5 | Noctalia launcher/control center/notifications/lock | Default session |
-| Mango | Mango (tile/scroller/dwindle) | Waybar, SwayNC, Rofi, Wlogout, SwayOSD, swayidle, swaybg, wlsunset | Select with `F3` in the greeter |
+| Session | Compositor | Shared shell | Login behavior |
+|---------|------------|--------------|----------------|
+| Niri | Niri | Noctalia v5: bar/launcher/control center/notifications/clipboard/lock/wallpaper/OSD/idle | Select with `F3`; the greeter remembers it |
+| Mango | Mango (tile/scroller/dwindle) | The same Noctalia v5 config and runtime state | Select with `F3`; the greeter remembers it |
 
-Mango's applets, Polkit agent, input method, clipboard, automount, and idle services are bound only to `mango-session.target`; leaving Mango stops them together so they do not leak into Niri.
+Under `mango-session.target`, Mango starts Noctalia, fcitx5, udiskie, xsettingsd, the portal-theme and screenshot-sound watchers, persistent clipboard, text/image cliphist, delayed random wallpaper, Gopeed, and XWayland DPI. The guard stops them together on logout. Noctalia itself provides Polkit, network/Bluetooth UI, notifications, and idle policy.
 
 ## Daily Apps
 

@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# mango-binds — 从双语快捷键文档提取 Mango 表格，在浮动 Foot 中用 fzf 检索。
+set -euo pipefail
+
+doc="$HOME/Documents/nix-dotfiles/doc/zh/shortcuts.md"
+if [[ ! -f $doc ]]; then
+  printf '找不到快捷键文档: %s\n' "$doc" >&2
+  exit 1
+fi
+
+menu_items=$(awk '
+  /^## Mango 快捷键$/ { in_section = 1; next }
+  /^## / && in_section { exit }
+  in_section && /^\| `/ {
+    line = $0
+    sub(/^\| /, "", line)
+    sub(/ \|$/, "", line)
+    gsub(/`/, "", line)
+    gsub(/ \| /, "  —  ", line)
+    print line
+  }
+' "$doc")
+
+if [[ -z $menu_items ]]; then
+  printf '快捷键文档中没有找到 Mango 表格。\n' >&2
+  exit 1
+fi
+
+export menu_items
+foot \
+  --app-id mango-hotkey-menu \
+  --title 'Mango 快捷键' \
+  --window-size-chars=96x22 \
+  bash -c 'printf "%s\n" "$menu_items" | fzf --reverse --prompt="󰌌 Mango: " --info=hidden --border=none >/dev/null'

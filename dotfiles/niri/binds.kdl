@@ -5,7 +5,7 @@ binds {
     // 特殊功能
     // ============================================================
     Mod+Shift+Slash hotkey-overlay-title="快捷键教程 Keybind tutorial" { spawn "~/.config/niri/scripts/niri-binds"; }
-    Mod+F1        hotkey-overlay-title="开关输入法 Toggle fcitx" { spawn-sh "pkill fcitx5 || fcitx5 -d"; }
+    Mod+F1        hotkey-overlay-title="重启输入法 Restart fcitx" { spawn "env" "-u" "GTK_IM_MODULE" "fcitx5" "-r"; }
     Mod+F2        hotkey-overlay-title="设置 Settings" { spawn-sh "noctalia msg settings-toggle"; }
     Mod+P         hotkey-overlay-title="提取窗口信息 Pick information" { spawn "~/.config/niri/scripts/niri-pick" "focus"; }
 
@@ -35,7 +35,7 @@ binds {
     // 壁纸
     // ============================================================
     Mod+F10       hotkey-overlay-title="随机切换壁纸 Random wallpaper" { spawn-sh "noctalia msg wallpaper-random"; }
-    Mod+Shift+F10 hotkey-overlay-title="随机下载壁纸 Random Download wallpaper" { spawn "~/.config/niri/scripts/random-anime-wallpaper"; }
+    Mod+Shift+F10 hotkey-overlay-title="随机下载壁纸 Random Download wallpaper" { spawn "~/.config/noctalia/scripts/random-anime-wallpaper"; }
 
     // ============================================================
     // 总览 / 退出

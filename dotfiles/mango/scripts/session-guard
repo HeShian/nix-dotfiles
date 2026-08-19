@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# 仅在 Mango IPC 自然断开时收拢 target；generation 切换主动停服务时不能误判为注销。
+set -u
+
+stopping=0
+watch_pid=
+
+stop_watcher() {
+  stopping=1
+  if [[ -n $watch_pid ]]; then
+    kill "$watch_pid" 2> /dev/null || true
+  fi
+}
+
+trap stop_watcher INT TERM
+
+mmsg watch all-monitors &
+watch_pid=$!
+status=0
+wait "$watch_pid" || status=$?
+
+if ((stopping == 0)); then
+  systemctl --user --no-block stop mango-session.target
+fi
+
+exit "$status"

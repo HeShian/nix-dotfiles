@@ -17,6 +17,8 @@ _: {
           "dotfiles/noctalia/templates/*"
           # Noctalia 下载的第三方社区模板/调色板
           "dotfiles/noctalia/state/*"
+          # Noctalia 运行时生成，stylua 会改写用户当前调色板文件
+          "dotfiles/nvim/lua/matugen.lua"
         ];
         formatter = {
           stylua.options = [
@@ -34,10 +36,12 @@ _: {
               "-s"
               "-sr"
             ];
-            # niri 脚本无 .sh 扩展名，按路径显式纳入
+            # 三套脚本目录都有无 .sh 扩展名的入口，按路径显式纳入。
             includes = [
               "*.sh"
+              "dotfiles/mango/scripts/*"
               "dotfiles/niri/scripts/*"
+              "dotfiles/noctalia/scripts/*"
             ];
           };
         };

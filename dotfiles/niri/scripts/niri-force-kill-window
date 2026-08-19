@@ -101,10 +101,11 @@ if ! output=$(niri msg pick-window 2> /dev/null); then exit 0; fi
 if [[ -z $output ]]; then exit 0; fi
 
 pid=$(grep -oP 'PID:\s*\K\d+' <<< "$output")
+window_id=$(grep -oP '^Window ID \K\d+' <<< "$output")
 app_id=$(grep -oP 'App ID:\s*"\K[^"]+' <<< "$output")
 app_name="${app_id:-$STR_UNKNOWN_APP}"
 
-if [[ -z $pid ]]; then exit 0; fi
+if [[ -z $pid || -z $window_id ]]; then exit 0; fi
 if [[ ! -f "/proc/$pid/comm" ]]; then
   notify-send "$STR_ERR_INFO_TITLE" "$STR_ERR_INFO_MSG" -a "Window Killer" -i dialog-error
   exit 1
@@ -115,7 +116,22 @@ process_name_lower="${process_name,,}"
 
 if [[ $process_name_lower == *"xwayland"* ]]; then
   proto_str="XWayland"
+
+  # pick-window 只返回点选结果，不会把焦点交给目标；先按 Niri 窗口 ID 聚焦，
+  # 否则 _NET_ACTIVE_WINDOW 仍可能指向此前活跃的另一个 X11 应用。
+  if ! niri msg action focus-window --id "$window_id" > /dev/null 2>&1; then
+    notify-send "$STR_ERR_INFO_TITLE" "$STR_ERR_INFO_MSG" -a "Window Killer" -i dialog-error
+    exit 1
+  fi
   sleep 0.05
+
+  focused_output=$(niri msg focused-window 2> /dev/null)
+  focused_window_id=$(grep -oP '^Window ID \K\d+' <<< "$focused_output")
+  if [[ $focused_window_id != "$window_id" ]]; then
+    notify-send "$STR_ERR_INFO_TITLE" "$STR_ERR_INFO_MSG" -a "Window Killer" -i dialog-error
+    exit 1
+  fi
+
   active_wid=$(xprop -root -notype _NET_ACTIVE_WINDOW 2> /dev/null | grep -o '0x[0-9a-fA-F]\+')
   real_pid=$(xprop -id "$active_wid" -notype _NET_WM_PID 2> /dev/null | grep -oP '\d+')
 else

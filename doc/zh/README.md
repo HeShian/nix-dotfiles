@@ -10,7 +10,7 @@
 |------|-----|
 | 主机 | aspire-a715 |
 | 用户 | claudia |
-| 桌面 | 默认 Niri + Noctalia v5；备选 Mango + Waybar/SwayNC/Rofi |
+| 桌面 | Niri 与 Mango 共用 Noctalia v5；登录器记住上一次选择 |
 | 管理 | Nix Flakes（flake-parts + den）+ Home Manager + Disko + agenix |
 | 机器参数 | `hosts/<host>/host.nix`（disk/cpu/gpu/primaryUser/proxy/users 元数据） |
 
